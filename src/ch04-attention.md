@@ -169,7 +169,7 @@ Output[2] = 0.211·[1,0,1,0] + 0.211·[0,1,0,1] + 0.578·[1,1,0,0]
 
 Token 2 ("sat") is blending information from all three tokens, with most weight on itself.
 
-![Attention weight heatmap for a 3-token sequence](images/ch04-attention-weights.png)
+
 
 ---
 

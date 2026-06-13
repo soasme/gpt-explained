@@ -6,7 +6,6 @@ language = "en"
 src = "src"
 
 [output.html]
-theme = "themes"
 git-repository-url = "https://github.com/soasme/gpt-explained"
 edit-url-template = "https://github.com/soasme/gpt-explained/edit/main/src/{path}"
 site-url = "/gpt-explained/"
