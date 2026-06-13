@@ -12,22 +12,22 @@ The mechanism is called **the embedding matrix**, and it is the model's first le
 
 Think of the embedding matrix as an enormous lookup table. It has one row per vocabulary entry and `d_model` columns, where `d_model` is the model's **hidden dimension** — a hyperparameter that controls how rich each token's representation is. In GPT-2 small, `d_model = 768`. In LLaMA-3 70B, `d_model = 8192`.
 
-```
-Embedding matrix E:  shape [|V| × d_model]
+$$
+Embedding matrix E:  shape [|V| \times d_model]
 
-  token 0:  [  0.12  -0.83   0.41  …  (d_model numbers) ]
-  token 1:  [ -0.55   0.19   0.77  …                    ]
-  token 2:  [  0.03   0.61  -0.29  …                    ]
+  token 0:  [  0.12  -0.83   0.41  \ldots  (d_model numbers) ]
+  token 1:  [ -0.55   0.19   0.77  \ldots                    ]
+  token 2:  [  0.03   0.61  -0.29  \ldots                    ]
   ...
-  token |V|: [ …                                         ]
-```
+  token |V|: [ \ldots                                         ]
+$$
 
-To embed a token with ID `i`, you just take row `i`. That's it. A single matrix row lookup. In NumPy: `E[i]`. In math: `eᵢ = Eᵢ`.
+To embed a token with ID `i`, you just take row `i`. That's it. A single matrix row lookup. In NumPy: `E[i]`. In math: $e_i = E_i$.
 
-For a sequence of `T` tokens with IDs `[i₁, i₂, …, iₜ]`, the embedding step produces a matrix of shape `[T × d_model]` — one row per token.
+For a sequence of `T` tokens with IDs $[i_1, i_2, \ldots, i_t]$, the embedding step produces a matrix of shape $[T \times d_model]$ — one row per token.
 
 > **Math Minute — Vectors**
-> A vector `v ∈ ℝⁿ` is an ordered list of `n` real numbers: `v = [v₁, v₂, …, vₙ]`. You can add vectors (`[1,2] + [3,4] = [4,6]`), scale them (`2·[1,2] = [2,4]`), and measure their similarity via the **dot product** (Chapter 4). Geometrically, a vector is a point — or an arrow — in n-dimensional space.
+> A vector $v \in \mathbb{R}^n$ is an ordered list of `n` real numbers: $v = [v_1, v_2, \ldots, v_n]$. You can add vectors (`[1,2] + [3,4] = [4,6]`), scale them ($2\cdot[1,2] = [2,4]$), and measure their similarity via the **dot product** (Chapter 4). Geometrically, a vector is a point — or an arrow — in n-dimensional space.
 
 ---
 
@@ -35,19 +35,19 @@ For a sequence of `T` tokens with IDs `[i₁, i₂, …, iₜ]`, the embedding s
 
 The values in the embedding matrix are not hand-crafted. They are initialized randomly and then **learned via gradient descent** during training, just like any other model parameter.
 
-The training objective is next-token prediction: given `t₁, t₂, …, tₙ`, predict `tₙ₊₁`. Because the model must do this well across billions of examples, it is forced to arrange embeddings such that tokens that appear in similar contexts land near each other in the embedding space.
+The training objective is next-token prediction: given $t_1, t_2, \ldots, t_n$, predict $t_{n+1}$. Because the model must do this well across billions of examples, it is forced to arrange embeddings such that tokens that appear in similar contexts land near each other in the embedding space.
 
 This produces the famous arithmetic property:
 
-```
-embedding("king") − embedding("man") + embedding("woman") ≈ embedding("queen")
-```
+$$
+embedding("king") - embedding("man") + embedding("woman") \approx embedding("queen")
+$$
 
 No one programmed this. It is a geometric consequence of how the vectors were shaped by the training signal.
 
 > **Math Minute — Dot Product**
-> The dot product of two vectors `u = [u₁,…,uₙ]` and `v = [v₁,…,vₙ]` is:
-> `u · v = u₁v₁ + u₂v₂ + … + uₙvₙ`
+> The dot product of two vectors $u = [u_1,\ldots,u_n]$ and $v = [v_1,\ldots,v_n]$ is:
+> $u \cdot v = u_{1v1} + u_{2v2} + \ldots + u_{nvn}$
 > It is a single number. If both vectors point in the same direction, the dot product is large and positive. If they are perpendicular, it is zero. If they point opposite, it is negative. Dot product measures **alignment**.
 
 ---
@@ -57,28 +57,28 @@ No one programmed this. It is a geometric consequence of how the vectors were sh
 Given:
 - `|V|` = vocabulary size
 - `d` = `d_model` (hidden dimension)
-- `E ∈ ℝ^{|V| × d}` = embedding matrix (learned)
-- `i ∈ {0, …, |V|−1}` = token ID
+- $E \in \mathbb{R}^{|V| \times d}$ = embedding matrix (learned)
+- $i \in {0, \ldots, |V|-1}$ = token ID
 
 The embedding of token `i` is:
 
-```
-eᵢ = Eᵢ,·  ∈ ℝᵈ
-```
+$$
+e_i = E_i,\cdot  \in \mathbb{R}^d
+$$
 
 (Row `i` of matrix `E`.)
 
-For a sequence of `T` tokens `[i₁, …, iₜ]`, the embedding operation is:
+For a sequence of `T` tokens $[i_1, \ldots, i_t]$, the embedding operation is:
 
-```
-X = E[[i₁,…,iₜ], :]  ∈ ℝ^{T × d}
-```
+$$
+X = E[[i_1,\ldots,i_t], :]  \in \mathbb{R}^{T \times d}
+$$
 
 This is just row indexing — no multiplication. In practice it is implemented as a matrix multiplication with a one-hot vector:
 
-```
-eᵢ = oᵢᵀ · E    where oᵢ ∈ {0,1}^|V|, (oᵢ)ⱼ = 1 if j=i else 0
-```
+$$
+e_i = o_i^{\top} \cdot E    where o_i \in {0,1}^|V|, (o_i)_j = 1 if j=i else 0
+$$
 
 But implementations use the index directly because it is faster.
 
@@ -88,15 +88,15 @@ But implementations use the index directly because it is faster.
 
 Let's use tiny numbers: `|V| = 5`, `d = 4`.
 
-```
-Embedding matrix E (5×4):
+$$
+Embedding matrix E (5\times 4):
        col0   col1   col2   col3
 tok 0: [ 0.10  -0.20   0.30  -0.40 ]
 tok 1: [ 0.50   0.60  -0.70   0.80 ]
 tok 2: [-0.90   0.10   0.20  -0.30 ]
 tok 3: [ 0.40  -0.50   0.60  -0.70 ]
 tok 4: [-0.10   0.80  -0.40   0.50 ]
-```
+$$
 
 Input token sequence: `"low lower"` → token IDs `[2, 3, 0]` (hypothetical).
 
@@ -112,7 +112,7 @@ X[2] = E[0] = [ 0.10, -0.20,  0.30, -0.40]   ← "er"
 Result X: shape [3 × 4]
 ```
 
-This `[3 × 4]` matrix is what flows into the next stage.
+This $[3 \times 4]$ matrix is what flows into the next stage.
 
 ![Embedding matrix lookup: token IDs map to row vectors](images/ch02-embedding-lookup.png)
 
@@ -235,13 +235,13 @@ clisp embeddings.lisp
 
 ## 2.6 Key Takeaways
 
-- An embedding matrix `E ∈ ℝ^{|V| × d}` maps token IDs to dense vectors.
+- An embedding matrix $E \in \mathbb{R}^{|V| \times d}$ maps token IDs to dense vectors.
 - The embedding of token `i` is row `i` of `E` — a single **lookup**, no computation.
-- For a sequence of `T` tokens, we get a `[T × d]` matrix `X`.
+- For a sequence of `T` tokens, we get a $[T \times d]$ matrix `X`.
 - The vectors are **learned**: training nudges similar tokens closer together.
-- Semantic arithmetic (`king − man + woman ≈ queen`) emerges from the training objective.
+- Semantic arithmetic ($king - man + woman \approx queen$) emerges from the training objective.
 
-> **What's next?** We have a matrix `X` of shape `[T × d]`. Each row knows *what* the token is, but nothing about *where* it sits in the sequence. Swapping two tokens would produce the same rows in a different order, which the model would treat identically. We need to inject **position information** — that's Chapter 3.
+> **What's next?** We have a matrix `X` of shape $[T \times d]$. Each row knows *what* the token is, but nothing about *where* it sits in the sequence. Swapping two tokens would produce the same rows in a different order, which the model would treat identically. We need to inject **position information** — that's Chapter 3.
 
 
 ---

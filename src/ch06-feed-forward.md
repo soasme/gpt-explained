@@ -10,18 +10,18 @@ While attention does the *routing* (mixing information across tokens), the FFN d
 
 ## 6.1 The Idea
 
-The FFN takes a single vector `x ∈ ℝᵈ` and transforms it:
+The FFN takes a single vector $x \in \mathbb{R}^d$ and transforms it:
 
 1. **Expand** it to a higher-dimensional space (`d_ff = 4d` typically).
 2. **Apply a non-linearity** (activation function).
 3. **Project back** to the model dimension.
 
-```
-FFN(x) = GELU( x W₁ + b₁ ) W₂ + b₂
-```
+$$
+FFN(x) = \operatorname{GELU}( x W_1 + b_1 ) W_2 + b_2
+$$
 
-- `W₁ ∈ ℝ^{d×d_ff}` — expansion (usually `d_ff = 4d`)
-- `W₂ ∈ ℝ^{d_ff×d}` — contraction
+- $W_1 \in \mathbb{R}^{d\times d_ff}$ — expansion (usually `d_ff = 4d`)
+- $W_2 \in \mathbb{R}^{d_ff\times d}$ — contraction
 - `GELU` — the activation function (explained below)
 
 The FFN is applied **position-wise**: every token's vector goes through the same weights independently. No mixing across positions happens here — that already happened in attention.
@@ -31,7 +31,7 @@ The FFN is applied **position-wise**: every token's vector goes through the same
 >
 > `ReLU(x) = max(0, x)` — simple: negative values → 0, positive values unchanged.
 >
-> `GELU(x) = x · Φ(x)` where `Φ` is the standard normal CDF. GELU is smooth and probabilistic: instead of a hard cut at zero, it "softly" gates the input. GPT uses GELU. LLaMA and most modern models use `SwiGLU`, a gated variant.
+> $\operatorname{GELU}(x) = x \cdot \Phi(x)$ where $\Phi$ is the standard normal CDF. GELU is smooth and probabilistic: instead of a hard cut at zero, it "softly" gates the input. GPT uses GELU. LLaMA and most modern models use `SwiGLU`, a gated variant.
 >
 > `Sigmoid(x) = 1/(1+e⁻ˣ)` squashes any real number to (0,1). Used in gates.
 
@@ -39,26 +39,26 @@ The FFN is applied **position-wise**: every token's vector goes through the same
 
 ## 6.2 The Math
 
-For a sequence input `X ∈ ℝ^{T×d}`, the FFN applies identically to each row:
+For a sequence input $X \in \mathbb{R}^{T\times d}$, the FFN applies identically to each row:
 
-```
-FFN(X) = GELU(X W₁ + 1·b₁ᵀ) W₂ + 1·b₂ᵀ
-```
+$$
+FFN(X) = \operatorname{GELU}(X W_1 + 1\cdot b_1^{\top}) W_2 + 1\cdot b_2^{\top}
+$$
 
-Where `1·b₁ᵀ` broadcasts the bias across all `T` positions.
+Where $1\cdot b_1^{\top}$ broadcasts the bias across all `T` positions.
 
 Breaking it down:
-```
-H = X W₁ + 1·b₁ᵀ       ∈ ℝ^{T × d_ff}     (linear expand)
-H' = GELU(H)             ∈ ℝ^{T × d_ff}     (activation)
-Y = H' W₂ + 1·b₂ᵀ       ∈ ℝ^{T × d}        (linear contract)
-```
+$$
+H = X W_1 + 1\cdot b_1^{\top}       \in \mathbb{R}^{T \times d_ff}     (linear expand)
+H' = \operatorname{GELU}(H)             \in \mathbb{R}^{T \times d_ff}     (activation)
+Y = H' W_2 + 1\cdot b_2^{\top}       \in \mathbb{R}^{T \times d}        (linear contract)
+$$
 
 **Parameter count:**
-- `W₁`: `d × d_ff = d × 4d = 4d²`
-- `W₂`: `d_ff × d = 4d²`
-- Biases: `d_ff + d ≈ 5d`
-- Total: `~8d²` — this is **twice** the parameter count of all attention weight matrices combined!
+- $W_1$: $d \times d_ff = d \times 4d = 4d^2$
+- $W_2$: $d_ff \times d = 4d^2$
+- Biases: $d_ff + d \approx 5d$
+- Total: $~8d^2$ — this is **twice** the parameter count of all attention weight matrices combined!
 
 For GPT-2 small (`d=768`): FFN has `~4.7M` parameters per layer (vs `~2.4M` for attention). The FFN is not an afterthought — it dominates model capacity.
 
@@ -68,22 +68,26 @@ For GPT-2 small (`d=768`): FFN has `~4.7M` parameters per layer (vs `~2.4M` for 
 
 The exact GELU formula is:
 
-```
-GELU(x) = x · (1/2) · [1 + erf(x/√2)]
+$$
+\operatorname{GELU}(x) = x \cdot \frac{1}{2} \cdot \left[1 + \operatorname{erf}\!\left(\frac{x}{\sqrt{2}}\right)\right]
+$$
 
-where erf is the Gauss error function: erf(z) = (2/√π) ∫₀ᶻ e⁻ᵗ² dt
-```
+where $\operatorname{erf}$ is the Gauss error function:
+
+$$
+\operatorname{erf}(z) = \frac{2}{\sqrt{\pi}} \int_0^z e^{-t^2} \, dt
+$$
 
 A fast approximation (used in practice):
 
-```
-GELU(x) ≈ 0.5 · x · (1 + tanh(√(2/π) · (x + 0.044715 · x³)))
-```
+$$
+\operatorname{GELU}(x) \approx 0.5 \cdot x \cdot (1 + \tanh(\sqrt{(2/\pi)} \cdot (x + 0.044715 \cdot x^3)))
+$$
 
 Key behaviors:
 - `GELU(0) = 0`
-- For large positive `x`: `GELU(x) ≈ x` (passes through)
-- For large negative `x`: `GELU(x) ≈ 0` (suppressed)
+- For large positive `x`: $\operatorname{GELU}(x) \approx x$ (passes through)
+- For large negative `x`: $\operatorname{GELU}(x) \approx 0$ (suppressed)
 - Smooth everywhere — gradient flows through during training
 
 ---
@@ -99,17 +103,17 @@ X = [[ 0.5,  1.2, -0.3,  0.8],
 ```
 
 Weight matrices (simplified for hand-calculation):
-```
-W₁ (4×8): columns are random, let's say it expands X to 8 dims
-b₁ (8): all zeros for simplicity
+$$
+W_1 (4\times 8): columns are random, let's say it expands X to 8 dims
+b_1 (8): all zeros for simplicity
 
-W₂ (8×4): contracts back
-b₂ (4): all zeros
-```
+W_2 (8\times 4): contracts back
+b_2 (4): all zeros
+$$
 
 Let's trace just row 0 of X: `x = [0.5, 1.2, -0.3, 0.8]`
 
-**Step 1 — Expand:** `h = x W₁`
+**Step 1 — Expand:** $h = x W_1$
 ```
 (with a hypothetical W₁ this produces a 8-element vector)
 h = [1.1, -0.4, 0.8, 2.1, -0.3, 0.6, 1.5, -0.8]
@@ -129,7 +133,7 @@ GELU(-0.8) ≈ -0.17
 h' = [0.95, -0.12, 0.64, 2.06, -0.11, 0.44, 1.40, -0.17]
 ```
 
-**Step 3 — Contract:** `y = h' W₂`
+**Step 3 — Contract:** $y = h' W_2$
 ```
 (with a hypothetical W₂ this produces a 4-element vector)
 y ≈ [0.7, 1.1, -0.2, 0.9]
@@ -247,16 +251,20 @@ The output `y` is a transformed version of the input vector — same dimensional
 
 A striking insight from Geva et al. (2021): the FFN layers act like **associative memories**.
 
-The first layer `W₁` stores "keys" — each column of `W₁` is a pattern to match against the input. GELU fires when the input matches. The second layer `W₂` stores "values" — the corresponding information to retrieve.
+The first layer $W_1$ stores "keys" — each column of $W_1$ is a pattern to match against the input. GELU fires when the input matches. The second layer $W_2$ stores "values" — the corresponding information to retrieve.
 
 Concretely:
-```
-h = GELU(x W₁)          # For each column k of W₁:
-                          # h[k] ≈ x·W₁[:,k]
-                          # High h[k] means "input matches pattern k"
+$$
+h = \operatorname{GELU}(x W_1)
+$$
 
-y = h W₂                 # Pull out value W₂[k] weighted by h[k]
-```
+where each component $h_k \approx x \cdot W_1[:,k]$ — a dot-product "match score" for pattern $k$. High $h_k$ means "input matches pattern $k$."
+
+$$
+y = h W_2
+$$
+
+Pull out value $W_2[k,:]$ weighted by $h_k$.
 
 This means the model can learn: "if the input contains patterns related to France, activate neuron 47, which retrieves 'Paris' associations."
 
@@ -264,7 +272,7 @@ This means the model can learn: "if the input contains patterns related to Franc
 
 ## 6.7 Key Takeaways
 
-- The FFN is a two-layer MLP applied **identically to every position**: `FFN(x) = GELU(xW₁ + b₁) W₂ + b₂`.
+- The FFN is a two-layer MLP applied **identically to every position**: $FFN(x) = \operatorname{GELU}(xW_1 + b_1) W_2 + b_2$.
 - The inner dimension `d_ff = 4d` means the FFN has **more parameters than the attention layers**.
 - GELU is a smooth activation function that "softly gates" negative values.
 - The FFN acts as an **associative memory**: first layer matches patterns, second layer retrieves associated information.

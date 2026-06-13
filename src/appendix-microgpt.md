@@ -45,18 +45,18 @@ See `src/lisp/microgpt.lisp` for the full training loop.
 
 | Component | Input | Output | Parameters |
 |-----------|-------|--------|------------|
-| Token Embedding | `[T]` ints | `[T × d]` | `|V| × d` |
-| Positional Embedding | `[T]` positions | `[T × d]` | `T_max × d` |
+| Token Embedding | `[T]` ints | $[T \times d]$ | $|V| \times d$ |
+| Positional Embedding | `[T]` positions | $[T \times d]$ | $T_max \times d$ |
 | × N Transformer Blocks | | | |
-| — LayerNorm 1 | `[T × d]` | `[T × d]` | `2d` |
-| — Multi-Head Attn | `[T × d]` | `[T × d]` | `4d²` |
-| — Residual | `[T × d]` | `[T × d]` | 0 |
-| — LayerNorm 2 | `[T × d]` | `[T × d]` | `2d` |
-| — FFN | `[T × d]` | `[T × d]` | `8d²` |
-| — Residual | `[T × d]` | `[T × d]` | 0 |
-| Final LayerNorm | `[T × d]` | `[T × d]` | `2d` |
-| Unembedding | `[d]` | `[|V|]` | `d × |V|` (tied) |
+| — LayerNorm 1 | $[T \times d]$ | $[T \times d]$ | `2d` |
+| — Multi-Head Attn | $[T \times d]$ | $[T \times d]$ | $4d^2$ |
+| — Residual | $[T \times d]$ | $[T \times d]$ | 0 |
+| — LayerNorm 2 | $[T \times d]$ | $[T \times d]$ | `2d` |
+| — FFN | $[T \times d]$ | $[T \times d]$ | $8d^2$ |
+| — Residual | $[T \times d]$ | $[T \times d]$ | 0 |
+| Final LayerNorm | $[T \times d]$ | $[T \times d]$ | `2d` |
+| Unembedding | `[d]` | `[|V|]` | $d \times |V|$ (tied) |
 
-**Total parameters:** `2|V|d + T_max·d + N(12d² + 4d) + 2d`
+**Total parameters:** $2|V|d + T_max\cdot d + N(12d^2 + 4d) + 2d$
 
 For GPT-2 small: `d=768, N=12, |V|=50257, T_max=1024` → ~117M params.

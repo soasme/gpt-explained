@@ -22,7 +22,7 @@ The output for each token is a **weighted sum** of all value vectors, where the 
 
 > **Math Minute — Softmax**
 > `softmax(z)` turns a vector of raw scores into a probability distribution.
-> For vector `z = [z₁, z₂, …, zₙ]`:
+> For vector $z = [z_1, z_2, \ldots, z_n]$:
 > ```
 > softmax(z)ᵢ = exp(zᵢ) / Σⱼ exp(zⱼ)
 > ```
@@ -34,75 +34,75 @@ The output for each token is a **weighted sum** of all value vectors, where the 
 
 ### Step 1: Project to Q, K, V
 
-Given input `X ∈ ℝ^{T×d}`, we learn three weight matrices:
+Given input $X \in \mathbb{R}^{T\times d}$, we learn three weight matrices:
 
-```
-Wq ∈ ℝ^{d×dₖ},   Wk ∈ ℝ^{d×dₖ},   Wv ∈ ℝ^{d×dᵥ}
-```
+$$
+Wq \in \mathbb{R}^{d\times d_k},   Wk \in \mathbb{R}^{d\times d_k},   Wv \in \mathbb{R}^{d\times d_v}
+$$
 
 And compute:
 
-```
-Q = X Wq  ∈ ℝ^{T×dₖ}   (queries)
-K = X Wk  ∈ ℝ^{T×dₖ}   (keys)
-V = X Wv  ∈ ℝ^{T×dᵥ}   (values)
-```
+$$
+Q = X Wq  \in \mathbb{R}^{T\times d_k}   (queries)
+K = X Wk  \in \mathbb{R}^{T\times d_k}   (keys)
+V = X Wv  \in \mathbb{R}^{T\times d_v}   (values)
+$$
 
-In standard single-head attention, `dₖ = dᵥ = d`.
+In standard single-head attention, $d_k = d_v = d$.
 
 ### Step 2: Compute Attention Scores
 
-```
-S = Q Kᵀ / √dₖ  ∈ ℝ^{T×T}
-```
+$$
+S = Q K^{\top} / \sqrt{d_k}  \in \mathbb{R}^{T\times T}
+$$
 
-`S[i,j]` measures how relevant token `j` is to token `i`. The division by `√dₖ` prevents the dot products from growing too large (which would push softmax into regions with near-zero gradients).
+`S[i,j]` measures how relevant token `j` is to token `i`. The division by $\sqrt{d_k}$ prevents the dot products from growing too large (which would push softmax into regions with near-zero gradients).
 
 > **Math Minute — Matrix Multiplication**
-> For matrices `A ∈ ℝ^{m×n}` and `B ∈ ℝ^{n×p}`:
-> `(AB)[i,j] = Σₖ A[i,k] · B[k,j]`
-> The result has shape `[m×p]`. Each entry is a dot product of a row of `A` and a column of `B`.
+> For matrices $A \in \mathbb{R}^{m\times n}$ and $B \in \mathbb{R}^{n\times p}$:
+> $(AB)[i,j] = Σ_k A[i,k] \cdot B[k,j]$
+> The result has shape $[m\times p]$. Each entry is a dot product of a row of `A` and a column of `B`.
 
 ### Step 3: Apply Causal Mask (for autoregressive models)
 
 GPT is **autoregressive**: when predicting token `t`, it must not look at tokens `t+1, t+2, …` (they haven't been generated yet). We enforce this by masking the upper triangle:
 
-```
-M[i,j] = 0    if j ≤ i    (allowed to attend)
-M[i,j] = -∞  if j > i    (blocked — future tokens)
+$$
+M[i,j] = 0    if j \leq i    (allowed to attend)
+M[i,j] = -\infty  if j > i    (blocked — future tokens)
 
 S_masked = S + M
-```
+$$
 
-Adding `-∞` before softmax effectively zeroes out those attention weights.
+Adding $-\infty$ before softmax effectively zeroes out those attention weights.
 
 ### Step 4: Softmax → Attention Weights
 
-```
-A = softmax(S_masked)   ∈ ℝ^{T×T}
-```
+$$
+A = \operatorname{softmax}(S_masked)   \in \mathbb{R}^{T\times T}
+$$
 
 `A[i,j]` is now a probability: how much token `i` attends to token `j`.
 
 ### Step 5: Weighted Sum of Values
 
-```
-Output = A V   ∈ ℝ^{T×dᵥ}
-```
+$$
+Output = A V   \in \mathbb{R}^{T\times d_v}
+$$
 
 `Output[i]` is a weighted blend of all value vectors, guided by how much token `i` attends to each position.
 
 **Full formula:**
 
-```
-Attention(Q, K, V) = softmax( QKᵀ / √dₖ + M ) · V
-```
+$$
+\operatorname{Attention}(Q, K, V) = \operatorname{softmax}( QK^{\top} / \sqrt{d_k} + M ) \cdot V
+$$
 
 ---
 
 ## 4.3 The Matrix: Worked Example
 
-Let `T = 3` tokens, `d = 4`, `dₖ = dᵥ = 4`. Input (position-encoded):
+Let `T = 3` tokens, `d = 4`, $d_k = d_v = 4$. Input (position-encoded):
 
 ```
 X = [[ 1.0,  0.0,  1.0,  0.0],   ← token 0: "the"
@@ -112,9 +112,9 @@ X = [[ 1.0,  0.0,  1.0,  0.0],   ← token 0: "the"
 
 Weight matrices (simplified, identity-like):
 
-```
-Wq = Wk = Wv = I₄ (4×4 identity, so Q=K=V=X for this example)
-```
+$$
+Wq = Wk = Wv = I_4 (4\times 4 identity, so Q=K=V=X for this example)
+$$
 
 **Step 1 — Q, K, V (same as X here):**
 
@@ -122,7 +122,7 @@ Wq = Wk = Wv = I₄ (4×4 identity, so Q=K=V=X for this example)
 Q = K = V = X
 ```
 
-**Step 2 — Scores `S = QKᵀ / √4`:**
+**Step 2 — Scores $S = QK^{\top} / \sqrt{4}$:**
 
 ```
 QKᵀ[0,0] = [1,0,1,0]·[1,0,1,0] = 1+0+1+0 = 2
@@ -348,10 +348,10 @@ Token 2 ("sat") is blending information from all three tokens, with most weight 
 
 - Attention asks: for each token, **which other tokens are most relevant**?
 - Q, K, V are **learned linear projections** of the input.
-- The attention score `S[i,j] = Qᵢ · Kⱼ / √dₖ` measures relevance.
+- The attention score $S[i,j] = Q_i \cdot K_j / \sqrt{d_k}$ measures relevance.
 - Causal masking prevents tokens from seeing future positions (critical for text generation).
 - The output is a **soft, weighted average** of value vectors.
-- Full formula: `Attention(Q,K,V) = softmax(QKᵀ/√dₖ + mask) V`
+- Full formula: $\operatorname{Attention}(Q,K,V) = \operatorname{softmax}(QK^{\top}/\sqrt{d_k} + mask) V$
 
 > **What's next?** One attention head can only track one type of relationship at a time. What if we want to simultaneously track syntactic dependencies, coreference, and semantic similarity? We run **multiple attention heads in parallel** — Chapter 5.
 

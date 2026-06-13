@@ -35,25 +35,25 @@ This is the **Pre-Layer-Norm** architecture. The original "Attention Is All You 
 
 ### Layer Normalization
 
-For a vector `x ∈ ℝᵈ`:
+For a vector $x \in \mathbb{R}^d$:
 
-```
-LayerNorm(x) = γ ⊙ (x - μ)/σ + β
+$$
+\operatorname{LayerNorm}(x) = \gamma \odot (x - \mu)/\sigma + \beta
 
 where:
-  μ = (1/d) Σᵢ xᵢ            (mean of the vector)
-  σ = √((1/d) Σᵢ (xᵢ - μ)²)  (standard deviation)
-  γ, β ∈ ℝᵈ                   (learned scale and shift, per-dimension)
-  ⊙ = element-wise multiplication
-```
+  \mu = (1/d) Σ_i x_i            (mean of the vector)
+  \sigma = \sqrt{((1/d)} Σ_i (x_i - \mu)^2)  (standard deviation)
+  \gamma, \beta \in \mathbb{R}^d                   (learned scale and shift, per-dimension)
+  \odot = element-wise multiplication
+$$
 
-`LayerNorm` ensures each vector has **mean 0 and variance 1** before the sub-layers process it. The learned `γ` and `β` allow the network to undo the normalization if needed.
+`LayerNorm` ensures each vector has **mean 0 and variance 1** before the sub-layers process it. The learned $\gamma$ and $\beta$ allow the network to undo the normalization if needed.
 
 > **Math Minute — Variance and Standard Deviation**
-> The variance of a set of numbers `{x₁, …, xₙ}` measures how spread out they are:
-> `Var = (1/n) Σᵢ (xᵢ − μ)²` where `μ` is the mean.
-> The standard deviation `σ = √Var` is in the same units as the original values.
-> Dividing by `σ` makes the spread equal to 1 — "standardizing."
+> The variance of a set of numbers ${x_1, \ldots, x_n}$ measures how spread out they are:
+> $Var = (1/n) Σ_i (x_i - \mu)^2$ where $\mu$ is the mean.
+> The standard deviation $\sigma = \sqrt{Var}$ is in the same units as the original values.
+> Dividing by $\sigma$ makes the spread equal to 1 — "standardizing."
 
 ---
 
@@ -63,15 +63,15 @@ A powerful way to understand the GPT architecture is through the lens of the **r
 
 The input embedding is injected into a "stream" — a vector of dimension `d` per token. Each transformer block **reads from** this stream (via attention and FFN) and **adds back to** it (via residual connections). The stream carries information across all blocks.
 
-```
-stream⁰ = token_embeddings + positional_embeddings    [T × d]
-stream¹ = stream⁰ + MHA(LN(stream⁰))
-stream¹ = stream¹ + FFN(LN(stream¹))
-stream² = stream¹ + MHA(LN(stream¹))
-stream² = stream² + FFN(LN(stream²))
-…
+$$
+stream^0 = token_embeddings + positional_embeddings    [T \times d]
+stream^1 = stream^0 + MHA(LN(stream^0))
+stream^1 = stream^1 + FFN(LN(stream^1))
+stream^2 = stream^1 + MHA(LN(stream^1))
+stream^2 = stream^2 + FFN(LN(stream^2))
+\ldots
 streamᴺ = final output
-```
+$$
 
 This view clarifies that attention heads and FFN neurons are not arranged sequentially — they are all writing to the same shared workspace.
 
@@ -108,9 +108,9 @@ x₁ = x + mha_out = [1.0+0.3, -0.5+0.7, 0.8-0.1, -0.2+0.5]
    = [1.3, 0.2, 0.7, 0.3]
 ```
 
-**Second LayerNorm + FFN + residual** (analogously) → `x₂`
+**Second LayerNorm + FFN + residual** (analogously) → $x_2$
 
-The key insight: `x₁` contains **both** the original information (from `x`) and the new information (from `mha_out`). Nothing is overwritten — the residual stream accumulates.
+The key insight: $x_1$ contains **both** the original information (from `x`) and the new information (from `mha_out`). Nothing is overwritten — the residual stream accumulates.
 
 ![Transformer block: attention + residual + LN + FFN + residual](images/ch07-transformer-block.png)
 
@@ -275,7 +275,7 @@ The residual stream carries information across all blocks. Later blocks can read
 - The **residual stream** is the shared workspace that all blocks read from and write to.
 - GPT stacks `N` identical blocks; capacity scales with `N` and `d`.
 
-> **What's next?** After `N` blocks, we have a final matrix `X_final ∈ ℝ^{T×d}`. Each row is a rich representation of the corresponding token in context. The last step: turn the final vector for position `T` into a probability distribution over the vocabulary — that's **vocabulary projection** in Chapter 8.
+> **What's next?** After `N` blocks, we have a final matrix $X_final \in \mathbb{R}^{T\times d}$. Each row is a rich representation of the corresponding token in context. The last step: turn the final vector for position `T` into a probability distribution over the vocabulary — that's **vocabulary projection** in Chapter 8.
 
 
 ---

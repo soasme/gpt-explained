@@ -22,17 +22,17 @@ Split the model dimension into `H` smaller "sub-spaces." In each sub-space, run 
 
 Formally, each head `h` has its own weight matrices:
 
-```
-Wqʰ ∈ ℝ^{d×dₖ},  Wkʰ ∈ ℝ^{d×dₖ},  Wvʰ ∈ ℝ^{d×dᵥ}
-```
+$$
+Wq^{h} \in \mathbb{R}^{d\times d_k},  Wk^{h} \in \mathbb{R}^{d\times d_k},  Wv^{h} \in \mathbb{R}^{d\times d_v}
+$$
 
 And computes:
 
-```
-headʰ = Attention(X Wqʰ, X Wkʰ, X Wvʰ)   ∈ ℝ^{T×dᵥ}
-```
+$$
+head^{h} = \operatorname{Attention}(X Wq^{h}, X Wk^{h}, X Wv^{h})   \in \mathbb{R}^{T\times d_v}
+$$
 
-The standard choice is `dₖ = dᵥ = d/H`, so that the total computation remains comparable to one large attention head.
+The standard choice is $d_k = d_v = d/H$, so that the total computation remains comparable to one large attention head.
 
 ---
 
@@ -40,45 +40,45 @@ The standard choice is `dₖ = dᵥ = d/H`, so that the total computation remain
 
 **Step 1 — Compute each head independently:**
 
-```
-For h = 1, …, H:
-  Qʰ = X Wqʰ    ∈ ℝ^{T×dₖ}
-  Kʰ = X Wkʰ    ∈ ℝ^{T×dₖ}
-  Vʰ = X Wvʰ    ∈ ℝ^{T×dᵥ}
-  headʰ = softmax( QʰKʰᵀ / √dₖ + M ) Vʰ
-```
+$$
+For h = 1, \ldots, H:
+  Q^{h} = X Wq^{h}    \in \mathbb{R}^{T\times d_k}
+  K^{h} = X Wk^{h}    \in \mathbb{R}^{T\times d_k}
+  V^{h} = X Wv^{h}    \in \mathbb{R}^{T\times d_v}
+  head^{h} = \operatorname{softmax}( Q^{h}{K^{h}}^{\top} / \sqrt{d_k} + M ) V^{h}
+$$
 
 **Step 2 — Concatenate:**
 
-```
-MultiHead = concat(head¹, head², …, headᴴ)   ∈ ℝ^{T × (H·dᵥ)}
-```
+$$
+\operatorname{MultiHead} = concat(head^1, head^2, \ldots, head^{H})   \in \mathbb{R}^{T \times (H\cdot d_v)}
+$$
 
-Since `dᵥ = d/H`, the concatenated output has shape `[T × d]` — the same as the input.
+Since $d_v = d/H$, the concatenated output has shape $[T \times d]$ — the same as the input.
 
 **Step 3 — Output projection:**
 
-```
-Wo ∈ ℝ^{d×d}   (learned)
+$$
+Wo \in \mathbb{R}^{d\times d}   (learned)
 
-Output = MultiHead · Wo   ∈ ℝ^{T×d}
-```
+Output = \operatorname{MultiHead} \cdot Wo   \in \mathbb{R}^{T\times d}
+$$
 
 The final output projection mixes information across heads.
 
 **Full formula:**
 
-```
-MHA(X) = [head¹ ‖ head² ‖ … ‖ headᴴ] Wo
+$$
+MHA(X) = [head^1 \| head^2 \| \ldots \| head^{H}] Wo
 
-where headʰ = Attention(X Wqʰ, X Wkʰ, X Wvʰ)
-```
+where head^{h} = \operatorname{Attention}(X Wq^{h}, X Wk^{h}, X Wv^{h})
+$$
 
 ---
 
 ## 5.3 The Matrix: Worked Example
 
-Let `T = 3`, `d = 4`, `H = 2` heads, so `dₖ = dᵥ = 2`.
+Let `T = 3`, `d = 4`, `H = 2` heads, so $d_k = d_v = 2$.
 
 Input:
 ```
@@ -100,7 +100,7 @@ K¹ = same
 V¹ = same
 ```
 
-Scores: `S¹ = Q¹K¹ᵀ / √2`:
+Scores: $S^1 = Q^1{K^1}^{\top} / \sqrt{2}$:
 ```
 Q¹K¹ᵀ = [[1,0,1],[0,1,1],[1,1,2]]
 S¹    = [[0.71, 0.00, 0.71],
@@ -143,7 +143,7 @@ MultiHead = [head¹ ‖ head²] =
    [0.779, 0.779, 0.421, 0.211]]   (3×4)
 ```
 
-**Output projection** with `Wo ∈ ℝ^{4×4}` mixes the heads' outputs.
+**Output projection** with $Wo \in \mathbb{R}^{4\times 4}$ mixes the heads' outputs.
 
 ![Multi-head attention: two heads capturing different relationship types](images/ch05-multi-head-attention.png)
 
@@ -283,10 +283,10 @@ These specializations emerge from training, not from explicit design. The model 
 
 ## 5.6 Key Takeaways
 
-- Multi-head attention runs `H` attention heads **in parallel**, each in a lower-dimensional subspace `dₖ = d/H`.
+- Multi-head attention runs `H` attention heads **in parallel**, each in a lower-dimensional subspace $d_k = d/H$.
 - Each head has independent `Wq, Wk, Wv` matrices — each learns a different "question to ask."
 - Outputs are **concatenated** (not averaged), then projected back to `d` with `Wo`.
-- The total parameter count is `3Hd·dₖ + d² = 3d² + d²` — same as one large head.
+- The total parameter count is $3Hd\cdot d_k + d^2 = 3d^2 + d^2$ — same as one large head.
 - Different heads specialize in different linguistic relationships.
 
 > **What's next?** After attention mixes information across tokens, each token's vector goes through a small **feed-forward network** — a two-layer MLP applied identically to every position. This is where most of the model's stored "knowledge" lives. Chapter 6.

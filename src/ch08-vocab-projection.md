@@ -2,7 +2,7 @@
 
 > *"After all that computation, the model must answer a simple question: what word comes next?"*
 
-After `N` transformer blocks, we have a matrix `X_final ∈ ℝ^{T×d}`. The final row, `X_final[T-1]`, is a rich contextualized representation of the last token — it "knows" everything in the context window. The last step is to project this vector into a probability distribution over the vocabulary: which token is most likely to come next?
+After `N` transformer blocks, we have a matrix $X_final \in \mathbb{R}^{T\times d}$. The final row, `X_final[T-1]`, is a rich contextualized representation of the last token — it "knows" everything in the context window. The last step is to project this vector into a probability distribution over the vocabulary: which token is most likely to come next?
 
 This projection is called the **language model head**, or **unembedding layer**.
 
@@ -12,52 +12,52 @@ This projection is called the **language model head**, or **unembedding layer**.
 
 The unembedding is the inverse of the embedding:
 
-- **Embedding:** integer → vector. Look up row `i` in `E ∈ ℝ^{|V|×d}`.
-- **Unembedding:** vector → distribution over integers. Project `x ∈ ℝᵈ` to `logits ∈ ℝ^{|V|}`, then softmax.
+- **Embedding:** integer → vector. Look up row `i` in $E \in \mathbb{R}^{|V|\times d}$.
+- **Unembedding:** vector → distribution over integers. Project $x \in \mathbb{R}^d$ to $logits \in \mathbb{R}^{|V|}$, then softmax.
 
-The projection is done with a weight matrix `Wᵤ ∈ ℝ^{d×|V|}`:
+The projection is done with a weight matrix $W_u \in \mathbb{R}^{d\times |V|}$:
 
-```
-logits = x Wᵤ   ∈ ℝ^{|V|}
-```
+$$
+logits = x W_u   \in \mathbb{R}^{|V|}
+$$
 
 Each `logits[i]` is the **unnormalized score** for vocabulary entry `i`. Higher score = the model thinks token `i` is more likely next.
 
-Most GPT implementations **tie** the unembedding weights to the embedding matrix: `Wᵤ = Eᵀ`. The same matrix is used for both embedding (rows as vectors) and unembedding (columns as classifiers). This **weight tying** reduces parameters and has been shown to improve performance.
+Most GPT implementations **tie** the unembedding weights to the embedding matrix: $W_u = E^{\top}$. The same matrix is used for both embedding (rows as vectors) and unembedding (columns as classifiers). This **weight tying** reduces parameters and has been shown to improve performance.
 
 ---
 
 ## 8.2 The Math
 
-Given the final hidden state `hₜ = X_final[T-1] ∈ ℝᵈ`:
+Given the final hidden state $h_t = X_final[T-1] \in \mathbb{R}^d$:
 
 **Step 1 — Final Layer Norm:**
 
-```
-h̃ₜ = LayerNorm(hₜ)    ∈ ℝᵈ
-```
+$$
+\tilde{h}_t = \operatorname{LayerNorm}(h_t)    \in \mathbb{R}^d
+$$
 
 (Applied once more before the unembedding projection.)
 
 **Step 2 — Vocabulary Projection:**
 
-```
-logits = h̃ₜ Wᵤ    ∈ ℝ^{|V|}
-```
+$$
+logits = \tilde{h}_t W_u    \in \mathbb{R}^{|V|}
+$$
 
-With weight tying: `Wᵤ = Eᵀ`, so:
+With weight tying: $W_u = E^{\top}$, so:
 
-```
-logits[i] = h̃ₜ · Eᵢ   (dot product with the embedding of token i)
-```
+$$
+logits[i] = \tilde{h}_t \cdot E_i   (dot product with the embedding of token i)
+$$
 
 The logit for token `i` is the dot product of the model's "prediction vector" with token `i`'s embedding. Tokens whose embeddings align with the prediction vector get high logits.
 
 **Step 3 — Softmax → Probabilities:**
 
-```
-P(next = i | context) = softmax(logits)[i] = exp(logits[i]) / Σⱼ exp(logits[j])
-```
+$$
+P(next = i | context) = \operatorname{softmax}(logits)[i] = \exp(logits[i]) / Σ_j \exp(logits[j])
+$$
 
 > **Math Minute — Temperature**
 > We can control the "sharpness" of the distribution with a **temperature parameter** `T_temp`:
@@ -76,17 +76,17 @@ P(next = i | context) = softmax(logits)[i] = exp(logits[i]) / Σⱼ exp(logits[j
 
 Training and inference use the same forward pass differently.
 
-**Training:** Given a sequence `[t₁, t₂, …, tₙ]`, the model predicts all next tokens simultaneously (thanks to causal masking): `P(t₂|t₁), P(t₃|t₁,t₂), …, P(tₙ|t₁,…,tₙ₋₁)`. The loss is cross-entropy averaged over all positions.
+**Training:** Given a sequence $[t_1, t_2, \ldots, t_n]$, the model predicts all next tokens simultaneously (thanks to causal masking): $P(t_2|t_1), P(t_3|t_1,t_2), \ldots, P(t_n|t_1,\ldots,t_{n-1})$. The loss is cross-entropy averaged over all positions.
 
 **Inference (generation):**
-```
-1. Start with prompt tokens [t₁, …, tₙ]
-2. Forward pass → logits for position n
-3. Sample/argmax → tₙ₊₁
-4. Append tₙ₊₁ to sequence
-5. Forward pass → logits for position n+1
+$$
+1. Start with prompt tokens [t_1, \ldots, t_n]
+2. Forward pass \to logits for position n
+3. Sample/\operatorname{argmax} \to t_{n+1}
+4. Append t_{n+1} to sequence
+5. Forward pass \to logits for position n+1
 6. Repeat until stop token or max length
-```
+$$
 
 This is called **autoregressive generation**: each new token is fed back in as input to generate the next.
 
@@ -96,17 +96,17 @@ This is called **autoregressive generation**: each new token is fed back in as i
 
 During training, for each position `t`, the model produces a probability distribution. The **cross-entropy loss** measures how far the prediction is from the true next token:
 
-```
-L(t) = -log P(tₜ₊₁ | t₁, …, tₜ)
-```
+$$
+L(t) = -\log P(t_{t+1} | t_1, \ldots, t_t)
+$$
 
-If the model assigns probability `0.8` to the true next token: `L = -log(0.8) ≈ 0.22`. 
-If the model assigns `0.001`: `L = -log(0.001) ≈ 6.9`. 
+If the model assigns probability `0.8` to the true next token: $L = -\log(0.8) \approx 0.22$. 
+If the model assigns `0.001`: $L = -\log(0.001) \approx 6.9$. 
 
 The total loss is the mean over all positions and all training examples. Minimizing this via gradient descent is exactly what shapes all the weights in the model — the embedding matrix, the attention weight matrices, the FFN weights — everything.
 
 > **Math Minute — Log**
-> `log(p)` for `p ∈ (0,1]` is always negative. As `p → 0`, `log(p) → -∞`. As `p → 1`, `log(p) → 0`. The negative log loss is 0 when the prediction is perfect and large when the model is confident about the wrong answer.
+> `log(p)` for $p \in (0,1]$ is always negative. As `p → 0`, $\log(p) \to -\infty$. As `p → 1`, `log(p) → 0`. The negative log loss is 0 when the prediction is perfect and large when the model is confident about the wrong answer.
 
 ---
 
@@ -118,7 +118,7 @@ Let `|V| = 5`, `d = 4`. Final hidden state:
 h = [0.3, -0.1, 0.8, 0.2]
 ```
 
-Unembedding matrix `Wᵤ = Eᵀ` (4×5, columns = token embeddings):
+Unembedding matrix $W_u = E^{\top}$ (4×5, columns = token embeddings):
 
 ```
 Eᵀ[:,0] = [0.10, 0.50, -0.90, 0.40]   ← embedding of token 0
@@ -128,7 +128,7 @@ Eᵀ[:,3] = [-0.40, 0.80, -0.30, -0.70] ← embedding of token 3
 Eᵀ[:,4] = [0.50, -0.40, 0.20, 0.30]   ← embedding of token 4 (hypothetical)
 ```
 
-Wait — Eᵀ has shape `[d × |V|]`. Projecting `h [1×d]` → `[1×|V|]`:
+Wait — Eᵀ has shape $[d \times |V|]$. Projecting $h [1\times d]$ → $[1\times |V|]$:
 
 ```
 logits[0] = h · E[0] = (0.3)(0.10) + (-0.1)(−0.20) + (0.8)(0.30) + (0.2)(−0.40)
@@ -366,7 +366,7 @@ P = [0.238, 0.141, 0.161, 0.321, 0.139]
 Why does weight tying work so well? Consider:
 
 - The embedding `E[i]` is learned to represent token `i` such that tokens that appear in similar contexts have similar embeddings.
-- The unembedding `logits[i] = h · E[i]` measures the alignment between the model's prediction vector `h` and token `i`'s embedding.
+- The unembedding $logits[i] = h \cdot E[i]$ measures the alignment between the model's prediction vector `h` and token `i`'s embedding.
 - If `h` is pointing in the direction of "tokens that follow this context," and `E[i]` represents token `i`'s meaning, then tokens that are semantically appropriate will naturally score higher.
 
 Weight tying forces the model to use a single geometric space for both "what a token means" and "how to predict a token" — an elegant constraint that regularizes learning.
@@ -375,8 +375,8 @@ Weight tying forces the model to use a single geometric space for both "what a t
 
 ## 8.8 Key Takeaways
 
-- The **unembedding** projects the final hidden state to logits: `logits = h Wᵤ ∈ ℝ^{|V|}`.
-- **Weight tying** (`Wᵤ = Eᵀ`) reuses the embedding matrix and reduces parameters.
+- The **unembedding** projects the final hidden state to logits: $logits = h W_u \in \mathbb{R}^{|V|}$.
+- **Weight tying** ($W_u = E^{\top}$) reuses the embedding matrix and reduces parameters.
 - **Softmax** converts logits to a probability distribution.
 - **Temperature** controls sampling sharpness; **top-K** restricts the candidate set.
 - **Autoregressive generation**: sample one token at a time, feeding each back as input.

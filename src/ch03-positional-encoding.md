@@ -2,7 +2,7 @@
 
 > *"The model sees all tokens at once. Without position, 'dog bites man' and 'man bites dog' are identical."*
 
-After the embedding step we have a matrix `X ∈ ℝ^{T×d}`. Each row `X[t]` is a vector representing token `t`. But here is the problem: attention (coming in Chapter 4) processes all tokens **simultaneously** — there is no inherent notion of "token 3 comes after token 2." If you shuffled the rows, the model would not know.
+After the embedding step we have a matrix $X \in \mathbb{R}^{T\times d}$. Each row `X[t]` is a vector representing token `t`. But here is the problem: attention (coming in Chapter 4) processes all tokens **simultaneously** — there is no inherent notion of "token 3 comes after token 2." If you shuffled the rows, the model would not know.
 
 We fix this by **adding a position vector** to each token's embedding. The combined vector carries both *what* (the token identity) and *where* (the position).
 
@@ -10,7 +10,7 @@ We fix this by **adding a position vector** to each token's embedding. The combi
 
 ## 3.1 The Idea
 
-For position `t` in a sequence, we compute a vector `p_t ∈ ℝᵈ` and add it to the corresponding embedding:
+For position `t` in a sequence, we compute a vector $p_t \in \mathbb{R}^d$ and add it to the corresponding embedding:
 
 ```
 x̃_t = x_t + p_t
@@ -27,7 +27,7 @@ The original "Attention Is All You Need" paper used a more elegant approach: **s
 
 ## 3.2 Sinusoidal Positional Encoding
 
-For position `t` and dimension `i` (where `0 ≤ i < d`):
+For position `t` and dimension `i` (where $0 \leq i < d$):
 
 ```
 PE(t, 2i)   = sin( t / 10000^(2i/d) )
@@ -49,22 +49,22 @@ Even-indexed dimensions use sine; odd-indexed dimensions use cosine. The denomin
 
 ## 3.3 The Math
 
-Full formula for the positional encoding matrix `PE ∈ ℝ^{T×d}`:
+Full formula for the positional encoding matrix $PE \in \mathbb{R}^{T\times d}$:
 
-```
-PE[t, i] = sin( t · ω_i )    if i is even
-PE[t, i] = cos( t · ω_⌊i/2⌋) if i is odd
+$$
+PE[t, i] = \sin( t \cdot \omega_i )    if i is even
+PE[t, i] = \cos( t \cdot \omega_\lfloor i/2\rfloor) if i is odd
 
-where ω_k = 1 / 10000^(2k/d)
-```
+where \omega_k = 1 / 10000^(2k/d)
+$$
 
 After building `PE`, the position-encoded input is:
 
-```
-X̃ = X + PE    (element-wise addition, both [T × d])
-```
+$$
+\tilde{X} = X + PE    (element-wise addition, both [T \times d])
+$$
 
-The model now works with `X̃` instead of `X`.
+The model now works with $\tilde{X}$ instead of `X`.
 
 ---
 
@@ -72,14 +72,14 @@ The model now works with `X̃` instead of `X`.
 
 Let `T = 4` (4 tokens), `d = 8` (8-dimensional).
 
-First compute the frequencies `ω_k` for `k = 0, 1, 2, 3`:
+First compute the frequencies $\omega_k$ for `k = 0, 1, 2, 3`:
 
-```
-ω₀ = 1 / 10000^(0/8) = 1.0
-ω₁ = 1 / 10000^(2/8) = 1 / 10000^0.25 ≈ 0.1
-ω₂ = 1 / 10000^(4/8) = 1 / 100 = 0.01
-ω₃ = 1 / 10000^(6/8) = 1 / 10000^0.75 ≈ 0.001
-```
+$$
+\omega_0 = 1 / 10000^(0/8) = 1.0
+\omega_1 = 1 / 10000^(2/8) = 1 / 10000^0.25 \approx 0.1
+\omega_2 = 1 / 10000^(4/8) = 1 / 100 = 0.01
+\omega_3 = 1 / 10000^(6/8) = 1 / 10000^0.75 \approx 0.001
+$$
 
 Now compute PE row by row (position `t = 0, 1, 2, 3`), column by column:
 
@@ -99,7 +99,7 @@ PE[3] = [sin(3·1.0), cos(3·1.0), sin(3·0.1), cos(3·0.1), ...]
 
 Notice: dimension 0-1 (high frequency) changes dramatically between positions. Dimension 6-7 (low frequency) barely changes. Together they form a **unique fingerprint** for each position.
 
-The final input matrix `X̃ = X + PE`:
+The final input matrix $\tilde{X} = X + PE$:
 
 ```
 X̃[t] = embed_vector[t] + PE[t]
@@ -207,7 +207,7 @@ For t=0: [-0.90, 0.10, 0.20, -0.30, ...]
 
 ## 3.6 Learned vs Sinusoidal Positional Embeddings
 
-GPT-2 and GPT-3 use **learned** positional embeddings — a second embedding matrix `P ∈ ℝ^{T_max × d}`, trained alongside the token embedding matrix. Each position `t` has a learned row `P[t]`.
+GPT-2 and GPT-3 use **learned** positional embeddings — a second embedding matrix $P \in \mathbb{R}^{T_max \times d}$, trained alongside the token embedding matrix. Each position `t` has a learned row `P[t]`.
 
 Pros:
 - Can adapt to the specific patterns in the training data.
@@ -223,11 +223,11 @@ Sinusoidal encoding is deterministic and extrapolates naturally. Modern architec
 
 - Without position information, the model is **permutation-invariant** — it cannot distinguish `"dog bites man"` from `"man bites dog"`.
 - Sinusoidal PE encodes position using sine/cosine at exponentially-spaced frequencies.
-- The encoding is **added** to the token embedding: `X̃ = X + PE`.
+- The encoding is **added** to the token embedding: $\tilde{X} = X + PE$.
 - Nearby positions have high cosine similarity; distant positions have lower similarity.
 - Modern models (GPT-2: learned; LLaMA: RoPE) vary the method but the purpose is the same.
 
-> **What's next?** We now have `X̃ ∈ ℝ^{T×d}` — a matrix that knows both what each token is and where it sits. Now the interesting part begins: **attention**, the mechanism that lets tokens share information with each other. Chapter 4.
+> **What's next?** We now have $\tilde{X} \in \mathbb{R}^{T\times d}$ — a matrix that knows both what each token is and where it sits. Now the interesting part begins: **attention**, the mechanism that lets tokens share information with each other. Chapter 4.
 
 
 ---
