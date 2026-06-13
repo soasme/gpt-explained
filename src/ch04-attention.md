@@ -354,3 +354,15 @@ Token 2 ("sat") is blending information from all three tokens, with most weight 
 - Full formula: `Attention(Q,K,V) = softmax(QKᵀ/√dₖ + mask) V`
 
 > **What's next?** One attention head can only track one type of relationship at a time. What if we want to simultaneously track syntactic dependencies, coreference, and semantic similarity? We run **multiple attention heads in parallel** — Chapter 5.
+
+
+---
+
+![Q, K, V projection — three separate linear transforms of the same input X.](images/ch04_qkv.png)
+
+*Q, K, V projection — three separate linear transforms of the same input X.*
+
+![Attention weight heatmap (causal) — rows are queries, columns are keys; future is masked.](images/ch04_attn_weights.png)
+
+*Attention weight heatmap (causal) — rows are queries, columns are keys; future is masked.*
+

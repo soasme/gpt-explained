@@ -276,3 +276,15 @@ The residual stream carries information across all blocks. Later blocks can read
 - GPT stacks `N` identical blocks; capacity scales with `N` and `d`.
 
 > **What's next?** After `N` blocks, we have a final matrix `X_final ∈ ℝ^{T×d}`. Each row is a rich representation of the corresponding token in context. The last step: turn the final vector for position `T` into a probability distribution over the vocabulary — that's **vocabulary projection** in Chapter 8.
+
+
+---
+
+![Full transformer block (Pre-LN) — LayerNorm before each sub-layer, residual connections around both.](images/ch07_block.png)
+
+*Full transformer block (Pre-LN) — LayerNorm before each sub-layer, residual connections around both.*
+
+![The residual stream — information flows unimpeded through addition, gradients flow backward.](images/ch07_residual.png)
+
+*The residual stream — information flows unimpeded through addition, gradients flow backward.*
+

@@ -228,3 +228,15 @@ Sinusoidal encoding is deterministic and extrapolates naturally. Modern architec
 - Modern models (GPT-2: learned; LLaMA: RoPE) vary the method but the purpose is the same.
 
 > **What's next?** We now have `X̃ ∈ ℝ^{T×d}` — a matrix that knows both what each token is and where it sits. Now the interesting part begins: **attention**, the mechanism that lets tokens share information with each other. Chapter 4.
+
+
+---
+
+![Positional encoding matrix — each row is added to the corresponding token embedding.](images/ch03_pe_matrix.png)
+
+*Positional encoding matrix — each row is added to the corresponding token embedding.*
+
+![Sinusoidal waves at different frequencies encode position uniquely across dimensions.](images/ch03_sin_waves.png)
+
+*Sinusoidal waves at different frequencies encode position uniquely across dimensions.*
+

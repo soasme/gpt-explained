@@ -63,9 +63,10 @@ class Ch06FFN(Scene):
             return x * 0.5 * (1 + np.tanh(np.sqrt(2/np.pi) * (x + 0.044715 * x**3)))
 
         gelu_curve = ax.plot(gelu, x_range=[-3, 3], color=ORANGE, stroke_width=2.5)
-        relu_curve = ax.plot(lambda x: max(0, x), x_range=[-3, 3],
-                             color=GREEN, stroke_width=1.5,
-                             stroke_dasharray=[8, 4])
+        relu_curve = DashedVMobject(
+            ax.plot(lambda x: max(0, x), x_range=[-3, 3],
+                    color=GREEN, stroke_width=1.5),
+            num_dashes=30)
 
         gelu_lbl = Text("GELU", font=MONO, font_size=16, color=ORANGE)
         gelu_lbl.next_to(ax, UP, buff=0.1).shift(RIGHT * 0.5)

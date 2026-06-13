@@ -263,3 +263,15 @@ Encoding 'lower': (10 3 4 8)
 - The tokenizer is trained **once**; at inference time it only applies the stored merge rules.
 
 > **What's next?** We have a sequence of integers: `[10, 3, 4, 8, …]`. These integers are just row indices. To give them geometric meaning — so the model can do math on them — we need an **embedding matrix**. That's Chapter 2.
+
+
+---
+
+![BPE merge sequence — each step replaces the most frequent byte pair with a new token.](images/ch01_bpe.png)
+
+*BPE merge sequence — each step replaces the most frequent byte pair with a new token.*
+
+![The full tokenization pipeline from raw text to integer IDs.](images/ch01_pipeline.png)
+
+*The full tokenization pipeline from raw text to integer IDs.*
+

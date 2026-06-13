@@ -1,67 +1,55 @@
 #!/usr/bin/env bash
-# render_all.sh — render all chapter Manim scenes and copy PNGs to src/images/
-# Usage: bash src/manim/render_all.sh [--quality ql|qm|qh]
+# Render all Manim scenes to static PNGs in src/images/
+# Usage: bash src/manim/render_all.sh
+set -e
 
-set -euo pipefail
-QUALITY=${1:---ql}
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-IMAGES_DIR="$(dirname "$SCRIPT_DIR")/images"
-mkdir -p "$IMAGES_DIR"
+BOOK_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+IMG_DIR="$BOOK_ROOT/src/images"
+MEDIA_DIR="/tmp/manim_render"
 
-declare -A SCENES=(
-  ["ch01_tokens.py"]="Ch01BPEMerges Ch01TokenizationPipeline"
-  ["ch02_embeddings.py"]="Ch02EmbeddingLookup Ch02SemanticSpace"
-  ["ch03_positional_encoding.py"]="Ch03PositionalEncoding Ch03SinWaves"
-  ["ch04_attention.py"]="Ch04AttentionWeights Ch04QKVDiagram"
-  ["ch05_multi_head_attention.py"]="Ch05MultiHeadAttention"
-  ["ch06_ffn.py"]="Ch06FFN Ch06MemoryInterpretation"
-  ["ch07_transformer_block.py"]="Ch07TransformerBlock Ch07ResidualStream"
-  ["ch08_vocab_projection.py"]="Ch08VocabProjection Ch08GenerationLoop"
-)
+mkdir -p "$IMG_DIR"
 
-OUTPUT_NAMES=(
-  "ch01-bpe-merges"
-  "ch01-tokenization-pipeline"
-  "ch02-embedding-lookup"
-  "ch02-semantic-space"
-  "ch03-positional-encoding"
-  "ch03-sin-waves"
-  "ch04-attention-weights"
-  "ch04-qkv-diagram"
-  "ch05-multi-head-attention"
-  "ch06-ffn"
-  "ch06-memory"
-  "ch07-transformer-block"
-  "ch07-residual-stream"
-  "ch08-vocab-projection"
-  "ch08-generation-loop"
-)
+run_scene() {
+  local py_file="$1"
+  local scene_name="$2"
+  local out_name="$3"
 
-echo "=== Rendering Manim scenes (quality: $QUALITY) ==="
-cd "$SCRIPT_DIR"
+  echo "Rendering $scene_name → $out_name.png"
+  python3.12 -m manim "$SCRIPT_DIR/$py_file" "$scene_name" \
+    --format png --save_last_frame \
+    --media_dir "$MEDIA_DIR" \
+    --quality l \
+    -v WARNING || { echo "WARN: $scene_name failed, skipping"; return 0; }
 
-for script in "${!SCENES[@]}"; do
-  echo ""
-  echo "--- $script ---"
-  for scene in ${SCENES[$script]}; do
-    echo "  Rendering $scene ..."
-    manim "$QUALITY" --format=png -s "$script" "$scene" 2>&1 | grep -E "(Error|Warning|Rendered)" || true
-  done
-done
+  # Find the generated PNG and copy to src/images/
+  local png
+  png=$(find "$MEDIA_DIR" -name "*.png" -newer "$SCRIPT_DIR/$py_file" 2>/dev/null | sort -t/ | tail -1)
+  if [[ -f "$png" ]]; then
+    cp "$png" "$IMG_DIR/${out_name}.png"
+    echo "  → copied to src/images/${out_name}.png"
+  else
+    echo "  WARN: could not find output PNG for $scene_name"
+  fi
+}
 
-echo ""
-echo "=== Copying PNGs to $IMAGES_DIR ==="
-
-# Manim saves stills to: media/images/<script_stem>/<SceneName>_ManimCE_v*.png
-find "$SCRIPT_DIR/media/images" -name "*.png" | while read -r f; do
-  scene_name=$(basename "$(dirname "$f")")
-  filename=$(basename "$f" | sed 's/_ManimCE_v[0-9.]*//')
-  # Convert CamelCase scene name to kebab-case
-  kebab=$(echo "$scene_name" | sed 's/\([A-Z]\)/-\1/g' | sed 's/^-//' | tr '[:upper:]' '[:lower:]')
-  dest="$IMAGES_DIR/${kebab}.png"
-  cp "$f" "$dest"
-  echo "  $f → $dest"
-done
+run_scene ch01_tokens.py          Ch01BPEMerges            ch01_bpe
+run_scene ch01_tokens.py          Ch01TokenizationPipeline ch01_pipeline
+run_scene ch02_embeddings.py      Ch02EmbeddingLookup      ch02_embedding_lookup
+run_scene ch02_embeddings.py      Ch02SemanticSpace        ch02_semantic_space
+run_scene ch03_positional_encoding.py Ch03PositionalEncoding ch03_pe_matrix
+run_scene ch03_positional_encoding.py Ch03SinWaves          ch03_sin_waves
+run_scene ch04_attention.py       Ch04QKVDiagram           ch04_qkv
+run_scene ch04_attention.py       Ch04AttentionWeights     ch04_attn_weights
+run_scene ch05_multi_head_attention.py Ch05MultiHeadAttention ch05_mha
+run_scene ch06_ffn.py             Ch06FFN                  ch06_ffn
+run_scene ch06_ffn.py             Ch06MemoryInterpretation ch06_memory
+run_scene ch07_transformer_block.py Ch07TransformerBlock   ch07_block
+run_scene ch07_transformer_block.py Ch07ResidualStream     ch07_residual
+run_scene ch08_vocab_projection.py Ch08VocabProjection     ch08_projection
+run_scene ch08_vocab_projection.py Ch08GenerationLoop      ch08_generation
 
 echo ""
-echo "Done. Images written to $IMAGES_DIR"
+echo "Done! Images in $IMG_DIR:"
+ls "$IMG_DIR"/*.png 2>/dev/null | wc -l
+echo "PNGs generated."

@@ -414,3 +414,15 @@ P(next token): [|V|]  →  sample  →  next token ID
 Every box in that diagram corresponds to one chapter of this book.
 
 > **Continue reading:** The Appendix assembles all Lisp code into a single runnable `microgpt.lisp` and walks through training on a tiny dataset. The Math Primer covers every mathematical prerequisite in one place.
+
+
+---
+
+![Vocab projection — the unembedding matrix converts hidden states to logits over 50k tokens.](images/ch08_projection.png)
+
+*Vocab projection — the unembedding matrix converts hidden states to logits over 50k tokens.*
+
+![Autoregressive generation loop — each predicted token is appended and fed back into the model.](images/ch08_generation.png)
+
+*Autoregressive generation loop — each predicted token is appended and fed back into the model.*
+

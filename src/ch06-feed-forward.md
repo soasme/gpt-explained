@@ -271,3 +271,15 @@ This means the model can learn: "if the input contains patterns related to Franc
 - No cross-position communication happens here — that's attention's job.
 
 > **What's next?** We now have all the pieces: attention that mixes information, and an FFN that processes each token's vector. How are they wired together? With **residual connections** and **layer normalization** to form the **transformer block** — Chapter 7.
+
+
+---
+
+![Feed-forward network — expand → GELU → contract, with GELU vs ReLU activation comparison.](images/ch06_ffn.png)
+
+*Feed-forward network — expand → GELU → contract, with GELU vs ReLU activation comparison.*
+
+![The FFN as associative memory — keys and values stored in the weight matrices.](images/ch06_memory.png)
+
+*The FFN as associative memory — keys and values stored in the weight matrices.*
+

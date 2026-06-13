@@ -242,3 +242,15 @@ clisp embeddings.lisp
 - Semantic arithmetic (`king − man + woman ≈ queen`) emerges from the training objective.
 
 > **What's next?** We have a matrix `X` of shape `[T × d]`. Each row knows *what* the token is, but nothing about *where* it sits in the sequence. Swapping two tokens would produce the same rows in a different order, which the model would treat identically. We need to inject **position information** — that's Chapter 3.
+
+
+---
+
+![Embedding matrix lookup — each token ID indexes into a row of the weight matrix.](images/ch02_embedding_lookup.png)
+
+*Embedding matrix lookup — each token ID indexes into a row of the weight matrix.*
+
+![Semantic arithmetic in embedding space — king − man + woman ≈ queen.](images/ch02_semantic_space.png)
+
+*Semantic arithmetic in embedding space — king − man + woman ≈ queen.*
+

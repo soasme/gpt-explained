@@ -290,3 +290,11 @@ These specializations emerge from training, not from explicit design. The model 
 - Different heads specialize in different linguistic relationships.
 
 > **What's next?** After attention mixes information across tokens, each token's vector goes through a small **feed-forward network** — a two-layer MLP applied identically to every position. This is where most of the model's stored "knowledge" lives. Chapter 6.
+
+
+---
+
+![Multi-head attention — H parallel heads each attend independently, then concat + project.](images/ch05_mha.png)
+
+*Multi-head attention — H parallel heads each attend independently, then concat + project.*
+

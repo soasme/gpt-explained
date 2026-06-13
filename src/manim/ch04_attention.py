@@ -50,7 +50,7 @@ class Ch04AttentionWeights(Scene):
         for i in range(T):
             for j in range(T):
                 val = A[i, j]
-                color = interpolate_color(BLACK, BLUE, val * 2.5)
+                color = interpolate_color(ManimColor("#000000"), ManimColor(BLUE), min(val * 2.5, 1.0))
                 sq = Square(side_length=cell_size,
                             fill_color=color, fill_opacity=0.95,
                             stroke_color=BG, stroke_width=0.5)
@@ -96,9 +96,9 @@ class Ch04AttentionWeights(Scene):
 
         # Show the masked region
         mask_box = Polygon(
-            grid[0 * T + 1][0].get_topleft(),
-            grid[0 * T + (T-1)][0].get_topright(),
-            grid[(T-2) * T + (T-1)][0].get_bottomright(),
+            grid[0 * T + 1][0].get_corner(UL),
+            grid[0 * T + (T-1)][0].get_corner(UR),
+            grid[(T-2) * T + (T-1)][0].get_corner(DR),
             color=RED, stroke_width=2, fill_opacity=0.08, fill_color=RED)
         mask_note = Text("masked (future)", font=MONO, font_size=14, color=RED)
         mask_note.next_to(mask_box, RIGHT, buff=0.1)
