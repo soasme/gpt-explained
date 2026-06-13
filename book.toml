@@ -1,0 +1,22 @@
+[book]
+title = "GPT Explained"
+description = "A hands-on guide to transformer architecture — from tokens to text generation, with math, matrices, Lisp, and animations."
+authors = ["soasme"]
+language = "en"
+src = "src"
+
+[output.html]
+theme = "themes"
+git-repository-url = "https://github.com/soasme/gpt-explained"
+edit-url-template = "https://github.com/soasme/gpt-explained/edit/main/src/{path}"
+site-url = "/gpt-explained/"
+default-theme = "coal"
+preferred-dark-theme = "coal"
+
+[output.html.playground]
+editable = true
+copy-js = true
+
+[output.html.fold]
+enable = true
+level = 1

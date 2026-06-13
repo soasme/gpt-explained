@@ -1,0 +1,25 @@
+# mdBook build output
+book/
+
+# Manim render output (generated, not committed)
+src/manim/media/
+src/manim/__pycache__/
+
+# Generated images (rebuilt by CI)
+src/images/*.png
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+
+# Rust
+target/
+
+# Editor
+.DS_Store
+.idea/
+.vscode/
+*.swp
