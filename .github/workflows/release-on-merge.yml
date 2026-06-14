@@ -46,3 +46,17 @@ jobs:
         tag: ${{ steps.compute-tag.outputs.tagname }}
         commit: main
         artifacts: './gpt-explained.epub,./gpt-explained.fb2.zip,./gpt-explained.pdf,./gpt-explained.html'
+
+    - name: Prepare GitHub Pages content
+      run: |
+        mkdir -p gh-pages-content
+        cp gpt-explained.html gh-pages-content/index.html
+        cp gpt-explained.pdf gh-pages-content/gpt-explained.pdf
+        cp gpt-explained.epub gh-pages-content/gpt-explained.epub
+
+    - name: Publish to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v4
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_branch: gh-pages
+        publish_dir: ./gh-pages-content
