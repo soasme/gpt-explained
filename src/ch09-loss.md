@@ -192,75 +192,93 @@ Since $H(q) = 0$ for one-hot labels, cross-entropy = KL divergence from predicte
 
 ---
 
-## 9.7 Lisp Implementation
+## 9.7 Scheme Implementation
 
-```lisp
-;;; Chapter 9: Loss Functions in microGPT
+`softmax` is repeated here so this file is self-contained; the implementation is the same as in Chapter 4. `cross-entropy-loss` computes $-\log P(\text{true token})$ for a single position. The softmax converts raw logits to probabilities; we look up the probability of the true token and take its negative log. We clamp to $10^{-12}$ before taking the log to avoid $-\infty$ in the degenerate case where the model assigns exactly zero probability — this cannot happen with a proper softmax but floating-point underflow can produce it.
 
-(defun cross-entropy-loss (logits true-token-id)
-  "Single-position cross-entropy loss.
-   LOGITS: raw unnormalized scores, shape [vocab-size]
-   TRUE-TOKEN-ID: integer index of the correct next token
-   Returns a scalar loss (nats)."
-  (let* ((probs (softmax logits))
-         (p-true (aref probs true-token-id)))
-    ;; Clamp to avoid log(0)
+```scheme
+(define (softmax v)
+  (let* ((n     (vector-length v))
+         (max-v (let loop ((i 1) (m (vector-ref v 0)))
+                  (if (= i n) m
+                      (loop (+ i 1) (max m (vector-ref v i))))))
+         (exps  (make-vector n))
+         (total (let loop ((i 0) (s 0.0))
+                  (if (= i n) s
+                      (let ((e (exp (- (vector-ref v i) max-v))))
+                        (vector-set! exps i e)
+                        (loop (+ i 1) (+ s e)))))))
+    (let loop ((i 0))
+      (when (< i n)
+        (vector-set! exps i (/ (vector-ref exps i) total))
+        (loop (+ i 1))))
+    exps))
+
+(define (cross-entropy-loss logits true-id)
+  (let* ((probs  (softmax logits))
+         (p-true (vector-ref probs true-id)))
     (- (log (max p-true 1e-12)))))
-
-(defun sequence-loss (all-logits true-tokens)
-  "Mean cross-entropy loss over a sequence.
-   ALL-LOGITS: list of logit vectors, one per position
-   TRUE-TOKENS: list of true next token IDs
-   Returns scalar mean loss."
-  (let* ((n (length all-logits))
-         (losses (mapcar #'cross-entropy-loss all-logits true-tokens)))
-    (/ (reduce #'+ losses) n)))
-
-(defun perplexity (loss)
-  "Convert mean cross-entropy loss (nats) to perplexity."
-  (exp loss))
-
-;;; Softmax gradient (used in backprop)
-(defun softmax-cross-entropy-grad (logits true-token-id)
-  "Gradient of cross-entropy loss w.r.t. logits.
-   Returns a vector: P(j) - 1_{j = true_token} for each j."
-  (let* ((probs (softmax logits))
-         (grad  (copy-seq probs)))
-    (decf (aref grad true-token-id) 1.0)
-    grad))
-
-;;; ----- Demo -----
-(defun demo-loss ()
-  ;; Toy: 5-token vocabulary, 4 positions
-  ;; Logits and true next tokens from Section 9.5
-  (let ((logits-seq
-          (list
-           (make-array 5 :initial-contents '(-2.0 -1.5  0.2 -0.8 -2.0))  ; pos 0, true=3
-           (make-array 5 :initial-contents '(-1.5 -2.0 -1.0 -1.5  0.5))  ; pos 1, true=4
-           (make-array 5 :initial-contents '( 0.2 -0.5 -0.7 -0.7 -1.2))  ; pos 2, true=0
-           (make-array 5 :initial-contents '(-2.0 -2.0  0.8 -2.0 -2.0))))  ; pos 3, true=2
-        (true-toks '(3 4 0 2)))
-
-    (format t "Per-position losses:~%")
-    (loop for logits in logits-seq
-          for true   in true-toks
-          for pos    from 0
-          for loss = (cross-entropy-loss logits true)
-          do (format t "  pos ~d (true=~d): loss=~,3f  P(true)=~,3f~%"
-                     pos true loss (aref (softmax logits) true)))
-
-    (let* ((mean-loss (sequence-loss logits-seq true-toks))
-           (ppl       (perplexity mean-loss)))
-      (format t "~%Mean loss: ~,3f~%" mean-loss)
-      (format t "Perplexity: ~,2f~%~%" ppl))
-
-    (format t "Softmax-CE gradient at pos 3 (true=2):~%  ~a~%"
-            (softmax-cross-entropy-grad
-             (make-array 5 :initial-contents '(-2.0 -2.0 0.8 -2.0 -2.0))
-             2))))
 ```
 
-Run with `sbcl --load src/lisp/microgpt.lisp` (after loading helpers). Expected output:
+`sequence-loss` averages the per-position losses into one scalar — the training signal for a complete sequence. `perplexity` exponentiates that average: $\text{PPL} = e^{\mathcal{L}}$. A perplexity of $k$ means the model behaves, on average, as if it were choosing uniformly from $k$ equally likely tokens. The two procedures are closely related: sequence-loss is what the optimizer minimizes; perplexity is the same quantity in human-readable form.
+
+```scheme
+(define (sequence-loss logits-list true-ids)
+  (let* ((pairs  (map cons logits-list true-ids))
+         (losses (map (lambda (p) (cross-entropy-loss (car p) (cdr p))) pairs))
+         (total  (apply + losses)))
+    (/ total (length losses))))
+
+(define (perplexity loss)
+  (exp loss))
+```
+
+The softmax-cross-entropy gradient has a famously clean closed form: $\partial \mathcal{L} / \partial z_j = P(j) - \mathbf{1}[j = \text{true}]$. For the true token, the gradient is $P(\text{true}) - 1$, which is negative — it pushes the logit up. For every other token the gradient is $P(j)$, which is positive — it pushes those logits down. The model is nudged to give more probability to the correct token and less to all others.
+
+```scheme
+(define (softmax-cross-entropy-grad logits true-id)
+  (let* ((probs (softmax logits))
+         (grad  (vector-copy probs)))
+    (vector-set! grad true-id (- (vector-ref grad true-id) 1.0))
+    grad))
+```
+
+**Demo.** The logits below reproduce the worked example from Section 9.5. We expect per-position losses of approximately 1.609, 0.511, 0.916, and 0.223, a mean loss of 0.815, and perplexity of about 2.26.
+
+```scheme
+(let* ((logits-seq
+        (list
+         (vector -2.0 -1.5  0.2 -0.8 -2.0)
+         (vector -1.5 -2.0 -1.0 -1.5  0.5)
+         (vector  0.2 -0.5 -0.7 -0.7 -1.2)
+         (vector -2.0 -2.0  0.8 -2.0 -2.0)))
+       (true-toks '(3 4 0 2)))
+  (display "Per-position losses:") (newline)
+  (let loop ((ls logits-seq) (ts true-toks) (pos 0))
+    (unless (null? ls)
+      (let* ((logits (car ls))
+             (true   (car ts))
+             (loss   (cross-entropy-loss logits true))
+             (p-true (vector-ref (softmax logits) true)))
+        (display "  pos ") (display pos)
+        (display " (true=") (display true)
+        (display "): loss=") (display loss)
+        (display "  P(true)=") (display p-true) (newline))
+      (loop (cdr ls) (cdr ts) (+ pos 1))))
+  (newline)
+  (let* ((mean-loss (sequence-loss logits-seq true-toks))
+         (ppl       (perplexity mean-loss)))
+    (display "Mean loss:  ") (display mean-loss) (newline)
+    (display "Perplexity: ") (display ppl) (newline))
+  (newline)
+  (display "Softmax-CE gradient at pos 3 (true=2):") (newline)
+  (display (softmax-cross-entropy-grad
+            (vector -2.0 -2.0 0.8 -2.0 -2.0)
+            2))
+  (newline))
+```
+
+Run with `mit-scheme --quiet --load loss.scm`. Expected output:
 
 ```
 Per-position losses:

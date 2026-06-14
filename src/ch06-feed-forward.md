@@ -145,105 +145,167 @@ The output `y` is a transformed version of the input vector — same dimensional
 
 ---
 
-## 6.5 The Code: FFN in Lisp
+## 6.5 The Code: FFN in Scheme
 
-```lisp
-;;;; feed-forward-network.lisp
-;;;; Position-wise Feed-Forward Network with GELU activation
+GELU is the activation function used in GPT-2. Its tanh approximation is $\text{GELU}(x) \approx 0.5 \cdot x \cdot (1 + \tanh(\sqrt{2/\pi} \cdot (x + 0.044715 x^3)))$. For large positive $x$, GELU approaches $x$ — the value passes through. For large negative $x$, it approaches 0 — the value is suppressed. Unlike ReLU, the transition at zero is smooth: the function is differentiable everywhere, so gradients flow cleanly through negative values during training.
 
-;; (load "attention.lisp")   ; provides mat-mul, linear
-
-;;; ─── GELU activation ─────────────────────────────────────────────
-
-;; We use the tanh approximation (same as used in GPT-2)
-(defun gelu (x)
-  "GELU activation: x · 0.5 · (1 + tanh(√(2/π) · (x + 0.044715·x³)))"
-  (let* ((c (sqrt (/ 2.0 pi)))
-         (inner (+ x (* 0.044715 x x x)))
-         (t-val (tanh (* c inner))))
-    (* x 0.5 (+ 1.0 t-val))))
-
-(defun gelu-matrix (M)
-  "Apply GELU element-wise to matrix M."
-  (destructuring-bind (rows cols) (array-dimensions M)
-    (let ((result (make-array (list rows cols) :element-type 'single-float)))
-      (dotimes (i rows result)
-        (dotimes (j cols)
-          (setf (aref result i j) (gelu (aref M i j))))))))
-
-;;; ─── Bias broadcast helper ───────────────────────────────────────
-
-(defun add-bias (M b)
-  "Add bias vector B (length cols) to every row of M [T × cols]."
-  (destructuring-bind (rows cols) (array-dimensions M)
-    (assert (= cols (length b)) () "Bias length mismatch")
-    (let ((result (make-array (list rows cols) :element-type 'single-float)))
-      (dotimes (i rows result)
-        (dotimes (j cols)
-          (setf (aref result i j) (+ (aref M i j) (aref b j))))))))
-
-;;; ─── FFN Parameters ──────────────────────────────────────────────
-
-(defun make-ffn-params (d &optional (d-ff-ratio 4))
-  "Create FFN parameters.
-   d      : model dimension
-   d-ff   : feed-forward inner dimension (default 4×d)
-   Returns a plist with :w1 :b1 :w2 :b2."
-  (let* ((d-ff (* d d-ff-ratio))
-         (scale-1 (sqrt (/ 2.0 (+ d d-ff))))
-         (scale-2 (sqrt (/ 2.0 (+ d-ff d))))
-         (W1 (let ((m (make-array (list d d-ff) :element-type 'single-float)))
-               (dotimes (i d m)
-                 (dotimes (j d-ff)
-                   (setf (aref m i j) (* scale-1 (- (random 2.0) 1.0)))))))
-         (b1 (make-array d-ff :element-type 'single-float :initial-element 0.0))
-         (W2 (let ((m (make-array (list d-ff d) :element-type 'single-float)))
-               (dotimes (i d-ff m)
-                 (dotimes (j d)
-                   (setf (aref m i j) (* scale-2 (- (random 2.0) 1.0)))))))
-         (b2 (make-array d :element-type 'single-float :initial-element 0.0)))
-    (list :w1 W1 :b1 b1 :w2 W2 :b2 b2)))
-
-;;; ─── Forward pass ────────────────────────────────────────────────
-
-(defun ffn-forward (X params)
-  "FFN(X) = GELU(X W₁ + b₁) W₂ + b₂
-   X      : [T × d]
-   Returns: [T × d]"
-  (let* ((W1 (getf params :w1))
-         (b1 (getf params :b1))
-         (W2 (getf params :w2))
-         (b2 (getf params :b2))
-         ;; Step 1: expand with W1 + bias
-         (H (add-bias (mat-mul X W1) b1))
-         ;; Step 2: GELU activation
-         (H-act (gelu-matrix H))
-         ;; Step 3: contract with W2 + bias
-         (Y (add-bias (mat-mul H-act W2) b2)))
-    Y))
-
-;;; ─── Demo ─────────────────────────────────────────────────────────
-
-(let* ((d 8)
-       (T-len 3)
-       (params (make-ffn-params d 4))  ; 4× expansion → d_ff = 32
-       ;; Sample input (output from attention layer)
-       (X (let ((m (make-array (list T-len d) :element-type 'single-float)))
-            (dotimes (i T-len m)
-              (dotimes (j d)
-                (setf (aref m i j) (* 0.1 (- (random 20.0) 10.0))))))))
-  (format t "FFN Input X [~a × ~a]:~%" T-len d)
-  (dotimes (i T-len)
-    (format t "  [")
-    (dotimes (j d) (format t "~7,3f" (aref X i j)))
-    (format t " ]~%"))
-  (let ((Y (ffn-forward X params)))
-    (format t "~%FFN Output Y [~a × ~a]:~%" T-len d)
-    (dotimes (i T-len)
-      (format t "  [")
-      (dotimes (j d) (format t "~7,3f" (aref Y i j)))
-      (format t " ]~%"))))
+```scheme
+(define (gelu x)
+  (let* ((c     (sqrt (/ 2.0 3.141592653589793)))
+         (inner (+ x (* 0.044715 x x x))))
+    (* x 0.5 (+ 1.0 (tanh (* c inner))))))
 ```
+
+`gelu-matrix` applies the scalar GELU to every element of a matrix, producing a result of the same shape. This is the standard pattern for applying an element-wise function across a matrix: allocate a fresh result, iterate over all positions, apply, store.
+
+```scheme
+(define (make-matrix rows cols)
+  (list rows cols (make-vector (* rows cols) 0.0)))
+(define (matrix-rows M) (car M))
+(define (matrix-cols M) (cadr M))
+(define (matrix-data M) (caddr M))
+(define (matrix-ref  M i j)
+  (vector-ref  (matrix-data M) (+ (* i (matrix-cols M)) j)))
+(define (matrix-set! M i j v)
+  (vector-set! (matrix-data M) (+ (* i (matrix-cols M)) j) v))
+
+(define (gelu-matrix M)
+  (let* ((rows (matrix-rows M))
+         (cols (matrix-cols M))
+         (R    (make-matrix rows cols)))
+    (let loop-i ((i 0))
+      (when (< i rows)
+        (let loop-j ((j 0))
+          (when (< j cols)
+            (matrix-set! R i j (gelu (matrix-ref M i j)))
+            (loop-j (+ j 1))))
+        (loop-i (+ i 1))))
+    R))
+```
+
+`add-bias` broadcasts a bias vector $b$ across all rows of a matrix $M$. In the FFN, $b_1$ has length $d_{ff}$ and must be added to every row of the $[T \times d_{ff}]$ intermediate result. Broadcasting is nothing more than adding $b[j]$ to $M[i,j]$ for every row $i$ — the same column offset applied uniformly. This is the affine part of the linear layer: without bias, the transformation $XW_1$ can only represent functions through the origin.
+
+```scheme
+(define (add-bias M b)
+  (let* ((rows (matrix-rows M))
+         (cols (matrix-cols M))
+         (R    (make-matrix rows cols)))
+    (let loop-i ((i 0))
+      (when (< i rows)
+        (let loop-j ((j 0))
+          (when (< j cols)
+            (matrix-set! R i j (+ (matrix-ref M i j) (vector-ref b j)))
+            (loop-j (+ j 1))))
+        (loop-i (+ i 1))))
+    R))
+```
+
+`make-ffn-params` allocates and initializes the four parameters: $W_1$ expands the model dimension $d$ to $4d$; $W_2$ contracts it back. The inner dimension $4d$ is where the FFN's capacity lives — neurons there fire on specific input patterns and write associated information back. Biases start at zero; Xavier scaling sets the weight magnitudes.
+
+```scheme
+(define (make-ffn-params d)
+  (let* ((d-ff   (* 4 d))
+         (scale1 (sqrt (/ 2.0 (+ d d-ff))))
+         (scale2 (sqrt (/ 2.0 (+ d-ff d))))
+         (W1 (let ((M (make-matrix d d-ff)))
+               (let loop-i ((i 0))
+                 (when (< i d)
+                   (let loop-j ((j 0))
+                     (when (< j d-ff)
+                       (matrix-set! M i j (* scale1 (- (* 2.0 (random 1.0)) 1.0)))
+                       (loop-j (+ j 1))))
+                   (loop-i (+ i 1))))
+               M))
+         (b1 (make-vector d-ff 0.0))
+         (W2 (let ((M (make-matrix d-ff d)))
+               (let loop-i ((i 0))
+                 (when (< i d-ff)
+                   (let loop-j ((j 0))
+                     (when (< j d)
+                       (matrix-set! M i j (* scale2 (- (* 2.0 (random 1.0)) 1.0)))
+                       (loop-j (+ j 1))))
+                   (loop-i (+ i 1))))
+               M))
+         (b2 (make-vector d 0.0)))
+    (list W1 b1 W2 b2)))
+
+(define (ffn-w1 p) (car p))
+(define (ffn-b1 p) (cadr p))
+(define (ffn-w2 p) (caddr p))
+(define (ffn-b2 p) (cadddr p))
+```
+
+`ffn-forward` composes the operations in the order prescribed by the formula $H = \text{GELU}(XW_1 + b_1) \cdot W_2 + b_2$. Each step is one procedure call; the composition of those calls is the FFN. The input and output both have shape $[T \times d]$; the intermediate $H$ has shape $[T \times 4d]$. No information crosses between token positions here — that is attention's job.
+
+```scheme
+(define (matrix-multiply A B)
+  (let* ((m (matrix-rows A)) (k (matrix-cols A)) (n (matrix-cols B))
+         (C (make-matrix m n)))
+    (let loop-i ((i 0))
+      (when (< i m)
+        (let loop-j ((j 0))
+          (when (< j n)
+            (let loop-k ((p 0) (acc 0.0))
+              (if (= p k)
+                  (matrix-set! C i j acc)
+                  (loop-k (+ p 1)
+                          (+ acc (* (matrix-ref A i p)
+                                    (matrix-ref B p j))))))
+            (loop-j (+ j 1))))
+        (loop-i (+ i 1))))
+    C))
+
+(define (ffn-forward X params)
+  (let* ((H     (add-bias (matrix-multiply X (ffn-w1 params)) (ffn-b1 params)))
+         (H-act (gelu-matrix H))
+         (Y     (add-bias (matrix-multiply H-act (ffn-w2 params)) (ffn-b2 params))))
+    Y))
+```
+
+**Demo.** We build parameters for $d=8$ (inner dimension $4d=32$), create a random $[3 \times 8]$ input, run the forward pass, and print the result. The output has the same shape as the input — the FFN transforms but does not resize.
+
+```scheme
+(define (make-random-matrix rows cols)
+  (let ((M     (make-matrix rows cols))
+        (scale (sqrt (/ 2.0 (+ rows cols)))))
+    (let loop-i ((i 0))
+      (when (< i rows)
+        (let loop-j ((j 0))
+          (when (< j cols)
+            (matrix-set! M i j (* scale (- (* 2.0 (random 1.0)) 1.0)))
+            (loop-j (+ j 1))))
+        (loop-i (+ i 1))))
+    M))
+
+(let* ((d      8)
+       (T      3)
+       (params (make-ffn-params d))
+       (X      (make-random-matrix T d))
+       (Y      (ffn-forward X params)))
+  (display "FFN input X [3x8]:") (newline)
+  (let row ((i 0))
+    (when (< i T)
+      (display "  [")
+      (let col ((j 0))
+        (when (< j d)
+          (display (matrix-ref X i j)) (display " ")
+          (col (+ j 1))))
+      (display "]") (newline)
+      (row (+ i 1))))
+  (newline)
+  (display "FFN output Y [3x8]:") (newline)
+  (let row ((i 0))
+    (when (< i T)
+      (display "  [")
+      (let col ((j 0))
+        (when (< j d)
+          (display (matrix-ref Y i j)) (display " ")
+          (col (+ j 1))))
+      (display "]") (newline)
+      (row (+ i 1)))))
+```
+
+Run with `mit-scheme --quiet --load feed-forward.scm`.
 
 ---
 

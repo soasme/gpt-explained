@@ -149,201 +149,172 @@ P = [0.238, 0.141, 0.161, 0.321, 0.139]
 
 ---
 
-## 8.6 The Code: Full microGPT Forward Pass in Lisp
+## 8.6 The Code: Full microGPT Forward Pass in Scheme
 
-```lisp
-;;;; microgpt.lisp
-;;;; Complete forward pass: tokens → probabilities
-;;;; Assembles all previous chapters into a working microGPT
+Configuration is data. We represent the model's five hyperparameters as a plain list and define selectors once. Nothing in the forward pass hardcodes any dimension — every procedure reads what it needs through these selectors. 
 
-;; Dependencies (load in order):
-;; (load "embeddings.lisp")
-;; (load "positional-encoding.lisp")
-;; (load "attention.lisp")
-;; (load "multi-head-attention.lisp")
-;; (load "feed-forward-network.lisp")
-;; (load "transformer-block.lisp")
+```scheme
+(define (make-gpt-config vocab-size d-model num-heads num-layers max-seq-len)
+  (list vocab-size d-model num-heads num-layers max-seq-len))
 
-;;; ─── GPT Hyperparameters ─────────────────────────────────────────
+(define (config-vocab-size   c) (car c))
+(define (config-d-model      c) (cadr c))
+(define (config-num-heads    c) (caddr c))
+(define (config-num-layers   c) (cadddr c))
+(define (config-max-seq-len  c) (car (cddddr c)))
+```
 
-(defstruct gpt-config
-  vocab-size    ; |V|: number of tokens in vocabulary
-  d-model       ; d: hidden dimension (e.g., 768 for GPT-2 small)
-  num-heads     ; H: number of attention heads
-  num-layers    ; N: number of transformer blocks
-  max-seq-len   ; T_max: maximum sequence length
-  )
+`make-gpt-params` allocates all learnable weights. `wte` is the token embedding matrix $[|V| \times d]$; `wpe` is the position embedding matrix $[\text{max\_seq\_len} \times d]$ — both are random matrices initialized exactly as in Chapter 2. `blocks` is a list of $N$ transformer block parameter lists from Chapter 7. The final layer norm `ln-f` is a pair $(\gamma, \beta)$. Weight tying means the unembedding step will reuse `wte` transposed — no separate parameter is stored.
 
-(defparameter *microgpt-config*
-  (make-gpt-config :vocab-size 50
-                   :d-model 16
-                   :num-heads 4
-                   :num-layers 2
-                   :max-seq-len 32))
+```scheme
+(define (make-gpt-params config)
+  (let* ((V (config-vocab-size  config))
+         (d (config-d-model     config))
+         (H (config-num-heads   config))
+         (N (config-num-layers  config))
+         (T (config-max-seq-len config))
+         (wte    (make-random-matrix V d))
+         (wpe    (make-random-matrix T d))
+         (blocks (let build ((n N) (acc '()))
+                   (if (= n 0) acc
+                       (build (- n 1) (cons (make-block-params d H) acc)))))
+         (ln-f   (make-ln-params d)))
+    (list wte wpe blocks ln-f)))
 
-;;; ─── GPT Parameters ──────────────────────────────────────────────
+(define (params-wte    p) (car p))
+(define (params-wpe    p) (cadr p))
+(define (params-blocks p) (caddr p))
+(define (params-ln-f   p) (cadddr p))
+```
 
-(defun make-gpt-params (config)
-  "Initialize all parameters for a microGPT model."
-  (let* ((V (gpt-config-vocab-size  config))
-         (d (gpt-config-d-model     config))
-         (H (gpt-config-num-heads   config))
-         (N (gpt-config-num-layers  config))
-         (T (gpt-config-max-seq-len config)))
-    (list
-     ;; Token embedding matrix [V × d]
-     :wte (make-embedding-matrix V d)
-     ;; Position embedding matrix [T × d] (learned, like GPT-2)
-     :wpe (make-embedding-matrix T d)
-     ;; Stack of N transformer blocks
-     :blocks (make-transformer-stack N d H)
-     ;; Final layer norm
-     :ln-f (make-ln-params d)
-     ;; NOTE: unembedding (lm_head) reuses :wte  transposed (weight tying)
-     )))
+`gpt-forward` is the full pipeline: embed token IDs, add position embeddings, pass through $N$ transformer blocks, apply the final layer norm to the last token's vector, then compute dot products with every row of `wte` to produce the logit for each vocabulary entry. Each step is a single call to a procedure defined in an earlier chapter. The composition of those calls is the complete model.
 
-;;; ─── Forward Pass ─────────────────────────────────────────────────
-
-(defun gpt-forward (token-ids params config)
-  "Full GPT forward pass.
-   token-ids : list of integer token IDs, length T
-   params    : from make-gpt-params
-   Returns   : logits [|V|] for the LAST position (next-token prediction)"
-  (let* ((T-len (length token-ids))
-         (d     (gpt-config-d-model config))
-         (wte   (getf params :wte))
-         (wpe   (getf params :wpe))
-         (blocks(getf params :blocks))
-         (ln-f  (getf params :ln-f))
-
-         ;; 1. Token embeddings: [T × d]
+```scheme
+(define (gpt-forward token-ids params config)
+  (let* ((T-len   (length token-ids))
+         (d       (config-d-model config))
+         (wte     (params-wte    params))
+         (wpe     (params-wpe    params))
+         (blocks  (params-blocks params))
+         (ln-f    (params-ln-f   params))
          (tok-emb (embed-sequence wte token-ids))
+         (pos-ids (let build ((i 0) (acc '()))
+                    (if (= i T-len) (reverse acc)
+                        (build (+ i 1) (cons i acc)))))
+         (pos-emb (embed-sequence wpe pos-ids))
+         (X       (matrix-add tok-emb pos-emb))
+         (X-final (forward-stack X blocks))
+         (last-v  (let ((v (make-vector d)))
+                    (let loop ((j 0))
+                      (when (< j d)
+                        (vector-set! v j (matrix-ref X-final (- T-len 1) j))
+                        (loop (+ j 1))))
+                    v))
+         (h       (layer-norm-vec last-v (ln-gamma ln-f) (ln-beta ln-f)))
+         (V-size  (config-vocab-size config))
+         (logits  (make-vector V-size 0.0)))
+    (let loop ((i 0))
+      (when (< i V-size)
+        (let dot ((j 0) (acc 0.0))
+          (if (= j d)
+              (vector-set! logits i acc)
+              (dot (+ j 1) (+ acc (* (vector-ref h j) (matrix-ref wte i j))))))
+        (loop (+ i 1))))
+    logits))
+```
 
-         ;; 2. Position embeddings: [T × d]
-         (pos-emb (embed-sequence wpe (loop for i below T-len collect i)))
+Three sampling utilities sit between the logit vector and the next token. `softmax-1d` converts logits to probabilities with the usual max-subtraction trick. `top-k-logits` zeroes out all but the $k$ highest-scoring entries — restricting the candidate set prevents the model from putting probability on obviously wrong tokens. `sample-token` draws one token index from the distribution using inverse CDF sampling. Temperature divides the logits before softmax: values below 1 sharpen the distribution (more greedy), values above 1 flatten it (more random).
 
-         ;; 3. Add: X = token_emb + pos_emb
-         (X (mat-add tok-emb pos-emb))
+```scheme
+(define (softmax-1d v)
+  (let* ((n     (vector-length v))
+         (max-v (let loop ((i 1) (m (vector-ref v 0)))
+                  (if (= i n) m
+                      (loop (+ i 1) (max m (vector-ref v i))))))
+         (exps  (make-vector n))
+         (total (let loop ((i 0) (s 0.0))
+                  (if (= i n) s
+                      (let ((e (exp (- (vector-ref v i) max-v))))
+                        (vector-set! exps i e)
+                        (loop (+ i 1) (+ s e)))))))
+    (let loop ((i 0))
+      (when (< i n)
+        (vector-set! exps i (/ (vector-ref exps i) total))
+        (loop (+ i 1))))
+    exps))
 
-         ;; 4. Pass through N transformer blocks
-         (X-final (forward-transformer-stack X blocks))
-
-         ;; 5. Final LayerNorm on last token
-         (last-row (let ((v (make-array d :element-type 'single-float)))
-                     (dotimes (j d v) (setf (aref v j) (aref X-final (1- T-len) j)))))
-         (h (layer-norm-1d last-row (getf ln-f :gamma) (getf ln-f :beta)))
-
-         ;; 6. Unembedding: logits = h · Eᵀ
-         ;; Weight tying: use wte transposed as classifier
-         ;; logits[i] = dot(h, wte[i])
-         (V-size (gpt-config-vocab-size config))
-         (logits (make-array V-size :element-type 'single-float)))
-
-    (dotimes (i V-size logits)
-      (setf (aref logits i)
-            (let ((sum 0.0))
-              (dotimes (j d sum)
-                (incf sum (* (aref h j) (aref wte i j))))))))  )
-
-;;; ─── Softmax (1D) ────────────────────────────────────────────────
-
-(defun softmax-1d (v)
-  "Apply softmax to a 1D array, returning probabilities."
-  (let* ((n   (length v))
-         (max-v (reduce #'max v))
-         (exps (make-array n :element-type 'single-float))
-         (sum  0.0))
-    (dotimes (i n)
-      (setf (aref exps i) (exp (- (aref v i) max-v)))
-      (incf sum (aref exps i)))
-    (dotimes (i n exps)
-      (setf (aref exps i) (/ (aref exps i) sum)))))
-
-;;; ─── Sampling ─────────────────────────────────────────────────────
-
-(defun sample-token (probs)
-  "Sample a token index from probability distribution PROBS."
-  (let ((r (random 1.0))
-        (cumsum 0.0))
-    (dotimes (i (length probs) (1- (length probs)))
-      (incf cumsum (aref probs i))
-      (when (>= cumsum r) (return i)))))
-
-(defun top-k-logits (logits k)
-  "Zero out all but top-K logits (set to -1e9)."
-  (let* ((n (length logits))
-         (indexed (loop for i below n collect (cons i (aref logits i))))
-         (sorted (sort indexed #'> :key #'cdr))
-         (result (make-array n :element-type 'single-float
-                               :initial-element -1.0e9)))
-    (loop for (idx . val) in (subseq sorted 0 (min k n)) do
-      (setf (aref result idx) val))
+(define (top-k-logits logits k)
+  (let* ((n      (vector-length logits))
+         (pairs  (let build ((i 0) (acc '()))
+                   (if (= i n) acc
+                       (build (+ i 1) (cons (cons i (vector-ref logits i)) acc)))))
+         (sorted (sort pairs (lambda (a b) (> (cdr a) (cdr b)))))
+         (result (make-vector n -1.0e9)))
+    (let loop ((ps sorted) (count 0))
+      (when (and (not (null? ps)) (< count k))
+        (vector-set! result (caar ps) (cdar ps))
+        (loop (cdr ps) (+ count 1))))
     result))
 
-;;; ─── Text Generation Loop ────────────────────────────────────────
-
-(defun generate (params config start-ids &key
-                                           (max-new-tokens 10)
-                                           (temperature 1.0)
-                                           (top-k 10))
-  "Autoregressive text generation.
-   start-ids       : initial context token IDs
-   max-new-tokens  : how many tokens to generate
-   temperature     : sampling temperature (1.0 = standard, <1 = sharper)
-   top-k           : only sample from top-K tokens
-
-   Returns list of generated token IDs (excluding prompt)."
-  (let ((tokens (copy-list start-ids))
-        (generated '()))
-    (dotimes (_ max-new-tokens (reverse generated))
-      ;; Forward pass on current token sequence
-      (let* ((logits (gpt-forward tokens params config))
-             ;; Apply temperature
-             (scaled (let ((v (copy-seq logits)))
-                       (dotimes (i (length v) v)
-                         (setf (aref v i) (/ (aref v i) temperature)))))
-             ;; Top-K filtering
-             (filtered (top-k-logits scaled top-k))
-             ;; Softmax → probabilities
-             (probs (softmax-1d filtered))
-             ;; Sample
-             (next-token (sample-token probs)))
-        (push next-token generated)
-        (setf tokens (append tokens (list next-token)))))))
-
-;;; ─── Parameter count ──────────────────────────────────────────────
-
-(defun count-parameters (config)
-  "Compute total number of scalar parameters in the model."
-  (let* ((V (gpt-config-vocab-size  config))
-         (d (gpt-config-d-model     config))
-         (H (gpt-config-num-heads   config))
-         (N (gpt-config-num-layers  config))
-         (T (gpt-config-max-seq-len config))
-         ;; Embeddings
-         (wte-params (* V d))
-         (wpe-params (* T d))
-         ;; Per block: MHA = 4 × d² (Wq,Wk,Wv,Wo), FFN = 8d², LN = 2×2d
-         (block-params (* N (+ (* 4 d d) (* 8 d d) (* 4 d))))
-         ;; Final LN
-         (ln-f-params (* 2 d)))
-    (+ wte-params wpe-params block-params ln-f-params)))
-
-;;; ─── Demo ─────────────────────────────────────────────────────────
-
-(let* ((config *microgpt-config*)
-       (params (make-gpt-params config))
-       (prompt '(3 7 12 5))    ; pretend token IDs for "the cat sat on"
-       (generated (generate params config prompt
-                             :max-new-tokens 5
-                             :temperature 0.8
-                             :top-k 5)))
-  (format t "microGPT (~a params)~%"
-          (count-parameters config))
-  (format t "Prompt tokens: ~a~%" prompt)
-  (format t "Generated tokens: ~a~%" generated)
-  (format t "Full sequence: ~a~%" (append prompt generated)))
+(define (sample-token probs)
+  (let ((r (random 1.0)))
+    (let loop ((i 0) (cum 0.0))
+      (if (= i (vector-length probs))
+          (- (vector-length probs) 1)
+          (let ((c (+ cum (vector-ref probs i))))
+            (if (>= c r) i
+                (loop (+ i 1) c)))))))
 ```
+
+`generate` is the autoregressive loop. Starting from a list of prompt token IDs, it calls `gpt-forward`, applies temperature and top-k, samples the next token, appends it to the sequence, and repeats. The model sees its own output growing with each step — the entire context window is fed back in every iteration. This loop is the inference procedure; training is different (Chapter 9 and 10).
+
+```scheme
+(define (generate params config start-ids max-new-tokens temperature top-k)
+  (let loop ((tokens start-ids) (n max-new-tokens) (generated '()))
+    (if (= n 0)
+        (reverse generated)
+        (let* ((logits   (gpt-forward tokens params config))
+               (scaled   (let* ((len (vector-length logits))
+                                (v   (make-vector len)))
+                           (let lp ((i 0))
+                             (when (< i len)
+                               (vector-set! v i (/ (vector-ref logits i) temperature))
+                               (lp (+ i 1))))
+                           v))
+               (filtered (top-k-logits scaled top-k))
+               (probs    (softmax-1d filtered))
+               (next     (sample-token probs)))
+          (loop (append tokens (list next)) (- n 1) (cons next generated))))))
+```
+
+**Demo.** The parameter count formula gives us the model's total size before running it. We then run a short generation to confirm the pipeline executes end-to-end.
+
+```scheme
+(define (count-parameters config)
+  (let* ((V (config-vocab-size  config))
+         (d (config-d-model     config))
+         (N (config-num-layers  config))
+         (T (config-max-seq-len config)))
+    (+ (* V d)
+       (* T d)
+       (* N (+ (* 4 d d)
+               (* 8 d d)
+               (* 4 d)))
+       (* 2 d))))
+
+(let* ((config    (make-gpt-config 50 16 4 2 32))
+       (params    (make-gpt-params config))
+       (prompt    '(3 7 12 5))
+       (generated (generate params config prompt 5 0.8 5)))
+  (display "microGPT parameters: ")
+  (display (count-parameters config)) (newline)
+  (display "Prompt tokens:    ") (display prompt) (newline)
+  (display "Generated tokens: ") (display generated) (newline)
+  (display "Full sequence:    ")
+  (display (append prompt generated)) (newline))
+```
+
+Run with `mit-scheme --quiet --load microgpt.scm`.
 
 ---
 
