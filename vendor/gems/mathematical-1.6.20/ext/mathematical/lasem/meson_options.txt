@@ -1,0 +1,5 @@
+# Documentation and introspection
+
+option('introspection', type: 'feature', value: 'auto', description: 'Build introspection data (requires gobject-introspection)')
+option('documentation', type: 'feature', value: 'disabled', description: 'Build API reference (requires gi-docgen)')
+option('viewer', type: 'feature', value: 'disabled', description: 'Build viewer application (requires gtk4)')
