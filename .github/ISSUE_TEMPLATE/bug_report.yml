@@ -1,0 +1,71 @@
+name: Bug report
+description: Create a report to help us improve
+labels: ["bug"]
+body:
+  - type: checkboxes
+    attributes:
+      label: There's no existing/similar bug report.
+      description: Please search to see if an issue already exists for the bug you encountered.
+      options:
+        - label: I have searched the existing issues
+          required: true
+
+  - type: checkboxes
+    attributes:
+      label: This report is about a single actionable bug.
+      description: Please create one issue per bug, split up your bug reports if needed.
+      options:
+        - label: I'm reporting a single actionable bug
+          required: true
+
+  - type: checkboxes
+    attributes:
+      label: This report is about the GPT Explained book, English language.
+      options:
+        - label: This bug is not about a translation
+          required: true
+
+  - type: dropdown
+    attributes:
+      label: Which version of the book is affected?
+      description: |
+        It's important to know if the problem is in the source or in the tooling.
+      options:
+        - "Source files"
+        - "Tooling"
+        - "Source files and tooling"
+        - "I don't know"
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: "Describe the bug:"
+      description: A clear and concise description of what the bug is.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: "Steps to reproduce:"
+      description: Please write the steps needed to reproduce the bug here.
+      placeholder: Provide an ordered list of steps to reproduce.
+      value: |
+        1. Go to '...'
+        2. See error
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: "Expected behavior:"
+      description: A clear and concise description of what you expected to happen.
+    validations:
+      required: true
+
+  - type: textarea
+    attributes:
+      label: "Additional context:"
+      description: Add any other context about the problem here.
+    validations:
+      required: false

@@ -1,25 +1,28 @@
-# mdBook build output
-book/
+output
+.DS_Store
+.idea/
+.vscode/
+*.swp
 
-# Manim render output (generated, not committed)
+# build artifacts
+Gemfile.lock
+gpt-explained.html
+gpt-explained.pdf
+gpt-explained.pdfmarks
+gpt-explained.epub
+gpt-explained.fb2.zip
+gpt-explained-kf8.epub
+gpt-explained.mobi
+book/contributors.txt
+
+# manim render output
 src/manim/media/
 src/manim/__pycache__/
-
-# Generated images (rebuilt by CI)
-src/images/*.png
-
-# Python
 __pycache__/
 *.pyc
 *.pyo
 .venv/
 venv/
 
-# Rust
-target/
-
-# Editor
-.DS_Store
-.idea/
-.vscode/
-*.swp
+# generated images (rebuilt by CI)
+images/
