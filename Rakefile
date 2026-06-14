@@ -11,6 +11,14 @@ namespace :book do
   params = "--attribute revnumber='#{version_string}' --attribute revdate='#{date_string}'"
   header_hash = `git rev-parse --short HEAD`.strip
 
+  pkg_config_path = [
+    "/opt/homebrew/lib/pkgconfig",
+    "/opt/homebrew/opt/pango/lib/pkgconfig",
+    "/opt/homebrew/opt/cairo/lib/pkgconfig",
+    "/opt/homebrew/opt/gdk-pixbuf/lib/pkgconfig",
+    ENV["PKG_CONFIG_PATH"],
+  ].compact.join(":")
+
   def check_contrib
     if File.exist?('book/contributors.txt')
       current_head_hash = `git rev-parse --short HEAD`.strip
@@ -64,7 +72,7 @@ namespace :book do
       check_contrib()
 
       puts 'Converting to EPub...'
-      sh "bundle exec asciidoctor-epub3 #{params} gpt-explained.asc"
+      sh "PKG_CONFIG_PATH='#{pkg_config_path}' bundle exec asciidoctor-epub3 -r mathematical -r asciidoctor-mathematical #{params} gpt-explained.asc"
       puts ' -- Epub output at gpt-explained.epub'
   end
 
@@ -91,14 +99,7 @@ namespace :book do
       check_contrib()
 
       puts 'Converting to PDF... (this one takes a while)'
-      pkg_config = [
-        "/opt/homebrew/lib/pkgconfig",
-        "/opt/homebrew/opt/pango/lib/pkgconfig",
-        "/opt/homebrew/opt/cairo/lib/pkgconfig",
-        "/opt/homebrew/opt/gdk-pixbuf/lib/pkgconfig",
-        ENV["PKG_CONFIG_PATH"],
-      ].compact.join(":")
-      sh "PKG_CONFIG_PATH='#{pkg_config}' bundle exec asciidoctor-pdf -r mathematical -r asciidoctor-mathematical #{params} gpt-explained.asc 2>/dev/null"
+      sh "PKG_CONFIG_PATH='#{pkg_config_path}' bundle exec asciidoctor-pdf -r mathematical -r asciidoctor-mathematical #{params} gpt-explained.asc 2>/dev/null"
       puts ' -- PDF output at gpt-explained.pdf'
   end
 
