@@ -91,7 +91,14 @@ namespace :book do
       check_contrib()
 
       puts 'Converting to PDF... (this one takes a while)'
-      sh "bundle exec asciidoctor-pdf #{params} gpt-explained.asc 2>/dev/null"
+      pkg_config = [
+        "/opt/homebrew/lib/pkgconfig",
+        "/opt/homebrew/opt/pango/lib/pkgconfig",
+        "/opt/homebrew/opt/cairo/lib/pkgconfig",
+        "/opt/homebrew/opt/gdk-pixbuf/lib/pkgconfig",
+        ENV["PKG_CONFIG_PATH"],
+      ].compact.join(":")
+      sh "PKG_CONFIG_PATH='#{pkg_config}' bundle exec asciidoctor-pdf -r mathematical -r asciidoctor-mathematical #{params} gpt-explained.asc 2>/dev/null"
       puts ' -- PDF output at gpt-explained.pdf'
   end
 
