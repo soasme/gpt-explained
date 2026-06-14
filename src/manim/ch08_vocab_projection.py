@@ -6,12 +6,13 @@ Generates: images/ch08-vocab-projection.png
 from manim import *
 import numpy as np
 
-BG     = "#1C1C1C"
-BLUE   = "#58C4DD"
-GREEN  = "#83C167"
-YELLOW = "#FFFF00"
-ORANGE = "#FF9000"
-PURPLE = "#AA88FF"
+BG     = "#FFFFFF"
+DARK   = "#222222"
+BLUE   = "#1177BB"
+GREEN  = "#228811"
+YELLOW = "#CC8800"
+ORANGE = "#DD6600"
+PURPLE = "#6633AA"
 MONO   = "Monospace"
 
 
@@ -23,11 +24,6 @@ def softmax(v):
 class Ch08VocabProjection(Scene):
     def construct(self):
         self.camera.background_color = BG
-
-        title = Text("Vocabulary Projection: Vector → Probabilities",
-                     font=MONO, font_size=28, color=BLUE, weight=BOLD)
-        title.to_edge(UP, buff=0.3)
-        self.play(Write(title))
 
         # Step 1: hidden state vector
         h_vals = [0.3, -0.1, 0.8, 0.2]
@@ -75,7 +71,7 @@ class Ch08VocabProjection(Scene):
             bar.move_to(ax.c2p(i, height / 2))
             w_lbl = Text(word, font=MONO, font_size=13, color=color)
             w_lbl.next_to(ax.c2p(i, -0.6), DOWN, buff=0.05)
-            val_lbl = Text(f"{logit:.2f}", font=MONO, font_size=12, color=WHITE)
+            val_lbl = Text(f"{logit:.2f}", font=MONO, font_size=12, color=DARK)
             val_lbl.next_to(bar, UP if height > 0 else DOWN, buff=0.05)
             bars.add(VGroup(bar, w_lbl, val_lbl))
 
@@ -109,7 +105,7 @@ class Ch08VocabProjection(Scene):
             bar.move_to(ax2.c2p(i, prob / 2))
             w_lbl = Text(word, font=MONO, font_size=12, color=color)
             w_lbl.next_to(ax2.c2p(i, 0), DOWN, buff=0.05)
-            pct_lbl = Text(f"{prob:.0%}", font=MONO, font_size=11, color=WHITE)
+            pct_lbl = Text(f"{prob:.0%}", font=MONO, font_size=11, color=DARK)
             pct_lbl.next_to(bar, UP, buff=0.04)
             prob_bars.add(VGroup(bar, w_lbl, pct_lbl))
 
@@ -127,17 +123,11 @@ class Ch08VocabProjection(Scene):
         winner.to_edge(DOWN, buff=0.5)
         self.play(Write(winner))
         self.wait(3.0)
-        self.play(FadeOut(Group(*self.mobjects)))
-
 
 class Ch08GenerationLoop(Scene):
     """Autoregressive generation loop diagram."""
     def construct(self):
         self.camera.background_color = BG
-        title = Text("Autoregressive Generation", font=MONO,
-                     font_size=32, color=BLUE, weight=BOLD)
-        title.to_edge(UP, buff=0.3)
-        self.play(Write(title))
 
         steps = [
             ("Prompt", '"the cat sat on"', GREEN),
@@ -160,7 +150,7 @@ class Ch08GenerationLoop(Scene):
             self.play(Create(g), run_time=0.5)
             if prev is not None:
                 arr = Arrow(prev.get_bottom(), g.get_top(),
-                            color=WHITE, buff=0.04, stroke_width=1.8)
+                            color=DARK, buff=0.04, stroke_width=1.8)
                 self.play(GrowArrow(arr), run_time=0.3)
             prev = g
 
@@ -171,4 +161,3 @@ class Ch08GenerationLoop(Scene):
             angle=TAU / 5, color=YELLOW, stroke_width=2)
 
         self.wait(2.5)
-        self.play(FadeOut(Group(*self.mobjects)))

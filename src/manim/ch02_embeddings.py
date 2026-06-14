@@ -5,23 +5,18 @@ Generates: images/ch02-embedding-lookup.png
 """
 from manim import *
 
-BG     = "#1C1C1C"
-BLUE   = "#58C4DD"
-GREEN  = "#83C167"
-YELLOW = "#FFFF00"
-ORANGE = "#FF9000"
+BG     = "#FFFFFF"
+DARK   = "#222222"
+BLUE   = "#1177BB"
+GREEN  = "#228811"
+YELLOW = "#CC8800"
+ORANGE = "#DD6600"
 MONO   = "Monospace"
 
 
 class Ch02EmbeddingLookup(Scene):
     def construct(self):
         self.camera.background_color = BG
-
-        title = Text("Embedding Matrix Lookup", font=MONO, font_size=34,
-                     color=BLUE, weight=BOLD)
-        title.to_edge(UP, buff=0.35)
-        self.play(Write(title), run_time=1.0)
-        self.wait(0.3)
 
         # ---- Draw embedding matrix (|V|=6, d=4) ----
         V, D = 6, 4
@@ -47,7 +42,7 @@ class Ch02EmbeddingLookup(Scene):
         # Row labels
         row_labels = VGroup()
         for i in range(V):
-            lbl = Text(f"tok {i}", font=MONO, font_size=16, color=WHITE)
+            lbl = Text(f"tok {i}", font=MONO, font_size=16, color=DARK)
             lbl.next_to(matrix[i * D], LEFT, buff=0.2)
             row_labels.add(lbl)
 
@@ -108,18 +103,11 @@ class Ch02EmbeddingLookup(Scene):
         shape_note.next_to(id_text, UP, buff=0.3)
         self.play(Write(shape_note))
         self.wait(2.0)
-        self.play(FadeOut(Group(*self.mobjects)))
-
 
 class Ch02SemanticSpace(Scene):
     """King–Man+Woman≈Queen in 2D."""
     def construct(self):
         self.camera.background_color = BG
-
-        title = Text("Semantic Arithmetic in Embedding Space",
-                     font=MONO, font_size=28, color=BLUE, weight=BOLD)
-        title.to_edge(UP, buff=0.4)
-        self.play(Write(title))
 
         ax = Axes(x_range=[-3.5, 3.5, 1], y_range=[-3, 3, 1],
                   x_length=7, y_length=5,
@@ -150,10 +138,9 @@ class Ch02SemanticSpace(Scene):
         # Draw the "king - man + woman" arrow
         arr = Arrow(ax.c2p(*points["king"]), ax.c2p(*points["queen"]),
                     color=YELLOW, buff=0.0, stroke_width=2.5)
-        equation = MathTex(r"\vec{king} - \vec{man} + \vec{woman} \approx \vec{queen}",
-                           font_size=28, color=YELLOW)
+        equation = Text("king - man + woman  ≈  queen",
+                        font=MONO, font_size=24, color=YELLOW)
         equation.to_edge(DOWN, buff=0.5)
         self.play(GrowArrow(arr))
         self.play(Write(equation))
         self.wait(2.5)
-        self.play(FadeOut(Group(*self.mobjects)))

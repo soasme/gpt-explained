@@ -5,23 +5,18 @@ Generates: images/ch01-bpe-merges.png
 """
 from manim import *
 
-BG     = "#1C1C1C"
-BLUE   = "#58C4DD"
-GREEN  = "#83C167"
-YELLOW = "#FFFF00"
-ORANGE = "#FF9000"
-RED    = "#FF6060"
+BG     = "#FFFFFF"
+DARK   = "#222222"
+BLUE   = "#1177BB"
+GREEN  = "#228811"
+YELLOW = "#CC8800"
+ORANGE = "#DD6600"
+RED    = "#CC2222"
 MONO   = "Monospace"
 
 class Ch01BPEMerges(Scene):
     def construct(self):
         self.camera.background_color = BG
-
-        title = Text("Byte Pair Encoding — Merge Steps", font=MONO,
-                     font_size=32, color=BLUE, weight=BOLD)
-        title.to_edge(UP, buff=0.4)
-        self.play(Write(title), run_time=1.2)
-        self.wait(0.5)
 
         # --- Show the original word as characters ---
         chars = list("tokenization")
@@ -29,12 +24,12 @@ class Ch01BPEMerges(Scene):
         for i, c in enumerate(chars):
             box = VGroup(
                 Square(side_length=0.55, color=BLUE, fill_opacity=0.15),
-                Text(c, font=MONO, font_size=24, color=WHITE)
+                Text(c, font=MONO, font_size=24, color=DARK)
             )
             char_boxes.add(box)
 
         char_boxes.arrange(RIGHT, buff=0.08)
-        char_boxes.next_to(title, DOWN, buff=0.7)
+        char_boxes.move_to(UP * 1.6)
 
         label_chars = Text("Step 0: characters", font=MONO, font_size=20, color=GREEN)
         label_chars.next_to(char_boxes, DOWN, buff=0.3)
@@ -99,23 +94,16 @@ class Ch01BPEMerges(Scene):
         note.to_edge(DOWN, buff=0.5)
         self.play(FadeIn(note))
         self.wait(2.0)
-        self.play(FadeOut(Group(*self.mobjects)))
-
 
 class Ch01TokenizationPipeline(Scene):
     """Shows the full text-to-IDs pipeline."""
     def construct(self):
         self.camera.background_color = BG
 
-        title = Text("Text → Token IDs", font=MONO, font_size=36,
-                     color=BLUE, weight=BOLD)
-        title.to_edge(UP, buff=0.4)
-        self.play(Write(title), run_time=1.0)
-
         # Source text
         src_text = Text('"the cat sat on the mat"', font=MONO,
-                        font_size=28, color=WHITE)
-        src_text.next_to(title, DOWN, buff=0.8)
+                        font_size=28, color=DARK)
+        src_text.move_to(UP * 1.5)
 
         # Arrow down
         arrow = Arrow(src_text.get_bottom(), src_text.get_bottom() + DOWN*1.2,
@@ -145,4 +133,3 @@ class Ch01TokenizationPipeline(Scene):
         self.play(Create(brace1), Create(brace2))
         self.play(Write(same_id_note))
         self.wait(2.0)
-        self.play(FadeOut(Group(*self.mobjects)))

@@ -5,21 +5,20 @@ Scenes:
 """
 from manim import *
 
-BG      = "#1C1C1C"
-BLUE    = "#58C4DD"
-GREEN   = "#83C167"
-YELLOW  = "#FFFF00"
-RED     = "#FF6B6B"
-GREY    = "#888888"
+BG      = "#FFFFFF"
+DARK    = "#222222"
+BLUE    = "#1177BB"
+GREEN   = "#228811"
+YELLOW  = "#CC8800"
+RED     = "#CC2222"
+GREY    = "#999999"
+MONO    = "Monospace"
 
 config.background_color = BG
 
 
 class Ch09LossScene(Scene):
     def construct(self):
-        title = Text("Cross-Entropy Loss", font_size=36, color=BLUE).to_edge(UP)
-        self.play(Write(title))
-
         # ── Left panel: probability bar chart ──
         labels   = ["the","cat","sat","on","mat"]
         probs    = [0.05, 0.10, 0.60, 0.20, 0.05]
@@ -39,9 +38,9 @@ class Ch09LossScene(Scene):
             bar = Rectangle(width=bar_w, height=h, fill_color=col,
                             fill_opacity=0.85, stroke_width=0)
             bar.move_to([x + bar_w / 2, -1.2 + h / 2, 0])
-            prob_txt = Text(f"{p:.2f}", font_size=16, color=WHITE)
+            prob_txt = Text(f"{p:.2f}", font_size=16, color=DARK)
             prob_txt.next_to(bar, UP, buff=0.06)
-            word_txt = Text(lab, font_size=16, color=WHITE)
+            word_txt = Text(lab, font_size=16, color=DARK)
             word_txt.next_to(bar, DOWN, buff=0.06)
             bars.add(bar, prob_txt, word_txt)
 
@@ -58,19 +57,19 @@ class Ch09LossScene(Scene):
         self.play(Create(bars), GrowArrow(arrow), Write(arrow_lbl))
 
         # ── Right panel: loss formula ──
-        eq1 = MathTex(
-            r"\mathcal{L} = -\log P(\text{true})",
-            font_size=34, color=WHITE,
+        eq1 = Text(
+            "L = -log P(true)",
+            font=MONO, font_size=26, color=DARK,
         ).move_to([2.5, 0.8, 0])
 
-        eq2 = MathTex(
-            r"= -\log(0.20) \approx 1.61",
-            font_size=30, color=GREEN,
+        eq2 = Text(
+            "= -log(0.20) ≈ 1.61",
+            font=MONO, font_size=22, color=GREEN,
         ).next_to(eq1, DOWN, buff=0.35)
 
-        ppl = MathTex(
-            r"\text{PPL} = e^{\mathcal{L}} = e^{1.61} \approx 5.0",
-            font_size=28, color=YELLOW,
+        ppl = Text(
+            "PPL = e^L = e^1.61 ≈ 5.0",
+            font=MONO, font_size=20, color=YELLOW,
         ).next_to(eq2, DOWN, buff=0.35)
 
         self.play(Write(eq1))
@@ -84,8 +83,6 @@ class Ch09LossScene(Scene):
             x_length=3.8,
             y_length=2.0,
             axis_config={"color": GREY, "include_tip": False},
-            x_axis_config={"numbers_to_include": [0.25, 0.5, 0.75, 1.0]},
-            y_axis_config={"numbers_to_include": [1, 2, 3, 4, 5]},
         ).move_to([2.6, -1.3, 0])
 
         neg_log_curve = ax.plot(
@@ -94,11 +91,11 @@ class Ch09LossScene(Scene):
             color=RED,
             stroke_width=2.5,
         )
-        ax_lbl = Text("-log(p)", font_size=16, color=RED).next_to(ax, UP, buff=0.08)
+        ax_lbl = Text("-log(p)", font=MONO, font_size=16, color=RED).next_to(ax, UP, buff=0.08)
 
         # Dot at p=0.20
         dot = Dot(ax.c2p(0.20, -np.log(0.20)), color=YELLOW, radius=0.08)
-        dot_lbl = Text("p=0.20\nL≈1.61", font_size=13, color=YELLOW)
+        dot_lbl = Text("p=0.20\nL≈1.61", font=MONO, font_size=13, color=YELLOW)
         dot_lbl.next_to(dot, RIGHT, buff=0.1)
 
         self.play(Create(ax), Create(neg_log_curve), Write(ax_lbl))

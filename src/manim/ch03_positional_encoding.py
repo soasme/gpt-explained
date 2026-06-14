@@ -6,11 +6,11 @@ Generates: images/ch03-positional-encoding.png
 from manim import *
 import numpy as np
 
-BG     = "#1C1C1C"
-BLUE   = "#58C4DD"
-GREEN  = "#83C167"
-YELLOW = "#FFFF00"
-ORANGE = "#FF9000"
+BG     = "#FFFFFF"
+BLUE   = "#1177BB"
+GREEN  = "#228811"
+YELLOW = "#CC8800"
+ORANGE = "#DD6600"
 MONO   = "Monospace"
 
 
@@ -19,12 +19,6 @@ class Ch03PositionalEncoding(Scene):
 
     def construct(self):
         self.camera.background_color = BG
-
-        title = Text("Sinusoidal Positional Encoding", font=MONO,
-                     font_size=32, color=BLUE, weight=BOLD)
-        title.to_edge(UP, buff=0.35)
-        self.play(Write(title))
-        self.wait(0.4)
 
         T, d = 20, 16
         base = 10000.0
@@ -81,17 +75,11 @@ class Ch03PositionalEncoding(Scene):
         self.play(Create(high_box), Create(low_box))
         self.play(FadeIn(high_lbl), FadeIn(low_lbl))
         self.wait(2.5)
-        self.play(FadeOut(Group(*self.mobjects)))
-
 
 class Ch03SinWaves(Scene):
     """Show 3 sine waves at different frequencies."""
     def construct(self):
         self.camera.background_color = BG
-        title = Text("Positional Frequencies", font=MONO,
-                     font_size=32, color=BLUE, weight=BOLD)
-        title.to_edge(UP, buff=0.3)
-        self.play(Write(title))
 
         freqs = [1.0, 0.1, 0.01]
         colors = [YELLOW, GREEN, ORANGE]
@@ -112,4 +100,3 @@ class Ch03SinWaves(Scene):
             self.play(Create(ax), Create(curve), FadeIn(label), run_time=0.8)
 
         self.wait(2.0)
-        self.play(FadeOut(Group(*self.mobjects)))

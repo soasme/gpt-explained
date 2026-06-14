@@ -5,23 +5,19 @@ Generates: images/ch07-transformer-block.png
 """
 from manim import *
 
-BG     = "#1C1C1C"
-BLUE   = "#58C4DD"
-GREEN  = "#83C167"
-YELLOW = "#FFFF00"
-ORANGE = "#FF9000"
-PURPLE = "#AA88FF"
+BG     = "#FFFFFF"
+DARK   = "#222222"
+BLUE   = "#1177BB"
+GREEN  = "#228811"
+YELLOW = "#CC8800"
+ORANGE = "#DD6600"
+PURPLE = "#6633AA"
 MONO   = "Monospace"
 
 
 class Ch07TransformerBlock(Scene):
     def construct(self):
         self.camera.background_color = BG
-
-        title = Text("Transformer Block (Pre-LN)", font=MONO,
-                     font_size=34, color=BLUE, weight=BOLD)
-        title.to_edge(UP, buff=0.3)
-        self.play(Write(title))
 
         # Vertical layout: Input → LN → MHA → + → LN → FFN → + → Output
         box_w, box_h = 3.2, 0.65
@@ -58,7 +54,7 @@ class Ch07TransformerBlock(Scene):
         # Main arrows (straight down)
         for i in range(len(boxes) - 1):
             arr = Arrow(boxes[i].get_bottom(), boxes[i+1].get_top(),
-                        color=WHITE, buff=0.05, stroke_width=1.8)
+                        color=DARK, buff=0.05, stroke_width=1.8)
             self.play(GrowArrow(arr), run_time=0.25)
 
         # Residual skip 1: from "Input" to first residual add (jump over LN+MHA)
@@ -81,26 +77,20 @@ class Ch07TransformerBlock(Scene):
         self.wait(0.5)
 
         # Equations
-        eq1 = MathTex(r"x_1 = x + \text{MHA}(\text{LN}_1(x))", font_size=22,
-                      color=BLUE)
-        eq2 = MathTex(r"x_2 = x_1 + \text{FFN}(\text{LN}_2(x_1))", font_size=22,
-                      color=PURPLE)
+        eq1 = Text("x₁ = x + MHA(LN₁(x))", font=MONO, font_size=20,
+                   color=BLUE)
+        eq2 = Text("x₂ = x₁ + FFN(LN₂(x₁))", font=MONO, font_size=20,
+                   color=PURPLE)
         equations = VGroup(eq1, eq2).arrange(DOWN, buff=0.25)
         equations.to_edge(RIGHT, buff=0.5)
 
         self.play(Write(equations))
         self.wait(3.0)
-        self.play(FadeOut(Group(*self.mobjects)))
-
 
 class Ch07ResidualStream(Scene):
     """Residual stream concept: N blocks adding to a shared stream."""
     def construct(self):
         self.camera.background_color = BG
-        title = Text("The Residual Stream", font=MONO,
-                     font_size=34, color=BLUE, weight=BOLD)
-        title.to_edge(UP, buff=0.3)
-        self.play(Write(title))
 
         # Horizontal stream
         stream = Line(LEFT * 5.5, RIGHT * 5.5, color=GREEN, stroke_width=3)
@@ -143,4 +133,3 @@ class Ch07ResidualStream(Scene):
         note.to_edge(DOWN, buff=0.5)
         self.play(FadeIn(note))
         self.wait(3.0)
-        self.play(FadeOut(Group(*self.mobjects)))

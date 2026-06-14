@@ -6,12 +6,13 @@ Generates: images/ch04-attention-weights.png
 from manim import *
 import numpy as np
 
-BG     = "#1C1C1C"
-BLUE   = "#58C4DD"
-GREEN  = "#83C167"
-YELLOW = "#FFFF00"
-ORANGE = "#FF9000"
-RED    = "#FF6060"
+BG     = "#FFFFFF"
+DARK   = "#222222"
+BLUE   = "#1177BB"
+GREEN  = "#228811"
+YELLOW = "#CC8800"
+ORANGE = "#DD6600"
+RED    = "#CC2222"
 MONO   = "Monospace"
 
 def softmax(v):
@@ -24,11 +25,6 @@ class Ch04AttentionWeights(Scene):
 
     def construct(self):
         self.camera.background_color = BG
-
-        title = Text("Scaled Dot-Product Attention", font=MONO,
-                     font_size=32, color=BLUE, weight=BOLD)
-        title.to_edge(UP, buff=0.3)
-        self.play(Write(title))
 
         # Example attention weights (T=5 tokens, causal)
         tokens = ["the", "cat", "sat", "on", "mat"]
@@ -57,7 +53,7 @@ class Ch04AttentionWeights(Scene):
                 sq.move_to(RIGHT * j * cell_size + DOWN * i * cell_size)
 
                 # Value label
-                lbl = Text(f"{val:.2f}", font=MONO, font_size=12, color=WHITE)
+                lbl = Text(f"{val:.2f}", font=MONO, font_size=12, color=DARK)
                 lbl.move_to(sq)
                 grid.add(VGroup(sq, lbl))
 
@@ -104,17 +100,11 @@ class Ch04AttentionWeights(Scene):
         mask_note.next_to(mask_box, RIGHT, buff=0.1)
         self.play(Create(mask_box), FadeIn(mask_note))
         self.wait(2.5)
-        self.play(FadeOut(Group(*self.mobjects)))
-
 
 class Ch04QKVDiagram(Scene):
     """Q, K, V projection diagram."""
     def construct(self):
         self.camera.background_color = BG
-        title = Text("Query, Key, Value Projections", font=MONO,
-                     font_size=30, color=BLUE, weight=BOLD)
-        title.to_edge(UP, buff=0.3)
-        self.play(Write(title))
 
         # Input
         X_box = RoundedRectangle(corner_radius=0.15, width=2.0, height=1.0,
@@ -158,9 +148,8 @@ class Ch04QKVDiagram(Scene):
                         color=col, buff=0.05, stroke_width=2)
             self.play(GrowArrow(arr), Create(out), run_time=0.5)
 
-        formula = MathTex(r"\text{Attn}(Q,K,V) = \text{softmax}\!\left(\frac{QK^T}{\sqrt{d_k}}\right)\!V",
-                          font_size=28, color=YELLOW)
+        formula = Text("Attn(Q,K,V) = softmax( QKᵀ / √dk ) · V",
+                       font=MONO, font_size=22, color=YELLOW)
         formula.to_edge(DOWN, buff=0.5)
         self.play(Write(formula))
         self.wait(3.0)
-        self.play(FadeOut(Group(*self.mobjects)))

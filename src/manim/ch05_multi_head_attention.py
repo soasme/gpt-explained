@@ -5,23 +5,18 @@ Generates: images/ch05-multi-head-attention.png
 """
 from manim import *
 
-BG     = "#1C1C1C"
-BLUE   = "#58C4DD"
-GREEN  = "#83C167"
-YELLOW = "#FFFF00"
-ORANGE = "#FF9000"
-PURPLE = "#AA88FF"
+BG     = "#FFFFFF"
+BLUE   = "#1177BB"
+GREEN  = "#228811"
+YELLOW = "#CC8800"
+ORANGE = "#DD6600"
+PURPLE = "#6633AA"
 MONO   = "Monospace"
 
 
 class Ch05MultiHeadAttention(Scene):
     def construct(self):
         self.camera.background_color = BG
-
-        title = Text("Multi-Head Attention", font=MONO, font_size=34,
-                     color=BLUE, weight=BOLD)
-        title.to_edge(UP, buff=0.3)
-        self.play(Write(title))
 
         # Input X
         x_box = RoundedRectangle(corner_radius=0.15, width=2.5, height=0.75,
@@ -112,4 +107,3 @@ class Ch05MultiHeadAttention(Scene):
         note.to_edge(DOWN, buff=0.45)
         self.play(FadeIn(note))
         self.wait(3.0)
-        self.play(FadeOut(Group(*self.mobjects)))

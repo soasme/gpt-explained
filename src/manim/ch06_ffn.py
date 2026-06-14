@@ -6,22 +6,18 @@ Generates: images/ch06-ffn.png
 from manim import *
 import numpy as np
 
-BG     = "#1C1C1C"
-BLUE   = "#58C4DD"
-GREEN  = "#83C167"
-YELLOW = "#FFFF00"
-ORANGE = "#FF9000"
+BG     = "#FFFFFF"
+DARK   = "#222222"
+BLUE   = "#1177BB"
+GREEN  = "#228811"
+YELLOW = "#CC8800"
+ORANGE = "#DD6600"
 MONO   = "Monospace"
 
 
 class Ch06FFN(Scene):
     def construct(self):
         self.camera.background_color = BG
-
-        title = Text("Feed-Forward Network (FFN)", font=MONO,
-                     font_size=34, color=BLUE, weight=BOLD)
-        title.to_edge(UP, buff=0.3)
-        self.play(Write(title))
 
         # --- Layer diagram ---
         def make_layer_box(label, dims, color, pos):
@@ -47,7 +43,7 @@ class Ch06FFN(Scene):
         # Arrows
         for i in range(len(layers) - 1):
             arr = Arrow(layers[i].get_bottom(), layers[i+1].get_top(),
-                        color=WHITE, buff=0.05, stroke_width=2)
+                        color=DARK, buff=0.05, stroke_width=2)
             self.play(GrowArrow(arr), run_time=0.4)
 
         self.wait(0.5)
@@ -77,22 +73,16 @@ class Ch06FFN(Scene):
                   FadeIn(gelu_lbl), FadeIn(relu_lbl))
         self.wait(1.5)
 
-        formula = MathTex(r"\text{FFN}(x) = \text{GELU}(xW_1 + b_1)\,W_2 + b_2",
-                          font_size=26, color=YELLOW)
+        formula = Text("FFN(x) = GELU(xW₁ + b₁) W₂ + b₂",
+                       font=MONO, font_size=22, color=YELLOW)
         formula.to_edge(DOWN, buff=0.45)
         self.play(Write(formula))
         self.wait(2.5)
-        self.play(FadeOut(Group(*self.mobjects)))
-
 
 class Ch06MemoryInterpretation(Scene):
     """FFN as key-value memory."""
     def construct(self):
         self.camera.background_color = BG
-        title = Text("FFN as Associative Memory", font=MONO,
-                     font_size=30, color=BLUE, weight=BOLD)
-        title.to_edge(UP, buff=0.3)
-        self.play(Write(title))
 
         # 3 neuron rows
         examples = [
@@ -116,4 +106,3 @@ class Ch06MemoryInterpretation(Scene):
         note.to_edge(DOWN, buff=0.5)
         self.play(FadeIn(note))
         self.wait(2.5)
-        self.play(FadeOut(Group(*self.mobjects)))
