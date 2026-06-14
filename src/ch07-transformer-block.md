@@ -10,15 +10,15 @@ A GPT model is simply a stack of `N` identical transformer blocks. GPT-2 small: 
 
 ## 7.1 The Idea
 
-The core insight of residual networks (He et al., 2015, ResNets in computer vision): instead of learning `f(x)`, learn the **residual** `f(x) - x`, then add back the input:
+A GPT model is a stack of identical blocks — GPT-2 small has 12, GPT-3 has 96. Stacking many layers should make the model more powerful, but in practice it causes two problems: information gets distorted as it passes through many transformations, and very deep networks are notoriously hard to train.
 
-```
-output = x + f(x)
-```
+A transformer block solves both problems with two simple ideas.
 
-Why does this help? During backpropagation, gradients flow directly through the `+` operation. Even if the sub-network `f` produces near-zero gradients, the gradient "highway" through the skip connection keeps training alive. This makes it possible to train networks hundreds of layers deep.
+**Residual connections** (also called skip connections): instead of replacing a vector entirely, each sub-layer only adds its output to the original. The input is preserved and combined with the new information. Think of it as writing notes in the margin rather than rewriting the whole page. Each layer only needs to learn *what to change*, not what the whole answer should be. This keeps information flowing cleanly all the way through, even in very deep stacks.
 
-**Layer normalization** stabilizes the activations within each sub-layer. Without it, the distributions of activations shift as the model trains, making training unstable.
+**Layer normalization**: the numbers inside a vector can grow or shrink unpredictably as the model trains. If they drift too far, the training process becomes unstable. Layer normalization resets them to a consistent scale before each sub-layer processes them. It is a housekeeping step: it does not change which direction the vector points, just how large the numbers are.
+
+Together, these two techniques make it possible to stack dozens of transformer blocks without losing control of training.
 
 ---
 

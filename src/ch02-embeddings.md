@@ -10,24 +10,13 @@ The mechanism is called **the embedding matrix**, and it is the model's first le
 
 ## 2.1 The Idea
 
-Think of the embedding matrix as an enormous lookup table. It has one row per vocabulary entry and `d_model` columns, where `d_model` is the model's **hidden dimension** — a hyperparameter that controls how rich each token's representation is. In GPT-2 small, `d_model = 768`. In LLaMA-3 70B, `d_model = 8192`.
+A token ID is just a number — say, `42`. That integer is an address, not a meaning. You cannot do useful arithmetic on addresses: `42 + 7 = 49` tells you nothing about the relationship between the two words.
 
-$$
-Embedding matrix E:  shape [|V| \times d_model]
+To give each token a meaning the model can actually compute with, we replace its ID with a **list of hundreds of decimal numbers** — a vector. Think of it like this: the model keeps a big table, one row per word in the vocabulary. When it sees token `42`, it pulls out row `42` and uses those numbers as the token's representation going forward.
 
-  token 0:  [  0.12  -0.83   0.41  \ldots  (d_model numbers) ]
-  token 1:  [ -0.55   0.19   0.77  \ldots                    ]
-  token 2:  [  0.03   0.61  -0.29  \ldots                    ]
-  ...
-  token |V|: [ \ldots                                         ]
-$$
+The key property that makes this useful is that the table is *learned*. After training on billions of words, tokens with similar meanings end up with similar rows. "Cat" and "kitten" cluster together. "Run" and "sprint" are nearby. "Cat" and "justice" are far apart. The model discovers these relationships entirely from how words appear together in text — no human labels required.
 
-To embed a token with ID `i`, you just take row `i`. That's it. A single matrix row lookup. In NumPy: `E[i]`. In math: $e_i = E_i$.
-
-For a sequence of `T` tokens with IDs $[i_1, i_2, \ldots, i_t]$, the embedding step produces a matrix of shape $[T \times d_model]$ — one row per token.
-
-> **Math Minute — Vectors**
-> A vector $v \in \mathbb{R}^n$ is an ordered list of `n` real numbers: $v = [v_1, v_2, \ldots, v_n]$. You can add vectors (`[1,2] + [3,4] = [4,6]`), scale them ($2\cdot[1,2] = [2,4]$), and measure their similarity via the **dot product** (Chapter 4). Geometrically, a vector is a point — or an arrow — in n-dimensional space.
+This learned table is the **embedding matrix**, and the step that converts a sequence of IDs into a sequence of vectors is called **embedding**.
 
 ---
 

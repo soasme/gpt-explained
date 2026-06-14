@@ -8,7 +8,26 @@ That is the job of **training**: adjusting every weight in the model so that the
 
 ---
 
-## 10.1 The Goal: Move the Loss Down
+## 10.1 The Idea
+
+The loss tells us *how wrong* the model was at its last prediction. Training uses that wrongness to *improve* the model — so it does better next time.
+
+Here is the core loop, in plain terms:
+
+1. **Forward pass**: feed a sentence into the model, let it predict the next word at every position, measure how wrong those predictions were (the loss).
+2. **Backward pass**: trace back through every calculation the model just made and figure out — for each weight — whether increasing it would have made the loss higher or lower, and by how much. This produces a *gradient* for every weight.
+3. **Update**: nudge each weight slightly in the direction that reduces the loss. Weights that caused big errors get bigger nudges; weights that barely mattered get smaller nudges.
+4. **Repeat**: billions of times, across trillions of words.
+
+That is the entire training algorithm. The forward pass is just the model computing a prediction. The backward pass (called **backpropagation**) is the chain of blame-attribution that makes learning possible.
+
+The tricky part is the backward pass. A transformer has hundreds of millions of weights, all tangled together through layers of matrix multiplications and non-linearities. Backpropagation works by applying one rule — the chain rule from calculus — repeatedly, layer by layer, from the loss all the way back to the inputs. Each layer needs to know how to pass blame backward through itself.
+
+The sections that follow build this machinery from scratch.
+
+---
+
+## 10.2 The Goal: Move the Loss Down
 
 The model has millions of parameters. Call them collectively $\theta$. The loss $\mathcal{L}(\theta)$ is a function of all of them. We want to find $\theta$ that makes $\mathcal{L}$ small.
 
@@ -34,7 +53,7 @@ The answer is **backpropagation**.
 
 ---
 
-## 10.2 The Chain Rule
+## 10.3 The Chain Rule
 
 Backpropagation is the chain rule from calculus, applied to a computation graph.
 
@@ -73,7 +92,7 @@ This is the entire idea. Everything that follows is this rule, applied to millio
 
 ---
 
-## 10.3 Backprop Through a Linear Layer
+## 10.4 Backprop Through a Linear Layer
 
 The most common operation in a transformer is a **linear layer**: $y = Wx$.
 
@@ -127,7 +146,7 @@ The first equation tells us how to update $W$. The second passes the gradient ba
 
 ---
 
-## 10.4 Backprop Through Softmax and Cross-Entropy
+## 10.5 Backprop Through Softmax and Cross-Entropy
 
 Chapter 9 stated the softmax-CE gradient without proof:
 
@@ -168,7 +187,7 @@ Two lines of logic. The entire gradient of the output layer is: predicted probab
 
 ---
 
-## 10.5 Accumulating Gradients Across the Sequence
+## 10.6 Accumulating Gradients Across the Sequence
 
 We compute the softmax-CE gradient independently at each position $t$. But all positions share the same unembedding matrix $W_u$ (and the same transformer weights). Their gradient contributions must be *summed* before updating any weight.
 
@@ -197,7 +216,7 @@ If a weight was used at positions 0, 1, and 2, the gradient entering the weight 
 
 ---
 
-## 10.6 The Gradient Descent Step
+## 10.7 The Gradient Descent Step
 
 With gradients accumulated for every parameter, the update rule is:
 
@@ -225,7 +244,7 @@ The `!` suffix signals mutation — we modify the weight matrix in place, as is 
 
 ---
 
-## 10.7 One Training Step
+## 10.8 One Training Step
 
 Now we can assemble the full cycle: forward pass to get predictions and loss, backward pass to get gradients, update pass to improve every weight.
 
@@ -263,7 +282,7 @@ Now we can assemble the full cycle: forward pass to get predictions and loss, ba
 
 ---
 
-## 10.8 Watching the Loss Fall
+## 10.9 Watching the Loss Fall
 
 Running thousands of training steps, the loss curve looks roughly like this:
 
@@ -283,13 +302,13 @@ The curve drops steeply at first (obvious mistakes are easy to fix) then more sl
 
 ---
 
-## 10.9 Diagram
+## 10.10 Diagram
 
 ![Backpropagation: gradient flowing from loss backward through each layer, updating weights](images/ch10_training.png)
 
 ---
 
-## 10.10 Key Takeaways
+## 10.11 Key Takeaways
 
 - **Gradient descent** moves every weight downhill: $\theta \leftarrow \theta - \eta \nabla_\theta \mathcal{L}$.
 - **Partial derivatives** measure the sensitivity of the loss to each individual weight, holding all others fixed.

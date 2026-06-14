@@ -10,21 +10,19 @@ While attention does the *routing* (mixing information across tokens), the FFN d
 
 ## 6.1 The Idea
 
-The FFN takes a single vector $x \in \mathbb{R}^d$ and transforms it:
+Attention is about *communication* — each token collects information from other tokens. The feed-forward network is about *computation* — each token processes what it just collected, entirely on its own.
 
-1. **Expand** it to a higher-dimensional space (`d_ff = 4d` typically).
-2. **Apply a non-linearity** (activation function).
-3. **Project back** to the model dimension.
+After attention, every token's vector has been updated with context from the surrounding words. The FFN now takes each updated vector and runs it through a private transformation: expand it into a much larger space, filter it through a non-linearity that decides which features are "active," then compress it back to the original size. No information crosses between tokens here — every position is handled independently with the same set of weights.
 
-$$
-FFN(x) = \operatorname{GELU}( x W_1 + b_1 ) W_2 + b_2
-$$
+Why expand and then compress? The expansion gives the model room to express a large number of potential features at once. The non-linearity then selects which combinations matter and switches the rest off. The compression packages the result back into the model's standard vector size.
 
-- $W_1 \in \mathbb{R}^{d\times d_ff}$ — expansion (usually `d_ff = 4d`)
-- $W_2 \in \mathbb{R}^{d_ff\times d}$ — contraction
-- `GELU` — the activation function (explained below)
+This expand-filter-compress pipeline is where most of the model's factual knowledge lives. Research has shown that individual neurons in the FFN's expanded space can be associated with specific concepts ("Paris," "past tense," "chemical element"). The model does not store facts in attention — it stores them here.
 
-The FFN is applied **position-wise**: every token's vector goes through the same weights independently. No mixing across positions happens here — that already happened in attention.
+The same FFN weights are applied to every token position in the sequence: position 1 and position 100 go through identical transformations. Only attention sees position.
+
+---
+
+## 6.2 The Math
 
 > **Math Minute — ReLU and GELU**
 > A **non-linearity** is a function that makes the network capable of learning complex patterns beyond linear mappings.
@@ -34,10 +32,6 @@ The FFN is applied **position-wise**: every token's vector goes through the same
 > $\operatorname{GELU}(x) = x \cdot \Phi(x)$ where $\Phi$ is the standard normal CDF. GELU is smooth and probabilistic: instead of a hard cut at zero, it "softly" gates the input. GPT uses GELU. LLaMA and most modern models use `SwiGLU`, a gated variant.
 >
 > `Sigmoid(x) = 1/(1+e⁻ˣ)` squashes any real number to (0,1). Used in gates.
-
----
-
-## 6.2 The Math
 
 For a sequence input $X \in \mathbb{R}^{T\times d}$, the FFN applies identically to each row:
 

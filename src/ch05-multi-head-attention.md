@@ -18,21 +18,18 @@ Multi-head attention runs `H` independent attention heads in parallel, each free
 
 ## 5.1 The Idea
 
-Split the model dimension into `H` smaller "sub-spaces." In each sub-space, run independent attention. Concatenate all results. Project back.
+A single attention operation produces one pattern of "who attends to whom." But a sentence carries many different kinds of relationships at the same time.
 
-Formally, each head `h` has its own weight matrices:
+In "The animal didn't cross the street because it was too tired":
+- *it* refers back to *animal* — that is a **coreference** relationship.
+- *cross* links to *street* — that is a **verb-object** relationship.
+- *because* connects a cause to an effect — that is a **logical** relationship.
 
-$$
-Wq^{h} \in \mathbb{R}^{d\times d_k},  Wk^{h} \in \mathbb{R}^{d\times d_k},  Wv^{h} \in \mathbb{R}^{d\times d_v}
-$$
+One attention head can only focus on one of these at a time. Multi-head attention runs several independent attention operations **in parallel** — each one free to specialize on a different pattern. Each head sees the same input but learns to ask a different question of it.
 
-And computes:
+At the end, the results from all heads are stitched back together and projected into a single vector, the same size as before. The model learns entirely from data which head should track grammar, which should track meaning, which should track proximity — no one programs this in explicitly.
 
-$$
-head^{h} = \operatorname{Attention}(X Wq^{h}, X Wk^{h}, X Wv^{h})   \in \mathbb{R}^{T\times d_v}
-$$
-
-The standard choice is $d_k = d_v = d/H$, so that the total computation remains comparable to one large attention head.
+The result is a richer representation than any single head could produce: each token's final vector has been informed by multiple different lenses simultaneously.
 
 ---
 

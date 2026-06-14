@@ -10,18 +10,16 @@ We fix this by **adding a position vector** to each token's embedding. The combi
 
 ## 3.1 The Idea
 
-For position `t` in a sequence, we compute a vector $p_t \in \mathbb{R}^d$ and add it to the corresponding embedding:
+After embedding, every token is a vector. But those vectors carry no information about *where* in the sentence the token appears. "Dog bites man" and "man bites dog" produce the same three vectors, just in a different order — and attention (coming next) would treat both sentences identically if we did nothing.
 
-```
-x̃_t = x_t + p_t
-```
+The fix is straightforward: before passing the vectors into attention, we **add a position signal** to each one. Token 0 gets a small nudge in one direction; token 1 gets a different nudge; token 50 gets yet another. The nudge is itself a vector the same size as the embedding, and it is designed so that no two positions produce the same nudge.
 
-The simplest approach: learned position embeddings (like the token embeddings — just a table of vectors, one per position). GPT-2 uses this.
+Think of it like stamping each page of a manuscript with its page number before sending it to the printer. The text on the page does not change — but now the order is recoverable.
 
-The original "Attention Is All You Need" paper used a more elegant approach: **sinusoidal positional encoding** — a deterministic formula using sine and cosine functions at different frequencies. We will study both, but sinusoidal encoding teaches more about why it works.
+There are two ways to design the position stamp:
 
-> **Math Minute — Sine and Cosine**
-> `sin(θ)` and `cos(θ)` oscillate between -1 and 1 as θ increases. Different frequencies oscillate at different rates. Low frequency → slow oscillation (changes slowly with position). High frequency → fast oscillation (changes rapidly). Think of them as a clock: hour hand (low frequency) and second hand (high frequency) together uniquely identify the time.
+- **Learned**: keep a second lookup table, one row per position, and let the model learn the best stamps from data. GPT-2 does this.
+- **Sinusoidal**: compute the stamp from a fixed mathematical formula using waves of different frequencies. The original transformer paper did this. We study both, because the sinusoidal approach illuminates *why* position signals work.
 
 ---
 

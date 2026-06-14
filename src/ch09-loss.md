@@ -8,7 +8,21 @@ This chapter is about that measurement: the **loss function**.
 
 ---
 
-## 9.1 The Problem: Evaluating a Probability Distribution
+## 9.1 The Idea
+
+The model reads a sentence and, at each position, guesses what word comes next. Those guesses are never perfect — but how do we measure *how wrong* a guess is?
+
+We need a single number that captures "wrongness" in a way that is small when the model is doing well and large when it is doing badly. That number is the **loss**. And crucially, it needs to be computable from the model's output so we can use it to improve the model.
+
+Here is the key insight: the model already outputs a probability for every word in the vocabulary. If the true next word is "cat" and the model assigns a 90% probability to "cat," that is a good prediction — loss should be low. If the model assigns only 1% probability to "cat" (spreading the rest across unrelated words), that is a bad prediction — loss should be high.
+
+The **cross-entropy loss** formalizes this: it measures how much probability the model assigned to the *correct* answer. A perfect model assigns 100% to the right word — loss is zero. A confused model spreads probability thinly — loss is high.
+
+Over a long training document, the total loss is the average wrongness across every single word prediction. Training is the process of adjusting all the model's internal numbers to make this average as small as possible.
+
+---
+
+## 9.2 The Problem: Evaluating a Probability Distribution
 
 After the forward pass, the model produces a probability distribution over the vocabulary:
 
@@ -22,7 +36,7 @@ The answer is **cross-entropy loss**.
 
 ---
 
-## 9.2 Cross-Entropy Loss
+## 9.3 Cross-Entropy Loss
 
 ### The Formula
 
@@ -74,7 +88,7 @@ In practice, batches of fixed-length sequences are used. The loss is the mean cr
 
 ---
 
-## 9.3 Teacher Forcing
+## 9.4 Teacher Forcing
 
 Notice the formula conditions on *true* past tokens $t_1, \ldots, t_t$, not the model's *own predictions*. This is called **teacher forcing**: during training, we always feed the ground-truth context, not what the model would have generated.
 
@@ -87,7 +101,7 @@ The causal mask from Chapter 4 is what enables this. Position $t$ can only atten
 
 ---
 
-## 9.4 Perplexity
+## 9.5 Perplexity
 
 Loss as nats is hard to interpret intuitively. **Perplexity** converts it to something more concrete:
 
@@ -113,7 +127,7 @@ GPT-2 (1.5B) reached ~18 perplexity on WikiText-103. GPT-4 is estimated well bel
 
 ---
 
-## 9.5 The Matrix: Worked Example
+## 9.6 The Matrix: Worked Example
 
 Let's trace the loss for a 4-token sequence `["The", "cat", "sat", "on"]` with $|V| = 5$ (toy vocabulary). True token IDs: `[1, 3, 4, 0, 2]` — the model processes tokens 1–4, predicting tokens 2–5.
 
@@ -164,7 +178,7 @@ Every parameter in the model receives a gradient from this single loss number. G
 
 ---
 
-## 9.6 Cross-Entropy as Information Theory
+## 9.7 Cross-Entropy as Information Theory
 
 Cross-entropy has deep roots. The **entropy** of the true distribution $q$ is:
 
@@ -192,7 +206,7 @@ Since $H(q) = 0$ for one-hot labels, cross-entropy = KL divergence from predicte
 
 ---
 
-## 9.7 Scheme Implementation
+## 9.8 Scheme Implementation
 
 `softmax` is repeated here so this file is self-contained; the implementation is the same as in Chapter 4. `cross-entropy-loss` computes $-\log P(\text{true token})$ for a single position. The softmax converts raw logits to probabilities; we look up the probability of the true token and take its negative log. We clamp to $10^{-12}$ before taking the log to avoid $-\infty$ in the degenerate case where the model assigns exactly zero probability — this cannot happen with a proper softmax but floating-point underflow can produce it.
 
@@ -298,13 +312,13 @@ The gradient says: *"Reduce logit 2's score by 0.876, raise every other logit by
 
 ---
 
-## 9.8 Diagram
+## 9.9 Diagram
 
 ![Cross-entropy loss: logits → softmax → negative log of true-token probability](images/ch09_loss.png)
 
 ---
 
-## 9.9 Key Takeaways
+## 9.10 Key Takeaways
 
 - **Cross-entropy loss** is $-\log P(\text{true next token})$. Zero when perfect, unbounded when wrong.
 - **Teacher forcing** feeds ground-truth context at training time, enabling full parallelism via causal masking.

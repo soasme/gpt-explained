@@ -10,20 +10,13 @@ This projection is called the **language model head**, or **unembedding layer**.
 
 ## 8.1 The Idea
 
-The unembedding is the inverse of the embedding:
+After all the attention and feed-forward layers, we have a vector representing the last token — a list of hundreds of numbers that encodes everything the model knows about what has been said so far. But the user needs a *word*, not a list of numbers.
 
-- **Embedding:** integer → vector. Look up row `i` in $E \in \mathbb{R}^{|V|\times d}$.
-- **Unembedding:** vector → distribution over integers. Project $x \in \mathbb{R}^d$ to $logits \in \mathbb{R}^{|V|}$, then softmax.
+The final step converts that vector into a probability over the entire vocabulary: for each of the 50,000-odd words the model knows, what is the chance it is the right next word? The word with the highest probability (or a word sampled from the distribution) becomes the model's output.
 
-The projection is done with a weight matrix $W_u \in \mathbb{R}^{d\times |V|}$:
+How does a vector become a probability distribution? The model compares the vector against every word in the vocabulary and assigns a score to each one. High score means "this word fits the context well." Low score means it does not. Then those scores are squeezed into the range 0–1 and made to sum to 1, giving a proper probability.
 
-$$
-logits = x W_u   \in \mathbb{R}^{|V|}
-$$
-
-Each `logits[i]` is the **unnormalized score** for vocabulary entry `i`. Higher score = the model thinks token `i` is more likely next.
-
-Most GPT implementations **tie** the unembedding weights to the embedding matrix: $W_u = E^{\top}$. The same matrix is used for both embedding (rows as vectors) and unembedding (columns as classifiers). This **weight tying** reduces parameters and has been shown to improve performance.
+This step is the mirror image of Chapter 2: embedding turned an integer (a word ID) into a vector; unembedding turns a vector back into a distribution over integers. Many implementations even reuse the same table for both directions — the same weights that encode "cat → vector" are transposed to decode "vector → how much does this look like cat?"
 
 ---
 
