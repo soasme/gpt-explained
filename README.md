@@ -2,7 +2,7 @@
 
 > *A hands-on guide to transformer architecture — from tokens to text generation, with math, matrices, Lisp, and animations.*
 
-**📚 Read online:** https://soasme.github.io/gpt-explained/
+**📚 Read online:** https://www.soasme.com/gpt-explained/
 
 ---
 
@@ -28,6 +28,8 @@ This book teaches how GPT-style language models actually work, from the very fir
 | 6 | **Feed-Forward Network** — The Model's Memory |
 | 7 | **The Transformer Block** — Putting It Together |
 | 8 | **Vocabulary Projection** — From Vectors to Words |
+| 9 | **Loss** - Are we adjusting the model weights the right way? | 
+| 10 | **Training** - Backpropagation to adjust weights |
 | A | **microGPT in Lisp** — Complete Runnable Code |
 | B | **Math Primer** — Every prerequisite in one place |
 
@@ -106,7 +108,7 @@ Generated: (47 12 83 5 71 29 44 3 90 18)
 Every push to `main`:
 1. Renders all Manim scenes → PNG images
 2. Builds mdBook with images embedded
-3. Deploys to GitHub Pages at https://soasme.github.io/gpt-explained/
+3. Deploys to GitHub Pages at https://www.soasme.com/gpt-explained/
 
 ---
 

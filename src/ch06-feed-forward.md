@@ -43,15 +43,17 @@ Where $1\cdot b_1^{\top}$ broadcasts the bias across all `T` positions.
 
 Breaking it down:
 $$
-H = X W_1 + 1\cdot b_1^{\top}       \in \mathbb{R}^{T \times d_ff}     (linear expand)
-H' = \operatorname{GELU}(H)             \in \mathbb{R}^{T \times d_ff}     (activation)
-Y = H' W_2 + 1\cdot b_2^{\top}       \in \mathbb{R}^{T \times d}        (linear contract)
+\begin{aligned}
+H  &= X W_1 + \mathbf{1} b_1^{\top} \in \mathbb{R}^{T \times d_{\text{ff}}} && \text{(expand)} \\
+H' &= \operatorname{GELU}(H)          \in \mathbb{R}^{T \times d_{\text{ff}}} && \text{(activate)} \\
+Y  &= H' W_2 + \mathbf{1} b_2^{\top} \in \mathbb{R}^{T \times d}            && \text{(contract)}
+\end{aligned}
 $$
 
 **Parameter count:**
-- $W_1$: $d \times d_ff = d \times 4d = 4d^2$
-- $W_2$: $d_ff \times d = 4d^2$
-- Biases: $d_ff + d \approx 5d$
+- $W_1$: $d \times d_{\text{ff}} = d \times 4d = 4d^2$
+- $W_2$: $d_{\text{ff}} \times d = 4d^2$
+- Biases: $d_{\text{ff}} + d \approx 5d$
 - Total: $~8d^2$ — this is **twice** the parameter count of all attention weight matrices combined!
 
 For GPT-2 small (`d=768`): FFN has `~4.7M` parameters per layer (vs `~2.4M` for attention). The FFN is not an afterthought — it dominates model capacity.
@@ -88,7 +90,7 @@ Key behaviors:
 
 ## 6.4 The Matrix: Worked Example
 
-Let `T = 2`, `d = 4`, `d_ff = 8` (2× for brevity, usually 4×).
+Let `T = 2`, `d = 4`, `d_{\text{ff}} = 8` (2× for brevity, usually 4×).
 
 Input (after attention):
 ```
@@ -329,7 +331,7 @@ This means the model can learn: "if the input contains patterns related to Franc
 ## 6.7 Key Takeaways
 
 - The FFN is a two-layer MLP applied **identically to every position**: $FFN(x) = \operatorname{GELU}(xW_1 + b_1) W_2 + b_2$.
-- The inner dimension `d_ff = 4d` means the FFN has **more parameters than the attention layers**.
+- The inner dimension `d_{\text{ff}} = 4d` means the FFN has **more parameters than the attention layers**.
 - GELU is a smooth activation function that "softly gates" negative values.
 - The FFN acts as an **associative memory**: first layer matches patterns, second layer retrieves associated information.
 - No cross-position communication happens here — that's attention's job.

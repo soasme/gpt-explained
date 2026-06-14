@@ -68,10 +68,11 @@ $$
 GPT is **autoregressive**: when predicting token `t`, it must not look at tokens `t+1, t+2, …` (they haven't been generated yet). We enforce this by masking the upper triangle:
 
 $$
-M[i,j] = 0    if j \leq i    (allowed to attend)
-M[i,j] = -\infty  if j > i    (blocked — future tokens)
+M[i,j] = \begin{cases} 0 & \text{if } j \leq i \\ -\infty & \text{if } j > i \end{cases}
+$$
 
-S_masked = S + M
+$$
+S_{\text{masked}} = S + M
 $$
 
 Adding $-\infty$ before softmax effectively zeroes out those attention weights.
@@ -79,7 +80,7 @@ Adding $-\infty$ before softmax effectively zeroes out those attention weights.
 ### Step 4: Softmax → Attention Weights
 
 $$
-A = \operatorname{softmax}(S_masked)   \in \mathbb{R}^{T\times T}
+A = \operatorname{softmax}(S_{\text{masked}}) \in \mathbb{R}^{T\times T}
 $$
 
 `A[i,j]` is now a probability: how much token `i` attends to token `j`.
@@ -113,7 +114,7 @@ X = [[ 1.0,  0.0,  1.0,  0.0],   ← token 0: "the"
 Weight matrices (simplified, identity-like):
 
 $$
-Wq = Wk = Wv = I_4 (4\times 4 identity, so Q=K=V=X for this example)
+Wq = Wk = Wv = I_4 \quad (4\times 4 \text{ identity, so } Q=K=V=X)
 $$
 
 **Step 1 — Q, K, V (same as X here):**

@@ -27,10 +27,12 @@ There are two ways to design the position stamp:
 
 For position `t` and dimension `i` (where $0 \leq i < d$):
 
-```
-PE(t, 2i)   = sin( t / 10000^(2i/d) )
-PE(t, 2i+1) = cos( t / 10000^(2i/d) )
-```
+$$
+\begin{aligned}
+PE(t,\, 2i)   &= \sin\!\left(\frac{t}{10000^{2i/d}}\right) \\
+PE(t,\, 2i+1) &= \cos\!\left(\frac{t}{10000^{2i/d}}\right)
+\end{aligned}
+$$
 
 Even-indexed dimensions use sine; odd-indexed dimensions use cosine. The denominator `10000^(2i/d)` controls the frequency — it grows exponentially with `i`, so low dimensions have high frequency (vary rapidly with `t`) and high dimensions have low frequency (vary slowly).
 
@@ -50,16 +52,18 @@ Even-indexed dimensions use sine; odd-indexed dimensions use cosine. The denomin
 Full formula for the positional encoding matrix $PE \in \mathbb{R}^{T\times d}$:
 
 $$
-PE[t, i] = \sin( t \cdot \omega_i )    if i is even
-PE[t, i] = \cos( t \cdot \omega_\lfloor i/2\rfloor) if i is odd
-
-where \omega_k = 1 / 10000^(2k/d)
+\begin{aligned}
+PE[t, i] &= \sin(t \cdot \omega_{i/2})              && \text{if } i \text{ is even} \\
+PE[t, i] &= \cos(t \cdot \omega_{\lfloor i/2\rfloor}) && \text{if } i \text{ is odd}
+\end{aligned}
 $$
+
+where $\omega_k = 1 / 10000^{2k/d}$
 
 After building `PE`, the position-encoded input is:
 
 $$
-\tilde{X} = X + PE    (element-wise addition, both [T \times d])
+\tilde{X} = X + PE \quad \in \mathbb{R}^{T \times d}
 $$
 
 The model now works with $\tilde{X}$ instead of `X`.
@@ -73,10 +77,12 @@ Let `T = 4` (4 tokens), `d = 8` (8-dimensional).
 First compute the frequencies $\omega_k$ for `k = 0, 1, 2, 3`:
 
 $$
-\omega_0 = 1 / 10000^(0/8) = 1.0
-\omega_1 = 1 / 10000^(2/8) = 1 / 10000^0.25 \approx 0.1
-\omega_2 = 1 / 10000^(4/8) = 1 / 100 = 0.01
-\omega_3 = 1 / 10000^(6/8) = 1 / 10000^0.75 \approx 0.001
+\begin{aligned}
+\omega_0 &= 1 / 10000^{0/8} = 1.0 \\
+\omega_1 &= 1 / 10000^{2/8} = 1 / 10000^{0.25} \approx 0.1 \\
+\omega_2 &= 1 / 10000^{4/8} = 1 / 100 = 0.01 \\
+\omega_3 &= 1 / 10000^{6/8} = 1 / 10000^{0.75} \approx 0.001
+\end{aligned}
 $$
 
 Now compute PE row by row (position `t = 0, 1, 2, 3`), column by column:

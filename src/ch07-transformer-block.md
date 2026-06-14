@@ -26,10 +26,12 @@ Together, these two techniques make it possible to stack dozens of transformer b
 
 A single transformer block (Pre-LN variant, used by most modern GPTs):
 
-```
-x₁ = x + MHA(LayerNorm(x))       ← attention sub-layer
-x₂ = x₁ + FFN(LayerNorm(x₁))    ← FFN sub-layer
-```
+$$
+\begin{aligned}
+x_1 &= x + \text{MHA}(\text{LayerNorm}(x)) && \text{(attention sub-layer)} \\
+x_2 &= x_1 + \text{FFN}(\text{LayerNorm}(x_1)) && \text{(FFN sub-layer)}
+\end{aligned}
+$$
 
 This is the **Pre-Layer-Norm** architecture. The original "Attention Is All You Need" paper used Post-LN (`output = LayerNorm(x + sub-layer(x))`), but Pre-LN is more stable to train and is used in GPT-2 onwards.
 
@@ -38,14 +40,10 @@ This is the **Pre-Layer-Norm** architecture. The original "Attention Is All You 
 For a vector $x \in \mathbb{R}^d$:
 
 $$
-\operatorname{LayerNorm}(x) = \gamma \odot (x - \mu)/\sigma + \beta
-
-where:
-  \mu = (1/d) Σ_i x_i            (mean of the vector)
-  \sigma = \sqrt{((1/d)} Σ_i (x_i - \mu)^2)  (standard deviation)
-  \gamma, \beta \in \mathbb{R}^d                   (learned scale and shift, per-dimension)
-  \odot = element-wise multiplication
+\operatorname{LayerNorm}(x) = \gamma \odot \frac{x - \mu}{\sigma} + \beta
 $$
+
+where $\mu = \tfrac{1}{d}\sum_i x_i$, $\sigma = \sqrt{\tfrac{1}{d}\sum_i (x_i - \mu)^2}$, $\gamma, \beta \in \mathbb{R}^d$ are learned scale and shift, and $\odot$ is element-wise multiplication.
 
 `LayerNorm` ensures each vector has **mean 0 and variance 1** before the sub-layers process it. The learned $\gamma$ and $\beta$ allow the network to undo the normalization if needed.
 
@@ -63,15 +61,15 @@ A powerful way to understand the GPT architecture is through the lens of the **r
 
 The input embedding is injected into a "stream" — a vector of dimension `d` per token. Each transformer block **reads from** this stream (via attention and FFN) and **adds back to** it (via residual connections). The stream carries information across all blocks.
 
-$$
-stream^0 = token_embeddings + positional_embeddings    [T \times d]
-stream^1 = stream^0 + MHA(LN(stream^0))
-stream^1 = stream^1 + FFN(LN(stream^1))
-stream^2 = stream^1 + MHA(LN(stream^1))
-stream^2 = stream^2 + FFN(LN(stream^2))
-\ldots
+```
+stream⁰ = token_embeddings + positional_encodings    [T × d]
+stream¹ = stream⁰ + MHA(LN(stream⁰))
+stream¹ = stream¹ + FFN(LN(stream¹))
+stream² = stream¹ + MHA(LN(stream¹))
+stream² = stream² + FFN(LN(stream²))
+  ⋮
 streamᴺ = final output
-$$
+```
 
 This view clarifies that attention heads and FFN neurons are not arranged sequentially — they are all writing to the same shared workspace.
 

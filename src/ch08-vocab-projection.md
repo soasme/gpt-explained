@@ -41,15 +41,17 @@ $$
 With weight tying: $W_u = E^{\top}$, so:
 
 $$
-logits[i] = \tilde{h}_t \cdot E_i   (dot product with the embedding of token i)
+logits[i] = \tilde{h}_t \cdot E_i
 $$
+
+(Dot product of the model's prediction vector with token $i$'s embedding.)
 
 The logit for token `i` is the dot product of the model's "prediction vector" with token `i`'s embedding. Tokens whose embeddings align with the prediction vector get high logits.
 
 **Step 3 — Softmax → Probabilities:**
 
 $$
-P(next = i | context) = \operatorname{softmax}(logits)[i] = \exp(logits[i]) / Σ_j \exp(logits[j])
+P(\text{next} = i \mid \text{context}) = \operatorname{softmax}(logits)[i] = \frac{\exp(logits[i])}{\sum_j \exp(logits[j])}
 $$
 
 > **Math Minute — Temperature**
@@ -72,14 +74,12 @@ Training and inference use the same forward pass differently.
 **Training:** Given a sequence $[t_1, t_2, \ldots, t_n]$, the model predicts all next tokens simultaneously (thanks to causal masking): $P(t_2|t_1), P(t_3|t_1,t_2), \ldots, P(t_n|t_1,\ldots,t_{n-1})$. The loss is cross-entropy averaged over all positions.
 
 **Inference (generation):**
-$$
-1. Start with prompt tokens [t_1, \ldots, t_n]
-2. Forward pass \to logits for position n
-3. Sample/\operatorname{argmax} \to t_{n+1}
-4. Append t_{n+1} to sequence
-5. Forward pass \to logits for position n+1
+1. Start with prompt tokens $[t_1, \ldots, t_n]$
+2. Forward pass → logits for position $n$
+3. Sample or $\operatorname{argmax}$ → $t_{n+1}$
+4. Append $t_{n+1}$ to the sequence
+5. Forward pass → logits for position $n+1$
 6. Repeat until stop token or max length
-$$
 
 This is called **autoregressive generation**: each new token is fed back in as input to generate the next.
 

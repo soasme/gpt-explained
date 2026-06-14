@@ -36,7 +36,7 @@ No one programmed this. It is a geometric consequence of how the vectors were sh
 
 > **Math Minute — Dot Product**
 > The dot product of two vectors $u = [u_1,\ldots,u_n]$ and $v = [v_1,\ldots,v_n]$ is:
-> $u \cdot v = u_{1v1} + u_{2v2} + \ldots + u_{nvn}$
+> $u \cdot v = u_1 v_1 + u_2 v_2 + \ldots + u_n v_n$
 > It is a single number. If both vectors point in the same direction, the dot product is large and positive. If they are perpendicular, it is zero. If they point opposite, it is negative. Dot product measures **alignment**.
 
 ---
@@ -47,12 +47,12 @@ Given:
 - `|V|` = vocabulary size
 - `d` = `d_model` (hidden dimension)
 - $E \in \mathbb{R}^{|V| \times d}$ = embedding matrix (learned)
-- $i \in {0, \ldots, |V|-1}$ = token ID
+- $i \in \{0, \ldots, |V|-1\}$ = token ID
 
 The embedding of token `i` is:
 
 $$
-e_i = E_i,\cdot  \in \mathbb{R}^d
+e_i = E_{i,\cdot} \in \mathbb{R}^d
 $$
 
 (Row `i` of matrix `E`.)
@@ -66,7 +66,7 @@ $$
 This is just row indexing — no multiplication. In practice it is implemented as a matrix multiplication with a one-hot vector:
 
 $$
-e_i = o_i^{\top} \cdot E    where o_i \in {0,1}^|V|, (o_i)_j = 1 if j=i else 0
+e_i = o_i^{\top} \cdot E, \quad \text{where } o_i \in \{0,1\}^{|V|},\quad (o_i)_j = \begin{cases} 1 & j = i \\ 0 & j \neq i \end{cases}
 $$
 
 But implementations use the index directly because it is faster.
@@ -77,15 +77,16 @@ But implementations use the index directly because it is faster.
 
 Let's use tiny numbers: `|V| = 5`, `d = 4`.
 
-$$
-Embedding matrix E (5\times 4):
+Embedding matrix $E$ ($5\times 4$):
+
+```
        col0   col1   col2   col3
 tok 0: [ 0.10  -0.20   0.30  -0.40 ]
 tok 1: [ 0.50   0.60  -0.70   0.80 ]
 tok 2: [-0.90   0.10   0.20  -0.30 ]
 tok 3: [ 0.40  -0.50   0.60  -0.70 ]
 tok 4: [-0.10   0.80  -0.40   0.50 ]
-$$
+```
 
 Input token sequence: `"low lower"` → token IDs `[2, 3, 0]` (hypothetical).
 

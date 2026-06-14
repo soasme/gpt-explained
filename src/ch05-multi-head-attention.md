@@ -37,12 +37,15 @@ The result is a richer representation than any single head could produce: each t
 
 **Step 1 — Compute each head independently:**
 
+For $h = 1, \ldots, H$:
+
 $$
-For h = 1, \ldots, H:
-  Q^{h} = X Wq^{h}    \in \mathbb{R}^{T\times d_k}
-  K^{h} = X Wk^{h}    \in \mathbb{R}^{T\times d_k}
-  V^{h} = X Wv^{h}    \in \mathbb{R}^{T\times d_v}
-  head^{h} = \operatorname{softmax}( Q^{h}{K^{h}}^{\top} / \sqrt{d_k} + M ) V^{h}
+\begin{aligned}
+Q^{h} &= X Wq^{h} \in \mathbb{R}^{T\times d_k} \\
+K^{h} &= X Wk^{h} \in \mathbb{R}^{T\times d_k} \\
+V^{h} &= X Wv^{h} \in \mathbb{R}^{T\times d_v} \\
+head^{h} &= \operatorname{softmax}\!\left(\frac{Q^{h}{K^{h}}^{\top}}{\sqrt{d_k}} + M\right) V^{h}
+\end{aligned}
 $$
 
 **Step 2 — Concatenate:**
@@ -55,10 +58,10 @@ Since $d_v = d/H$, the concatenated output has shape $[T \times d]$ — the same
 
 **Step 3 — Output projection:**
 
-$$
-Wo \in \mathbb{R}^{d\times d}   (learned)
+$Wo \in \mathbb{R}^{d\times d}$ is a learned output projection matrix.
 
-Output = \operatorname{MultiHead} \cdot Wo   \in \mathbb{R}^{T\times d}
+$$
+\text{Output} = \operatorname{MultiHead} \cdot Wo \in \mathbb{R}^{T\times d}
 $$
 
 The final output projection mixes information across heads.
@@ -66,10 +69,10 @@ The final output projection mixes information across heads.
 **Full formula:**
 
 $$
-MHA(X) = [head^1 \| head^2 \| \ldots \| head^{H}] Wo
-
-where head^{h} = \operatorname{Attention}(X Wq^{h}, X Wk^{h}, X Wv^{h})
+\text{MHA}(X) = [head^1 \| head^2 \| \ldots \| head^{H}]\, Wo
 $$
+
+where $head^{h} = \operatorname{Attention}(X Wq^{h}, X Wk^{h}, X Wv^{h})$.
 
 ---
 

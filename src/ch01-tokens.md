@@ -56,9 +56,9 @@ The most common tokenization algorithm used in GPT models is **Byte Pair Encodin
 
 Let $V_0 = {c_1, c_2, \ldots}$ be the initial character vocabulary. After each merge step `k`:
 
-```
-V_{k+1} = V_k ∪ {(a, b) | freq(a, b) is max over all adjacent pairs}
-```
+$$
+V_{k+1} = V_k \cup \{(a, b) \mid \text{freq}(a, b) \text{ is max over all adjacent pairs}\}
+$$
 
 The merge order defines a priority list $M = [(a_1,b_1), (a_2,b_2), \ldots]$. To encode a string:
 
