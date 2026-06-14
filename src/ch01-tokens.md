@@ -121,135 +121,157 @@ After a few more merges, encoding `"low"` returns `[10]` — a single token.
 
 ---
 
-## 1.4 The Code: A Micro-BPE in Lisp
+## 1.4 The Code: A Micro-BPE in Scheme
 
-```lisp
-;;;; micro-bpe.lisp
-;;;; A minimal implementation of Byte Pair Encoding
-;;;; Deps: none (pure Common Lisp)
+We use Scheme throughout this book — it strips away syntactic ceremony so the *structure of computation* is visible. We build from named abstractions upward, one chunk at a time.
 
-;;; ─── Data Structures ───────────────────────────────────────────
+**The vocabulary abstraction.** Before writing any BPE logic, we name what a vocabulary *is*. A vocab maps string tokens to integer IDs. We expose three operations — create, extend, lookup — and never touch the underlying list structure from outside:
 
-;; A VOCAB is an alist: (string . integer)
-;; Example: (("l" . 0) ("o" . 1) ("lo" . 8) ...)
+```scheme
+(define (make-vocab) '())
 
-;; A CORPUS is a list of token-sequences, where each token is a string.
-;; Example: (("l" "o" "w" "_") ("l" "o" "w" "e" "r" "_"))
+(define (vocab-extend vocab token id)
+  (cons (cons token id) vocab))
 
-;;; ─── Step 1: Build character vocabulary ────────────────────────
+(define (vocab-lookup vocab token)
+  (cond ((null? vocab) #f)
+        ((string=? (caar vocab) token) (cdar vocab))
+        (else (vocab-lookup (cdr vocab) token))))
+```
 
-(defun string->chars (s)
-  "Split string S into a list of single-character strings."
-  (loop for c across s collect (string c)))
+The idea: name what you need, implement it once, and never revisit the representation again. Every line of BPE code above the `define` calls treats vocab as an opaque object.
 
-(defun initial-corpus (words)
-  "Given a list of WORDS, return a corpus of character sequences with '_' EOW marker."
-  (mapcar (lambda (w) (append (string->chars w) (list "_"))) words))
+**Characters and corpus.** A word enters BPE as a list of single-character strings, followed by `"_"` as an end-of-word marker. The marker lets BPE later discover that `"low"` is a complete unit while `"lower"` extends past it. `words->corpus` is simply `map` over words.
 
-;;; ─── Step 2: Count adjacent pairs ──────────────────────────────
+```scheme
+(define (word->tokens word)
+  (append (map string (string->list word)) (list "_")))
 
-(defun count-pairs (corpus)
-  "Return an alist of (pair . count) for all adjacent token pairs in CORPUS."
-  (let ((counts '()))
-    (dolist (seq corpus counts)
-      (loop for (a b) on seq while b do
-        (let* ((pair (list a b))
-               (cell (assoc pair counts :test #'equal)))
-          (if cell
-              (incf (cdr cell))
-              (push (cons pair 1) counts)))))))
+(define (words->corpus words)
+  (map word->tokens words))
+```
 
-(defun best-pair (counts)
-  "Return the pair with the highest count."
-  (car (reduce (lambda (best entry)
-                 (if (> (cdr entry) (cdr best)) entry best))
-               counts)))
+**Counting pairs.** Every adjacent pair `(a b)` in the corpus is a merge candidate. `adjacent-pairs` enumerates them recursively. `count-pairs` walks the entire corpus, tallying each pair in an association list. `most-frequent` then scans that list once, accumulating the best entry seen so far.
 
-;;; ─── Step 3: Apply a merge ──────────────────────────────────────
+```scheme
+(define (adjacent-pairs seq)
+  (if (or (null? seq) (null? (cdr seq)))
+      '()
+      (cons (list (car seq) (cadr seq))
+            (adjacent-pairs (cdr seq)))))
 
-(defun apply-merge (seq a b)
-  "In SEQ, replace every adjacent (A B) with the merged token AB."
-  (let ((merged (concatenate 'string a b)))
-    (loop with result = '()
-          while seq
-          do (if (and (string= (car seq) a)
-                      (cdr seq)
-                      (string= (cadr seq) b))
-                 (progn (push merged result) (setf seq (cddr seq)))
-                 (progn (push (car seq) result) (setf seq (cdr seq))))
-          finally (return (reverse result)))))
+(define (tally! pair counts)
+  (let ((cell (assoc pair counts equal?)))
+    (if cell
+        (begin (set-cdr! cell (+ (cdr cell) 1)) counts)
+        (cons (cons pair 1) counts))))
 
-(defun merge-corpus (corpus a b)
-  "Apply merge of (A B) to every sequence in CORPUS."
-  (mapcar (lambda (seq) (apply-merge seq a b)) corpus))
+(define (count-pairs corpus)
+  (let tally-all ((seqs corpus) (counts '()))
+    (if (null? seqs)
+        counts
+        (let tally-seq ((pairs (adjacent-pairs (car seqs))) (acc counts))
+          (if (null? pairs)
+              (tally-all (cdr seqs) acc)
+              (tally-seq (cdr pairs) (tally! (car pairs) acc)))))))
 
-;;; ─── Step 4: Train BPE ──────────────────────────────────────────
+(define (most-frequent counts)
+  (let loop ((remaining (cdr counts)) (best (car counts)))
+    (cond ((null? remaining) (car best))
+          ((> (cdar remaining) (cdr best)) (loop (cdr remaining) (car remaining)))
+          (else (loop (cdr remaining) best)))))
+```
 
-(defun train-bpe (words vocab-size)
-  "Train BPE on WORDS until vocabulary reaches VOCAB-SIZE.
-   Returns (vocab . merge-rules) where vocab is an alist and
-   merge-rules is an ordered list of (a b) pairs."
-  (let* ((corpus (initial-corpus words))
-         ;; Build initial vocab from all unique characters
-         (chars (remove-duplicates
-                 (apply #'append corpus) :test #'string=))
-         (vocab (loop for c in chars for i from 0
-                      collect (cons c i)))
-         (merges '()))
-    ;; BPE merge loop
-    (loop while (< (length vocab) vocab-size)
-          do (let ((counts (count-pairs corpus)))
-               (when (null counts) (return))
-               (let* ((pair (best-pair counts))
-                      (a (car pair))
-                      (b (cadr pair))
-                      (new-tok (concatenate 'string a b))
-                      (new-id (length vocab)))
-                 (push (cons new-tok new-id) vocab)
-                 (push pair merges)
-                 (setf corpus (merge-corpus corpus a b)))))
-    (cons (reverse vocab) (reverse merges))))
+**Applying a merge.** Replacing every `(a b)` pair in a token sequence with the concatenated string `"ab"` has a natural recursive structure: if the head is `a` and the next element is `b`, emit `"ab"` and skip both; otherwise emit the head and continue. There are no indices, no mutation — just a list going in and a shorter list coming out.
 
-;;; ─── Step 5: Encode a string ────────────────────────────────────
+```scheme
+(define (merge-pair seq a b)
+  (cond ((null? seq) '())
+        ((null? (cdr seq)) seq)
+        ((and (string=? (car seq) a) (string=? (cadr seq) b))
+         (cons (string-append a b) (merge-pair (cddr seq) a b)))
+        (else
+         (cons (car seq) (merge-pair (cdr seq) a b)))))
 
-(defun encode (string merges vocab)
-  "Encode STRING to a list of token IDs using trained MERGES and VOCAB."
-  (let ((tokens (append (string->chars string) (list "_"))))
-    ;; Apply each merge rule in order
-    (dolist (rule merges)
-      (setf tokens (apply-merge tokens (car rule) (cadr rule))))
-    ;; Look up IDs
-    (mapcar (lambda (tok)
-              (cdr (assoc tok vocab :test #'string=)))
-            tokens)))
+(define (merge-corpus corpus a b)
+  (map (lambda (seq) (merge-pair seq a b)) corpus))
+```
 
-;;; ─── Demo ───────────────────────────────────────────────────────
+**The training loop.** `train-bpe` is a single named-let with three accumulators: the current corpus, the growing vocabulary, and the ordered list of merges. Each recursive call is one BPE step: find the best pair, merge it, extend the vocab. The base case is reaching the target size, at which point both lists are reversed (since we prepend) and returned as a pair.
 
-(let* ((corpus-words '("low" "lower" "newest" "widest"))
-       (result (train-bpe corpus-words 20))
+```scheme
+(define (unique-tokens corpus)
+  (let loop ((seqs corpus) (seen '()))
+    (if (null? seqs) seen
+        (let add ((tokens (car seqs)) (acc seen))
+          (if (null? tokens) (loop (cdr seqs) acc)
+              (add (cdr tokens)
+                   (if (member (car tokens) acc) acc
+                       (cons (car tokens) acc))))))))
+
+(define (train-bpe words target-size)
+  (let* ((corpus     (words->corpus words))
+         (init-vocab (let number ((tokens (unique-tokens corpus)) (id 0) (v '()))
+                       (if (null? tokens) (reverse v)
+                           (number (cdr tokens) (+ id 1)
+                                   (cons (cons (car tokens) id) v))))))
+    (let bpe ((corpus corpus) (vocab init-vocab) (merges '()))
+      (if (>= (length vocab) target-size)
+          (cons (reverse vocab) (reverse merges))
+          (let ((counts (count-pairs corpus)))
+            (if (null? counts)
+                (cons (reverse vocab) (reverse merges))
+                (let* ((pair    (most-frequent counts))
+                       (a       (car pair))
+                       (b       (cadr pair))
+                       (new-tok (string-append a b))
+                       (new-id  (length vocab)))
+                  (bpe (merge-corpus corpus a b)
+                       (cons (cons new-tok new-id) vocab)
+                       (cons pair merges)))))))))
+```
+
+**Encoding.** Given trained merge rules, encoding applies them in order to a fresh character sequence. After all rules have been applied, `map` converts each remaining token to its ID. Encoding is a fold over the merge list, with `merge-pair` as the step.
+
+```scheme
+(define (encode word merges vocab)
+  (let apply-all ((tokens (word->tokens word)) (rules merges))
+    (if (null? rules)
+        (map (lambda (tok) (vocab-lookup vocab tok)) tokens)
+        (apply-all (merge-pair tokens (caar rules) (cadar rules))
+                   (cdr rules)))))
+```
+
+**Demo.** Run this with `mit-scheme --quiet --load micro-bpe.scm`:
+
+```scheme
+(let* ((words  '("low" "lower" "newest" "widest"))
+       (result (train-bpe words 20))
        (vocab  (car result))
        (merges (cdr result)))
-  (format t "Vocabulary (~a entries):~%" (length vocab))
-  (dolist (entry vocab)
-    (format t "  ~3a -> ~s~%" (cdr entry) (car entry)))
-  (format t "~%Encoding 'low':  ~a~%" (encode "low" merges vocab))
-  (format t "Encoding 'lower': ~a~%" (encode "lower" merges vocab)))
+  (display "Vocabulary:") (newline)
+  (for-each (lambda (e)
+              (display "  ") (display (cdr e))
+              (display " -> ") (display (car e)) (newline))
+            vocab)
+  (newline)
+  (display "Encoding \"low\":   ") (display (encode "low"   merges vocab)) (newline)
+  (display "Encoding \"lower\": ") (display (encode "lower" merges vocab)) (newline))
 ```
 
-**Expected output:**
+Expected output:
 
 ```
-Vocabulary (16 entries):
-  0  -> "l"
-  1  -> "o"
-  2  -> "w"
+Vocabulary:
+  0 -> l
+  1 -> o
   ...
-  9  -> "lo"
-  10 -> "low"
+  9 -> lo
+  10 -> low
   ...
 
-Encoding 'low':  (10)
-Encoding 'lower': (10 3 4 8)
+Encoding "low":   (10)
+Encoding "lower": (10 3 4 8)
 ```
 
 ---

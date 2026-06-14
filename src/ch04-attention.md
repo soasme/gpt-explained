@@ -173,173 +173,168 @@ Token 2 ("sat") is blending information from all three tokens, with most weight 
 
 ---
 
-## 4.4 The Code: Scaled Dot-Product Attention in Lisp
+## 4.4 The Code: Scaled Dot-Product Attention in Scheme
 
-```lisp
-;;;; attention.lisp
-;;;; Scaled dot-product attention (the core of the transformer)
+Attention is a composition of named operations. We define each piece — multiply, transpose, scale, softmax, mask — and then `scaled-dot-product-attention` is just a single `let*` that threads them together. Reading the procedure is reading the formula.
 
-;;; ─── Prerequisites from earlier chapters ────────────────────────
-;; (load "embeddings.lisp")      ; provides make-array utilities
-;; (load "positional-encoding.lisp")
+The matrix abstraction from Chapter 2 carries forward. We add four operations that form the vocabulary for everything in this chapter: multiply, transpose, scale, and add. Each takes matrices in and returns a new matrix out — no mutation of arguments.
 
-;;; ─── Matrix Operations ───────────────────────────────────────────
+```scheme
+(define (make-matrix rows cols)
+  (list rows cols (make-vector (* rows cols) 0.0)))
+(define (matrix-rows M) (car M))
+(define (matrix-cols M) (cadr M))
+(define (matrix-data M) (caddr M))
+(define (matrix-ref  M i j)
+  (vector-ref  (matrix-data M) (+ (* i (matrix-cols M)) j)))
+(define (matrix-set! M i j v)
+  (vector-set! (matrix-data M) (+ (* i (matrix-cols M)) j) v))
 
-(defun mat-mul (A B)
-  "Multiply matrix A [m×k] by matrix B [k×n]. Returns [m×n] matrix."
-  (destructuring-bind (m k-a) (array-dimensions A)
-    (destructuring-bind (k-b n) (array-dimensions B)
-      (assert (= k-a k-b) () "Matrix dimension mismatch: ~a vs ~a" k-a k-b)
-      (let ((C (make-array (list m n) :element-type 'single-float
-                                      :initial-element 0.0)))
-        (dotimes (i m C)
-          (dotimes (j n)
-            (dotimes (k k-a)
-              (incf (aref C i j) (* (aref A i k) (aref B k j))))))))))
+(define (matrix-multiply A B)
+  (let* ((m (matrix-rows A)) (k (matrix-cols A)) (n (matrix-cols B))
+         (C (make-matrix m n)))
+    (let loop-i ((i 0))
+      (when (< i m)
+        (let loop-j ((j 0))
+          (when (< j n)
+            (let loop-k ((p 0) (acc 0.0))
+              (if (= p k)
+                  (matrix-set! C i j acc)
+                  (loop-k (+ p 1) (+ acc (* (matrix-ref A i p) (matrix-ref B p j))))))
+            (loop-j (+ j 1))))
+        (loop-i (+ i 1))))
+    C))
 
-(defun mat-transpose (A)
-  "Transpose matrix A [m×n] → [n×m]."
-  (destructuring-bind (m n) (array-dimensions A)
-    (let ((AT (make-array (list n m) :element-type 'single-float)))
-      (dotimes (i m AT)
-        (dotimes (j n)
-          (setf (aref AT j i) (aref A i j)))))))
+(define (matrix-transpose A)
+  (let* ((m (matrix-rows A)) (n (matrix-cols A)) (AT (make-matrix n m)))
+    (let loop-i ((i 0))
+      (when (< i m)
+        (let loop-j ((j 0))
+          (when (< j n)
+            (matrix-set! AT j i (matrix-ref A i j))
+            (loop-j (+ j 1))))
+        (loop-i (+ i 1))))
+    AT))
 
-(defun mat-scale (A scalar)
-  "Multiply every element of A by SCALAR."
-  (destructuring-bind (m n) (array-dimensions A)
-    (let ((B (make-array (list m n) :element-type 'single-float)))
-      (dotimes (i m B)
-        (dotimes (j n)
-          (setf (aref B i j) (* scalar (aref A i j))))))))
+(define (matrix-scale A s)
+  (let* ((m (matrix-rows A)) (n (matrix-cols A)) (B (make-matrix m n)))
+    (let loop-i ((i 0))
+      (when (< i m)
+        (let loop-j ((j 0))
+          (when (< j n)
+            (matrix-set! B i j (* s (matrix-ref A i j)))
+            (loop-j (+ j 1))))
+        (loop-i (+ i 1))))
+    B))
 
-;;; ─── Softmax over each row ───────────────────────────────────────
+(define (matrix-add A B)
+  (let* ((m (matrix-rows A)) (n (matrix-cols A)) (C (make-matrix m n)))
+    (let loop-i ((i 0))
+      (when (< i m)
+        (let loop-j ((j 0))
+          (when (< j n)
+            (matrix-set! C i j (+ (matrix-ref A i j) (matrix-ref B i j)))
+            (loop-j (+ j 1))))
+        (loop-i (+ i 1))))
+    C))
+```
 
-(defun softmax-row (v)
-  "Apply softmax to 1D vector V. Returns new vector summing to 1."
-  (let* ((n (length v))
-         (max-v (reduce #'max v))
-         (exps (map '(vector single-float)
-                    (lambda (x) (exp (- x max-v))) v))
-         (sum (reduce #'+ exps))
-         (out (make-array n :element-type 'single-float)))
-    (dotimes (i n out)
-      (setf (aref out i) (/ (aref exps i) sum)))))
+`softmax` converts a vector of raw scores into a probability distribution. We subtract the maximum value before exponentiating — this does not change the output (softmax is shift-invariant) but prevents floating-point overflow when scores are large. `softmax-each-row` applies it independently to every row of a matrix, giving each query token its own distribution over keys.
 
-(defun softmax-rows (M)
-  "Apply softmax independently to each row of matrix M [T×T]."
-  (destructuring-bind (T-len _) (array-dimensions M)
-    (declare (ignore _))
-    (let ((A (make-array (array-dimensions M) :element-type 'single-float)))
-      (dotimes (i T-len A)
-        (let* ((row (make-array T-len :element-type 'single-float))
-               (soft-row nil))
-          (dotimes (j T-len) (setf (aref row j) (aref M i j)))
-          (setf soft-row (softmax-row row))
-          (dotimes (j T-len)
-            (setf (aref A i j) (aref soft-row j))))))))
+```scheme
+(define (softmax v)
+  (let* ((n     (vector-length v))
+         (max-v (let find-max ((i 1) (m (vector-ref v 0)))
+                  (if (= i n) m (find-max (+ i 1) (max m (vector-ref v i))))))
+         (exps  (make-vector n))
+         (total (let sum ((i 0) (s 0.0))
+                  (if (= i n) s
+                      (let ((e (exp (- (vector-ref v i) max-v))))
+                        (vector-set! exps i e)
+                        (sum (+ i 1) (+ s e)))))))
+    (let norm ((i 0))
+      (when (< i n)
+        (vector-set! exps i (/ (vector-ref exps i) total))
+        (norm (+ i 1))))
+    exps))
 
-;;; ─── Causal mask ─────────────────────────────────────────────────
+(define (softmax-each-row M)
+  (let* ((T (matrix-rows M)) (n (matrix-cols M)) (A (make-matrix T n)))
+    (let loop ((i 0))
+      (when (< i T)
+        (let ((row (make-vector n)))
+          (let copy ((j 0))
+            (when (< j n) (vector-set! row j (matrix-ref M i j)) (copy (+ j 1))))
+          (let ((soft (softmax row)))
+            (let copy-back ((j 0))
+              (when (< j n) (matrix-set! A i j (vector-ref soft j)) (copy-back (+ j 1))))))
+        (loop (+ i 1))))
+    A))
+```
 
-(defun causal-mask (T-len)
-  "Return a [T×T] mask: 0 on/below diagonal, -1e9 above.
-   -1e9 is used as a proxy for -∞ (zeroed out by softmax)."
-  (let ((M (make-array (list T-len T-len) :element-type 'single-float
-                                           :initial-element 0.0)))
-    (dotimes (i T-len M)
-      (loop for j from (1+ i) below T-len do
-        (setf (aref M i j) -1.0e9)))))
+The causal mask fills the upper triangle with $-10^9$. When added to the raw score matrix before softmax, those positions become $\approx 0$ in the attention weights. Token $i$ is effectively forbidden from attending to any position $j > i$ — the future does not exist yet during generation.
 
-(defun mat-add (A B)
-  "Element-wise add two same-shape matrices."
-  (destructuring-bind (m n) (array-dimensions A)
-    (let ((C (make-array (list m n) :element-type 'single-float)))
-      (dotimes (i m C)
-        (dotimes (j n)
-          (setf (aref C i j) (+ (aref A i j) (aref B i j))))))))
+```scheme
+(define (causal-mask T)
+  (let ((M (make-matrix T T)))
+    (let loop-i ((i 0))
+      (when (< i T)
+        (let loop-j ((j (+ i 1)))
+          (when (< j T) (matrix-set! M i j -1.0e9) (loop-j (+ j 1))))
+        (loop-i (+ i 1))))
+    M))
+```
 
-;;; ─── Scaled Dot-Product Attention ────────────────────────────────
+`scaled-dot-product-attention` is a direct translation of the formula $\text{Attention}(Q,K,V) = \text{softmax}(QK^\top/\sqrt{d_k} + \text{mask}) \cdot V$. Each term in the formula becomes one procedure call. The result is a pair: the output matrix and the attention weights (useful for inspection).
 
-(defun scaled-dot-product-attention (Q K V &key (mask t))
-  "Compute Attention(Q,K,V) = softmax(QKᵀ/√dₖ [+ causal_mask]) · V
+```scheme
+(define (scaled-dot-product-attention Q K V)
+  (let* ((dk     (exact->inexact (matrix-cols Q)))
+         (T      (matrix-rows Q))
+         (S      (matrix-scale (matrix-multiply Q (matrix-transpose K)) (/ 1.0 (sqrt dk))))
+         (S-mask (matrix-add S (causal-mask T)))
+         (A      (softmax-each-row S-mask))
+         (output (matrix-multiply A V)))
+    (cons output A)))
+```
 
-   Q : [T × dₖ]
-   K : [T × dₖ]
-   V : [T × dᵥ]
+`self-attention` wraps SDPA with the three linear projections. $Q = XW_q$, $K = XW_k$, $V = XW_v$ — three different "views" of the same input sequence. The weight matrices $W_q, W_k, W_v$ are what the model learns.
 
-   Returns:
-     output : [T × dᵥ]  — context vectors
-     weights: [T × T]   — attention probabilities"
-  (let* ((d-k (float (array-dimension Q 1)))
-         (T-len (array-dimension Q 0))
-         ;; S = QKᵀ / √dₖ
-         (S (mat-scale (mat-mul Q (mat-transpose K))
-                       (/ 1.0 (sqrt d-k))))
-         ;; Optional causal mask
-         (S-masked (if mask (mat-add S (causal-mask T-len)) S))
-         ;; A = softmax row-wise
-         (A (softmax-rows S-masked))
-         ;; Output = A · V
-         (output (mat-mul A V)))
-    (values output A)))
+```scheme
+(define (self-attention X Wq Wk Wv)
+  (scaled-dot-product-attention
+   (matrix-multiply X Wq)
+   (matrix-multiply X Wk)
+   (matrix-multiply X Wv)))
+```
 
-;;; ─── Linear projection (for Q, K, V matrices) ───────────────────
+**Demo.** Run with `mit-scheme --quiet --load attention.scm`. We use identity weight matrices so $Q=K=V=X$, matching the worked example in §4.3.
 
-(defun linear (X W)
-  "Project X [T × d_in] with weight W [d_in × d_out]. Returns [T × d_out]."
-  (mat-mul X W))
+```scheme
+(define (fill-matrix! M vals)
+  (let loop ((i 0) (j 0) (vs vals))
+    (unless (null? vs)
+      (matrix-set! M i j (car vs))
+      (let ((j-next (+ j 1)))
+        (if (= j-next (matrix-cols M))
+            (loop (+ i 1) 0 (cdr vs))
+            (loop i j-next (cdr vs)))))))
 
-(defun rand-weight-matrix (d-in d-out)
-  "Xavier-initialized weight matrix [d_in × d_out]."
-  (let* ((M (make-array (list d-in d-out) :element-type 'single-float))
-         (scale (sqrt (/ 2.0 (+ d-in d-out)))))
-    (dotimes (i d-in M)
-      (dotimes (j d-out)
-        (setf (aref M i j) (* scale (- (random 2.0) 1.0)))))))
-
-;;; ─── Single-head self-attention ──────────────────────────────────
-
-(defun self-attention (X Wq Wk Wv)
-  "Full single-head self-attention.
-   X  : [T × d]
-   Wq : [d × dₖ]
-   Wk : [d × dₖ]
-   Wv : [d × dᵥ]
-   Returns (values output attention-weights)."
-  (let ((Q (linear X Wq))
-        (K (linear X Wk))
-        (V (linear X Wv)))
-    (scaled-dot-product-attention Q K V)))
-
-;;; ─── Demo ─────────────────────────────────────────────────────────
-
-(let* ((T-len 3)
-       (d 4)
-       (dk 4)
-       (dv 4)
-       ;; Simple input: each row is one token's embedding
-       (X (make-array '(3 4) :element-type 'single-float
-                      :initial-contents '((1.0 0.0 1.0 0.0)
-                                          (0.0 1.0 0.0 1.0)
-                                          (1.0 1.0 0.0 0.0))))
-       ;; Identity weights for clarity
-       (I4 (make-array '(4 4) :element-type 'single-float
-                       :initial-contents '((1.0 0.0 0.0 0.0)
-                                           (0.0 1.0 0.0 0.0)
-                                           (0.0 0.0 1.0 0.0)
-                                           (0.0 0.0 0.0 1.0)))))
-  (multiple-value-bind (output weights)
-      (self-attention X I4 I4 I4)
-    (format t "Attention weights A [3×3]:~%")
-    (dotimes (i 3)
-      (format t "  [")
-      (dotimes (j 3) (format t "~7,3f" (aref weights i j)))
-      (format t " ]~%"))
-    (format t "~%Output [3×4]:~%")
-    (dotimes (i 3)
-      (format t "  [")
-      (dotimes (j 4) (format t "~7,3f" (aref output i j)))
-      (format t " ]~%"))))
+(let ((X  (make-matrix 3 4))
+      (I4 (make-matrix 4 4)))
+  (fill-matrix! X  '(1.0 0.0 1.0 0.0  0.0 1.0 0.0 1.0  1.0 1.0 0.0 0.0))
+  (fill-matrix! I4 '(1.0 0.0 0.0 0.0  0.0 1.0 0.0 0.0  0.0 0.0 1.0 0.0  0.0 0.0 0.0 1.0))
+  (let* ((result  (self-attention X I4 I4 I4))
+         (output  (car result))
+         (weights (cdr result)))
+    (display "Attention weights [3×3]:") (newline)
+    (let loop ((i 0))
+      (when (< i 3)
+        (display "  [")
+        (let col ((j 0))
+          (when (< j 3) (display (matrix-ref weights i j)) (display " ") (col (+ j 1))))
+        (display "]") (newline)
+        (loop (+ i 1))))))
 ```
 
 ---

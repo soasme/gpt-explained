@@ -113,95 +113,127 @@ For t=0: [-0.90, 0.10, 0.20, -0.30, ...]
 
 ---
 
-## 3.5 The Code: Positional Encoding in Lisp
+## 3.5 The Code: Positional Encoding in Scheme
 
-```lisp
-;;;; positional-encoding.lisp
-;;;; Sinusoidal positional encoding (Vaswani et al. 2017)
+The matrix data abstraction from Chapter 2 carries over unchanged — we repeat it here so each file is self-contained. Every chapter from this point forward assumes these six procedures are present.
 
-(defparameter *pe-base* 10000.0)
-
-;;; ─── Frequency computation ───────────────────────────────────────
-
-(defun omega (k d-model)
-  "Compute angular frequency for dimension-pair k in a d-model-dimensional space.
-   ω_k = 1 / 10000^(2k/d)"
-  (/ 1.0 (expt *pe-base* (/ (* 2.0 k) d-model))))
-
-;;; ─── Single position encoding ────────────────────────────────────
-
-(defun positional-encoding-row (t-pos d-model)
-  "Compute the positional encoding vector for position T-POS.
-   Returns a 1D vector of length D-MODEL."
-  (let ((pe (make-array d-model :element-type 'single-float)))
-    (loop for i below d-model
-          do (let* ((k (floor i 2))
-                    (w (omega k d-model)))
-               (setf (aref pe i)
-                     (if (evenp i)
-                         (sin (* t-pos w))
-                         (cos (* t-pos w))))))
-    pe))
-
-;;; ─── Full PE matrix ──────────────────────────────────────────────
-
-(defun make-pe-matrix (max-seq-len d-model)
-  "Build the PE matrix of shape [max-seq-len × d-model].
-   PE[t, i] = sin(t·ω_{i/2}) for even i
-              cos(t·ω_{i/2}) for odd i"
-  (let ((PE (make-array (list max-seq-len d-model)
-                        :element-type 'single-float)))
-    (dotimes (t-pos max-seq-len PE)
-      (let ((row (positional-encoding-row t-pos d-model)))
-        (dotimes (j d-model)
-          (setf (aref PE t-pos j) (aref row j)))))))
-
-;;; ─── Add PE to embedding matrix ──────────────────────────────────
-
-(defun add-positional-encoding (X PE)
-  "Add positional encoding PE to embedding matrix X.
-   Both have shape [T × d]. Returns X̃ = X + PE[:T, :]."
-  (destructuring-bind (T-len d-model) (array-dimensions X)
-    (let ((X-tilde (make-array (list T-len d-model)
-                               :element-type 'single-float)))
-      (dotimes (t T-len)
-        (dotimes (j d-model)
-          (setf (aref X-tilde t j)
-                (+ (aref X t j) (aref PE t j)))))
-      X-tilde)))
-
-;;; ─── Demonstrate position uniqueness ─────────────────────────────
-
-(defun dot-product-1d (u v)
-  "Dot product of two 1D arrays."
-  (let ((acc 0.0))
-    (dotimes (i (length u) acc)
-      (incf acc (* (aref u i) (aref v i))))))
-
-(defun cosine-sim (u v)
-  (let ((dot (dot-product-1d u v))
-        (nu (sqrt (dot-product-1d u u)))
-        (nv (sqrt (dot-product-1d v v))))
-    (/ dot (* nu nv))))
-
-;;; ─── Demo ─────────────────────────────────────────────────────────
-
-(let* ((d-model 8)
-       (seq-len 5)
-       (PE (make-pe-matrix seq-len d-model)))
-  (format t "Positional Encoding Matrix [~a × ~a]:~%" seq-len d-model)
-  (dotimes (t seq-len)
-    (format t "  PE[~a]: [" t)
-    (dotimes (j d-model)
-      (format t "~7,3f " (aref PE t j)))
-    (format t "]~%"))
-  ;; Show that nearby positions are more similar than far positions
-  (format t "~%Cosine similarities to position 0:~%")
-  (dotimes (t seq-len)
-    (let ((p0 (positional-encoding-row 0 d-model))
-          (pt (positional-encoding-row t d-model)))
-      (format t "  sim(PE[0], PE[~a]) = ~,4f~%" t (cosine-sim p0 pt)))))
+```scheme
+(define (make-matrix rows cols)
+  (list rows cols (make-vector (* rows cols) 0.0)))
+(define (matrix-rows M) (car M))
+(define (matrix-cols M) (cadr M))
+(define (matrix-data M) (caddr M))
+(define (matrix-ref  M i j)
+  (vector-ref  (matrix-data M) (+ (* i (matrix-cols M)) j)))
+(define (matrix-set! M i j v)
+  (vector-set! (matrix-data M) (+ (* i (matrix-cols M)) j) v))
 ```
+
+The frequency $\omega_k = 1/10000^{2k/d}$ controls how fast dimension-pair $k$ oscillates with position. When $k$ is small (low dimensions), $\omega_k$ is close to 1 and the sine/cosine cycle is fast — the value changes dramatically between adjacent positions. When $k$ is large (high dimensions), $\omega_k$ is tiny and the cycle is very slow, nearly constant across short sequences. The key property is exponential spacing: each successive $k$ slows the oscillation by a constant factor, just as a clock's second, minute, and hour hands each turn ten-times slower than the last.
+
+```scheme
+(define (angular-frequency k d)
+  (/ 1.0 (expt 10000.0 (/ (* 2.0 k) d))))
+```
+
+`pe-value` is the atomic formula: one number at position $t$, dimension $i$, in a $d$-dimensional encoding. Even-indexed dimensions receive sine; odd-indexed dimensions receive cosine. Both are evaluated at $t \cdot \omega_{\lfloor i/2 \rfloor}$. The entire positional encoding is this single expression — everything else is just iteration over it.
+
+```scheme
+(define (pe-value t-pos dim d)
+  (let* ((k     (quotient dim 2))
+         (omega (angular-frequency k d)))
+    (if (even? dim)
+        (sin (* t-pos omega))
+        (cos (* t-pos omega)))))
+```
+
+A full positional encoding vector for position $t$ is $d$ calls to `pe-value`, one per dimension. This lifts the scalar formula to the level of a row vector. The procedure follows the same pattern as `embed-token` from Chapter 2: allocate a vector, fill it by index, return it.
+
+```scheme
+(define (positional-encoding-row t-pos d)
+  (let ((v (make-vector d)))
+    (let loop ((i 0))
+      (when (< i d)
+        (vector-set! v i (pe-value t-pos i d))
+        (loop (+ i 1))))
+    v))
+```
+
+The full PE matrix lifts once more: apply `positional-encoding-row` to each of the $T$ positions and store the results row by row into a $[T \times d]$ matrix. This is the same lifting pattern used in Chapter 2 for `embed-sequence` — building a matrix by stacking row operations.
+
+```scheme
+(define (make-pe-matrix max-len d)
+  (let ((PE (make-matrix max-len d)))
+    (let loop ((t 0))
+      (when (< t max-len)
+        (let ((row (positional-encoding-row t d)))
+          (let copy ((j 0))
+            (when (< j d)
+              (matrix-set! PE t j (vector-ref row j))
+              (copy (+ j 1)))))
+        (loop (+ t 1))))
+    PE))
+```
+
+Adding PE to the token embedding matrix $X$ gives $\tilde{X} = X + PE$, element-wise — both are $[T \times d]$. Each token embedding receives its position's fingerprint fused into its values. From this point forward the model works with $\tilde{X}$, which encodes both what each token is and where it sits in the sequence.
+
+```scheme
+(define (add-positional-encoding X PE)
+  (let* ((T (matrix-rows X))
+         (d (matrix-cols X))
+         (X-tilde (make-matrix T d)))
+    (let loop ((t 0))
+      (when (< t T)
+        (let col ((j 0))
+          (when (< j d)
+            (matrix-set! X-tilde t j
+              (+ (matrix-ref X t j) (matrix-ref PE t j)))
+            (col (+ j 1))))
+        (loop (+ t 1))))
+    X-tilde))
+```
+
+Cosine similarity gives us a concrete way to check the encoding's behavior: nearby positions should produce more similar vectors than distant ones. We define it here for the demo; the same procedure appears in Chapter 2 and will reappear in later chapters.
+
+```scheme
+(define (dot u v)
+  (let loop ((i 0) (acc 0.0))
+    (if (= i (vector-length u)) acc
+        (loop (+ i 1) (+ acc (* (vector-ref u i) (vector-ref v i)))))))
+
+(define (cosine-similarity u v)
+  (/ (dot u v) (* (sqrt (dot u u)) (sqrt (dot v v)))))
+```
+
+**Demo.** We build a PE matrix for five positions with $d=8$, print every row, then measure the cosine similarity between position 0 and each other position. The similarities should decrease monotonically, confirming that the encoding faithfully captures distance.
+
+```scheme
+(let* ((d       8)
+       (seq-len 5)
+       (PE      (make-pe-matrix seq-len d)))
+  (display "Positional Encoding Matrix [5x8]:") (newline)
+  (let loop ((t 0))
+    (when (< t seq-len)
+      (display "  PE[") (display t) (display "]: [")
+      (let col ((j 0))
+        (when (< j d)
+          (display (matrix-ref PE t j)) (display " ")
+          (col (+ j 1))))
+      (display "]") (newline)
+      (loop (+ t 1))))
+  (newline)
+  (display "Cosine similarities to PE[0]:") (newline)
+  (let loop ((t 0))
+    (when (< t seq-len)
+      (let ((sim (cosine-similarity
+                  (positional-encoding-row 0 d)
+                  (positional-encoding-row t d))))
+        (display "  sim(PE[0], PE[") (display t) (display "]) = ")
+        (display sim) (newline))
+      (loop (+ t 1)))))
+```
+
+Run with `mit-scheme --quiet --load positional-encoding.scm`.
 
 ---
 
