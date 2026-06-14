@@ -40,6 +40,16 @@ jobs:
         ruby-version: 3.1
         bundler-cache: true
 
+    - name: Ensure mathematical native lib
+      run: |
+        LIB_DIR="vendor/gems/mathematical-1.6.20/ext/mathematical/lib"
+        if [ ! -f "$LIB_DIR/liblasem.so" ]; then
+          echo "liblasem.so missing — recompiling mathematical native extension"
+          cd vendor/gems/mathematical-1.6.20/ext/mathematical
+          bundle exec ruby extconf.rb
+          make
+        fi
+
     - name: Build release assets
       run: bundle exec rake book:build
 
