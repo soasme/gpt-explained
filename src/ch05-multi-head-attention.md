@@ -149,119 +149,160 @@ MultiHead = [head¹ ‖ head²] =
 
 ---
 
-## 5.4 The Code: Multi-Head Attention in Lisp
+## 5.4 The Code: Multi-Head Attention in Scheme
 
-```lisp
-;;;; multi-head-attention.lisp
-;;;; Multi-head attention = H parallel attention heads + output projection
+The matrix abstraction and `matrix-multiply` from Chapter 2 and Chapter 4 carry over. We also use `scaled-dot-product-attention` from Chapter 4 — multi-head attention builds directly on top of it.
 
-;; (load "attention.lisp")   ; provides scaled-dot-product-attention, mat-mul, etc.
+```scheme
+(define (make-matrix rows cols)
+  (list rows cols (make-vector (* rows cols) 0.0)))
+(define (matrix-rows M) (car M))
+(define (matrix-cols M) (cadr M))
+(define (matrix-data M) (caddr M))
+(define (matrix-ref  M i j)
+  (vector-ref  (matrix-data M) (+ (* i (matrix-cols M)) j)))
+(define (matrix-set! M i j v)
+  (vector-set! (matrix-data M) (+ (* i (matrix-cols M)) j) v))
 
-;;; ─── Data Structure ──────────────────────────────────────────────
-;;
-;; An ATTENTION-HEAD is a plist with keys:
-;;   :wq [d × dk]    :wk [d × dk]    :wv [d × dv]
-;;
-;; MHA-PARAMS is a plist with keys:
-;;   :heads — list of ATTENTION-HEAD plists
-;;   :wo    — output projection [d × d]
-
-(defun make-mha-params (d num-heads)
-  "Create Multi-Head Attention parameters for a D-dimensional model with NUM-HEADS heads.
-   Each head operates in dimension dk = dv = d/num-heads."
-  (assert (zerop (mod d num-heads))
-          () "d (~a) must be divisible by num-heads (~a)" d num-heads)
-  (let* ((dk (/ d num-heads))
-         (heads (loop repeat num-heads
-                      collect (list :wq (rand-weight-matrix d dk)
-                                    :wk (rand-weight-matrix d dk)
-                                    :wv (rand-weight-matrix d dk)))))
-    (list :heads heads
-          :wo   (rand-weight-matrix d d))))
-
-;;; ─── Matrix concatenation (column-wise) ─────────────────────────
-
-(defun hstack (matrices)
-  "Concatenate matrices column-wise.  All must have same row count.
-   E.g., [3×2] [3×2] → [3×4]."
-  (let* ((rows  (array-dimension (car matrices) 0))
-         (total-cols (reduce #'+ matrices
-                             :key (lambda (m) (array-dimension m 1))))
-         (result (make-array (list rows total-cols)
-                             :element-type 'single-float))
-         (col-offset 0))
-    (dolist (M matrices result)
-      (let ((cols (array-dimension M 1)))
-        (dotimes (i rows)
-          (dotimes (j cols)
-            (setf (aref result i (+ col-offset j))
-                  (aref M i j))))
-        (incf col-offset cols)))))
-
-;;; ─── Multi-Head Attention ────────────────────────────────────────
-
-(defun multi-head-attention (X params)
-  "Compute Multi-Head Attention for input X [T × d] using PARAMS.
-
-   For each head h:
-     Qh = X Wqh,  Kh = X Wkh,  Vh = X Wvh
-     headh = Attention(Qh, Kh, Vh)
-
-   Output = concat(head1, ..., headH) · Wo
-   Returns (values output all-attention-weights)."
-  (let* ((heads (getf params :heads))
-         (Wo    (getf params :wo))
-         (head-outputs '())
-         (all-weights  '()))
-    ;; Run each head
-    (dolist (head heads)
-      (let* ((Wq (getf head :wq))
-             (Wk (getf head :wk))
-             (Wv (getf head :wv))
-             (Q  (linear X Wq))
-             (K  (linear X Wk))
-             (V  (linear X Wv)))
-        (multiple-value-bind (out weights)
-            (scaled-dot-product-attention Q K V :mask t)
-          (push out head-outputs)
-          (push weights all-weights))))
-    ;; Concatenate head outputs: [T × (H·dv)]
-    (let* ((concat-out (hstack (reverse head-outputs)))
-           ;; Project: [T × d] · [d × d] = [T × d]
-           (output (mat-mul concat-out Wo)))
-      (values output (reverse all-weights)))))
-
-;;; ─── Demo ─────────────────────────────────────────────────────────
-
-(defun print-head-weights (weights)
-  (loop for w in weights
-        for h from 0 do
-    (format t "Head ~a attention weights [~a×~a]:~%"
-            h (array-dimension w 0) (array-dimension w 1))
-    (dotimes (i (array-dimension w 0))
-      (format t "  [")
-      (dotimes (j (array-dimension w 1))
-        (format t "~7,3f" (aref w i j)))
-      (format t " ]~%"))))
-
-(let* ((d 8)
-       (num-heads 2)
-       (T-len 4)
-       (params (make-mha-params d num-heads))
-       ;; Random input
-       (X (let ((m (make-array (list T-len d) :element-type 'single-float)))
-            (dotimes (i T-len m)
-              (dotimes (j d) (setf (aref m i j) (- (random 2.0) 1.0)))))))
-  (multiple-value-bind (output weights)
-      (multi-head-attention X params)
-    (print-head-weights weights)
-    (format t "~%MHA Output [~a × ~a]:~%"
-            (array-dimension output 0) (array-dimension output 1))
-    (dotimes (i T-len)
-      (format t "  [")
-      (dotimes (j d) (format t "~7,3f" (aref output i j)))
-      (format t " ]~%"))))
+(define (matrix-multiply A B)
+  (let* ((m (matrix-rows A)) (k (matrix-cols A)) (n (matrix-cols B))
+         (C (make-matrix m n)))
+    (let loop-i ((i 0))
+      (when (< i m)
+        (let loop-j ((j 0))
+          (when (< j n)
+            (let loop-k ((p 0) (acc 0.0))
+              (if (= p k)
+                  (matrix-set! C i j acc)
+                  (loop-k (+ p 1)
+                          (+ acc (* (matrix-ref A i p)
+                                    (matrix-ref B p j))))))
+            (loop-j (+ j 1))))
+        (loop-i (+ i 1))))
+    C))
 ```
+
+Each attention head is a triple of weight matrices $(W_q, W_k, W_v)$, each of shape $[d \times d_k]$ where $d_k = d/H$. We represent a head as a plain list so selectors stay readable. `make-mha-params` builds $H$ such triples plus the shared output projection $W_o$ of shape $[d \times d]$. Xavier initialization keeps the scale sensible regardless of $H$. Setting $d_k = d/H$ means the total number of parameters stays constant as $H$ grows — the heads share the model dimension equally.
+
+```scheme
+(define (make-random-matrix rows cols)
+  (let ((M     (make-matrix rows cols))
+        (scale (sqrt (/ 2.0 (+ rows cols)))))
+    (let row-loop ((i 0))
+      (when (< i rows)
+        (let col-loop ((j 0))
+          (when (< j cols)
+            (matrix-set! M i j (* scale (- (* 2.0 (random 1.0)) 1.0)))
+            (col-loop (+ j 1))))
+        (row-loop (+ i 1))))
+    M))
+
+(define (make-head d dk)
+  (list (make-random-matrix d dk)
+        (make-random-matrix d dk)
+        (make-random-matrix d dk)))
+
+(define (head-wq h) (car h))
+(define (head-wk h) (cadr h))
+(define (head-wv h) (caddr h))
+
+(define (make-mha-params d num-heads)
+  (let* ((dk    (/ d num-heads))
+         (heads (let build ((n num-heads) (acc '()))
+                  (if (= n 0) acc
+                      (build (- n 1) (cons (make-head d dk) acc)))))
+         (wo    (make-random-matrix d d)))
+    (list heads wo)))
+
+(define (mha-heads params) (car params))
+(define (mha-wo    params) (cadr params))
+```
+
+`hstack` concatenates a list of matrices column-wise, placing each successive matrix's columns immediately after the last. The result's column count equals the sum of all input column counts; the row count is unchanged. This is how we assemble the $H$ head outputs — each of shape $[T \times d_k]$ — into a single $[T \times d]$ matrix before the output projection.
+
+```scheme
+(define (hstack matrices)
+  (let* ((T    (matrix-rows (car matrices)))
+         (cols (map matrix-cols matrices))
+         (d    (apply + cols))
+         (R    (make-matrix T d)))
+    (let outer ((mats matrices) (offset 0))
+      (unless (null? mats)
+        (let* ((M  (car mats))
+               (nc (matrix-cols M)))
+          (let loop-i ((i 0))
+            (when (< i T)
+              (let loop-j ((j 0))
+                (when (< j nc)
+                  (matrix-set! R i (+ offset j) (matrix-ref M i j))
+                  (loop-j (+ j 1))))
+              (loop-i (+ i 1))))
+          (outer (cdr mats) (+ offset nc)))))
+    R))
+```
+
+`multi-head-attention` maps over the list of heads, computes SDPA for each independently, collects all outputs, then hstacks them and applies the output projection $W_o$. The `map` gives every head its own private $Q, K, V$ subspace — no head can see another's computations until they are merged by $W_o$. The returned pair carries the projected output and the full list of per-head attention weights, one weight matrix per head.
+
+```scheme
+(define (scaled-dot-product-attention Q K V)
+  (let* ((dk     (exact->inexact (matrix-cols Q)))
+         (T      (matrix-rows Q))
+         (S      (matrix-scale (matrix-multiply Q (matrix-transpose K))
+                               (/ 1.0 (sqrt dk))))
+         (S-mask (matrix-add S (causal-mask T)))
+         (A      (softmax-each-row S-mask))
+         (output (matrix-multiply A V)))
+    (cons output A)))
+
+(define (multi-head-attention X params)
+  (let* ((heads   (mha-heads params))
+         (Wo      (mha-wo    params))
+         (results (map (lambda (h)
+                         (scaled-dot-product-attention
+                          (matrix-multiply X (head-wq h))
+                          (matrix-multiply X (head-wk h))
+                          (matrix-multiply X (head-wv h))))
+                       heads))
+         (head-outputs (map car results))
+         (head-weights (map cdr results))
+         (concat-out   (hstack head-outputs))
+         (output       (matrix-multiply concat-out Wo)))
+    (cons output head-weights)))
+```
+
+**Demo.** We construct a small model with $d=8$ and $H=2$ heads, build a random $[4 \times 8]$ input, and run one forward pass. The output should have the same shape as the input; we print the attention weights for each head and the final projected output.
+
+```scheme
+(let* ((d         8)
+       (num-heads 2)
+       (T         4)
+       (params    (make-mha-params d num-heads))
+       (X         (make-random-matrix T d))
+       (result    (multi-head-attention X params))
+       (output    (car result))
+       (weights   (cdr result)))
+  (display "Head attention weights:") (newline)
+  (let loop ((ws weights) (h 0))
+    (unless (null? ws)
+      (display "  head ") (display h) (display " [")
+      (display (matrix-rows (car ws))) (display "x")
+      (display (matrix-cols (car ws))) (display "]") (newline)
+      (loop (cdr ws) (+ h 1))))
+  (newline)
+  (display "MHA output [") (display (matrix-rows output))
+  (display "x") (display (matrix-cols output)) (display "]:") (newline)
+  (let row ((i 0))
+    (when (< i (matrix-rows output))
+      (display "  [")
+      (let col ((j 0))
+        (when (< j (matrix-cols output))
+          (display (matrix-ref output i j)) (display " ")
+          (col (+ j 1))))
+      (display "]") (newline)
+      (row (+ i 1)))))
+```
+
+Run with `mit-scheme --quiet --load multi-head-attention.scm`.
 
 ---
 

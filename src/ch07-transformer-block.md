@@ -116,138 +116,173 @@ The key insight: $x_1$ contains **both** the original information (from `x`) and
 
 ---
 
-## 7.5 The Code: Transformer Block in Lisp
+## 7.5 The Code: Transformer Block in Scheme
 
-```lisp
-;;;; transformer-block.lisp
-;;;; One complete transformer block with Pre-LN architecture
+Layer normalization operates on a single vector: compute its mean $\mu$ and standard deviation $\sigma$, then shift each entry to mean 0, variance 1. Learned parameters $\gamma$ and $\beta$ then rescale and shift the normalized result — initialized to $\gamma=1, \beta=0$ so the transformation starts as an identity. This lets the model undo normalization when a sub-layer needs unnormalized values. The small $\epsilon=10^{-5}$ prevents division by zero when a vector is constant.
 
-;; (load "attention.lisp")
-;; (load "multi-head-attention.lisp")
-;; (load "feed-forward-network.lisp")
+```scheme
+(define (make-matrix rows cols)
+  (list rows cols (make-vector (* rows cols) 0.0)))
+(define (matrix-rows M) (car M))
+(define (matrix-cols M) (cadr M))
+(define (matrix-data M) (caddr M))
+(define (matrix-ref  M i j)
+  (vector-ref  (matrix-data M) (+ (* i (matrix-cols M)) j)))
+(define (matrix-set! M i j v)
+  (vector-set! (matrix-data M) (+ (* i (matrix-cols M)) j) v))
 
-;;; ─── Layer Normalization ─────────────────────────────────────────
-
-(defun layer-norm-1d (x gamma beta eps)
-  "LayerNorm for a single vector X.
-   gamma, beta : learned scale and shift (same length as x).
-   eps         : small value for numerical stability (e.g., 1e-5)."
-  (let* ((n (length x))
-         (mu (/ (reduce #'+ x) n))
-         (var (/ (reduce #'+ (map 'vector
-                                  (lambda (xi) (expt (- xi mu) 2))
-                                  x))
-                 n))
+(define (layer-norm-vec x gamma beta)
+  (let* ((n   (vector-length x))
+         (eps 1e-5)
+         (mu  (let sum ((i 0) (s 0.0))
+                (if (= i n) (/ s n)
+                    (sum (+ i 1) (+ s (vector-ref x i))))))
+         (var (let sum ((i 0) (s 0.0))
+                (if (= i n) (/ s n)
+                    (let ((d (- (vector-ref x i) mu)))
+                      (sum (+ i 1) (+ s (* d d)))))))
          (std (sqrt (+ var eps)))
-         (out (make-array n :element-type 'single-float)))
-    (dotimes (i n out)
-      (setf (aref out i)
-            (+ (* (aref gamma i)
-                  (/ (- (aref x i) mu) std))
-               (aref beta i))))))
-
-(defun layer-norm-matrix (M gamma beta &optional (eps 1e-5))
-  "Apply LayerNorm independently to each row of M [T × d]."
-  (destructuring-bind (T-len d) (array-dimensions M)
-    (let ((result (make-array (list T-len d) :element-type 'single-float)))
-      (dotimes (i T-len result)
-        (let* ((row (make-array d :element-type 'single-float))
-               (normed nil))
-          ;; Extract row
-          (dotimes (j d) (setf (aref row j) (aref M i j)))
-          ;; Normalize
-          (setf normed (layer-norm-1d row gamma beta eps))
-          ;; Write back
-          (dotimes (j d) (setf (aref result i j) (aref normed j))))))))
-
-(defun make-ln-params (d)
-  "Create LayerNorm parameters: γ=1, β=0 (identity init)."
-  (list :gamma (make-array d :element-type 'single-float :initial-element 1.0)
-        :beta  (make-array d :element-type 'single-float :initial-element 0.0)))
-
-;;; ─── Matrix addition (for residual connections) ──────────────────
-
-;; mat-add is defined in attention.lisp
-
-;;; ─── Transformer Block Parameters ───────────────────────────────
-
-(defun make-block-params (d num-heads)
-  "Create all parameters for one transformer block."
-  (list :mha  (make-mha-params d num-heads)
-        :ffn  (make-ffn-params d 4)
-        :ln1  (make-ln-params d)
-        :ln2  (make-ln-params d)))
-
-;;; ─── Transformer Block Forward Pass ─────────────────────────────
-
-(defun transformer-block-forward (X params)
-  "One Pre-LN transformer block:
-   x₁ = x  + MHA(LayerNorm₁(x))
-   x₂ = x₁ + FFN(LayerNorm₂(x₁))
-   Returns x₂ [T × d]."
-  (let* ((mha-params (getf params :mha))
-         (ffn-params (getf params :ffn))
-         (ln1        (getf params :ln1))
-         (ln2        (getf params :ln2))
-         ;; Sub-layer 1: MHA with pre-norm + residual
-         (X-normed-1 (layer-norm-matrix X
-                                        (getf ln1 :gamma)
-                                        (getf ln1 :beta)))
-         (mha-out (multi-head-attention X-normed-1 mha-params))
-         (X1 (mat-add X mha-out))
-         ;; Sub-layer 2: FFN with pre-norm + residual
-         (X-normed-2 (layer-norm-matrix X1
-                                        (getf ln2 :gamma)
-                                        (getf ln2 :beta)))
-         (ffn-out (ffn-forward X-normed-2 ffn-params))
-         (X2 (mat-add X1 ffn-out)))
-    X2))
-
-;;; ─── Stack of Transformer Blocks ─────────────────────────────────
-
-(defun make-transformer-stack (num-layers d num-heads)
-  "Create a list of NUM-LAYERS transformer block parameter plists."
-  (loop repeat num-layers
-        collect (make-block-params d num-heads)))
-
-(defun forward-transformer-stack (X block-param-list)
-  "Run X through a stack of transformer blocks in sequence.
-   Returns the final [T × d] output."
-  (reduce #'transformer-block-forward block-param-list
-          :initial-value X))
-
-;;; ─── Verify residual stream integrity ────────────────────────────
-
-(defun matrix-norm (M)
-  "Frobenius norm of M: √(Σ m²ᵢⱼ)"
-  (sqrt (let ((sum 0.0))
-          (destructuring-bind (r c) (array-dimensions M)
-            (dotimes (i r sum)
-              (dotimes (j c)
-                (incf sum (expt (aref M i j) 2))))))))
-
-;;; ─── Demo ─────────────────────────────────────────────────────────
-
-(let* ((d 16)
-       (num-heads 4)
-       (num-layers 3)
-       (T-len 4)
-       (blocks (make-transformer-stack num-layers d num-heads))
-       ;; Start with random token+position embeddings
-       (X (let ((m (make-array (list T-len d) :element-type 'single-float)))
-            (dotimes (i T-len m)
-              (dotimes (j d)
-                (setf (aref m i j) (* 0.02 (- (random 100.0) 50.0))))))))
-  (format t "Input norm: ~,4f~%" (matrix-norm X))
-  ;; Pass through each block, reporting norm
-  (let ((stream X))
-    (loop for params in blocks
-          for layer from 1 do
-      (setf stream (transformer-block-forward stream params))
-      (format t "After block ~a: norm = ~,4f~%" layer (matrix-norm stream)))
-    (format t "~%Final stream shape: [~a × ~a]~%"
-            (array-dimension stream 0) (array-dimension stream 1))))
+         (out (make-vector n)))
+    (let loop ((i 0))
+      (when (< i n)
+        (vector-set! out i
+          (+ (* (vector-ref gamma i) (/ (- (vector-ref x i) mu) std))
+             (vector-ref beta i)))
+        (loop (+ i 1))))
+    out))
 ```
+
+`layer-norm-matrix` applies `layer-norm-vec` independently to each row of a $[T \times d]$ matrix. Every token position is normalized separately — the mean and variance are computed within that token's vector, not across the batch. This is what distinguishes layer normalization from batch normalization: the statistics are per-example and per-position, making behavior identical at training and inference time.
+
+```scheme
+(define (layer-norm-matrix M gamma beta)
+  (let* ((T (matrix-rows M))
+         (d (matrix-cols M))
+         (R (make-matrix T d)))
+    (let loop ((i 0))
+      (when (< i T)
+        (let* ((row (make-vector d))
+               (_ (let cp ((j 0))
+                    (when (< j d)
+                      (vector-set! row j (matrix-ref M i j))
+                      (cp (+ j 1)))))
+               (normed (layer-norm-vec row gamma beta)))
+          (let cp ((j 0))
+            (when (< j d)
+              (matrix-set! R i j (vector-ref normed j))
+              (cp (+ j 1)))))
+        (loop (+ i 1))))
+    R))
+```
+
+`make-ln-params` returns the pair $(\gamma, \beta)$ with the identity initialization $\gamma_i = 1$, $\beta_i = 0$ for all $i$. At the start of training this means layer norm is a pure normalization with no learned transformation. As training proceeds, $\gamma$ and $\beta$ are updated by gradient descent to whatever values help prediction.
+
+```scheme
+(define (make-ln-params d)
+  (list (make-vector d 1.0)
+        (make-vector d 0.0)))
+
+(define (ln-gamma p) (car p))
+(define (ln-beta  p) (cadr p))
+```
+
+`make-block-params` collects all four parameter groups for one transformer block: the MHA weights, the FFN weights, and two layer norms. Having all block parameters in one list makes it easy to pass a block around as a value — `make-transformer-stack` will build a list of such values, one per layer.
+
+```scheme
+(define (make-block-params d num-heads)
+  (list (make-mha-params d num-heads)
+        (make-ffn-params d)
+        (make-ln-params d)
+        (make-ln-params d)))
+
+(define (block-mha  b) (car b))
+(define (block-ffn  b) (cadr b))
+(define (block-ln1  b) (caddr b))
+(define (block-ln2  b) (cadddr b))
+```
+
+`transformer-block-forward` is the Pre-LN residual block. The two-line formula $x_1 = x + \text{MHA}(\text{LN}_1(x))$, $x_2 = x_1 + \text{FFN}(\text{LN}_2(x_1))$ becomes two `let` bindings. The residual additions (`matrix-add`) are the key: even if the sub-layers produce near-zero outputs, the original $x$ passes through unchanged. This is what makes hundred-layer stacks trainable — gradients flow directly along the residual path without passing through any nonlinearity. Pre-LN (normalizing before the sub-layer, not after) is more stable than Post-LN for deep stacks.
+
+```scheme
+(define (matrix-add A B)
+  (let* ((m (matrix-rows A)) (n (matrix-cols A))
+         (C (make-matrix m n)))
+    (let loop-i ((i 0))
+      (when (< i m)
+        (let loop-j ((j 0))
+          (when (< j n)
+            (matrix-set! C i j (+ (matrix-ref A i j) (matrix-ref B i j)))
+            (loop-j (+ j 1))))
+        (loop-i (+ i 1))))
+    C))
+
+(define (transformer-block-forward X block)
+  (let* ((ln1     (block-ln1 block))
+         (ln2     (block-ln2 block))
+         (X1-norm (layer-norm-matrix X (ln-gamma ln1) (ln-beta ln1)))
+         (mha-out (car (multi-head-attention X1-norm (block-mha block))))
+         (X1      (matrix-add X mha-out))
+         (X2-norm (layer-norm-matrix X1 (ln-gamma ln2) (ln-beta ln2)))
+         (ffn-out (ffn-forward X2-norm (block-ffn block)))
+         (X2      (matrix-add X1 ffn-out)))
+    X2))
+```
+
+`forward-stack` threads the input matrix $X$ through a list of blocks using `fold` — each block receives the output of the previous one. This is the complete transformer stack: `N` applications of `transformer-block-forward`, chained. The accumulator pattern matches exactly the residual stream metaphor: each block adds its contribution to a growing, evolving representation.
+
+```scheme
+(define (forward-stack X blocks)
+  (let loop ((x X) (bs blocks))
+    (if (null? bs)
+        x
+        (loop (transformer-block-forward x (car bs)) (cdr bs)))))
+```
+
+**Demo.** We build a 3-block stack with $d=16$, $H=4$ heads, and a random $[4 \times 16]$ input. We print the Frobenius norm after each block to confirm the residual stream grows stably rather than exploding or collapsing.
+
+```scheme
+(define (matrix-frob-norm M)
+  (let ((sum 0.0))
+    (let loop-i ((i 0))
+      (when (< i (matrix-rows M))
+        (let loop-j ((j 0))
+          (when (< j (matrix-cols M))
+            (let ((v (matrix-ref M i j)))
+              (set! sum (+ sum (* v v))))
+            (loop-j (+ j 1))))
+        (loop-i (+ i 1))))
+    (sqrt sum)))
+
+(define (make-random-matrix rows cols)
+  (let ((M     (make-matrix rows cols))
+        (scale (sqrt (/ 2.0 (+ rows cols)))))
+    (let loop-i ((i 0))
+      (when (< i rows)
+        (let loop-j ((j 0))
+          (when (< j cols)
+            (matrix-set! M i j (* scale (- (* 2.0 (random 1.0)) 1.0)))
+            (loop-j (+ j 1))))
+        (loop-i (+ i 1))))
+    M))
+
+(let* ((d          16)
+       (num-heads  4)
+       (num-layers 3)
+       (T          4)
+       (blocks     (let build ((n num-layers) (acc '()))
+                     (if (= n 0) acc
+                         (build (- n 1) (cons (make-block-params d num-heads) acc)))))
+       (X          (make-random-matrix T d)))
+  (display "Input norm: ") (display (matrix-frob-norm X)) (newline)
+  (let loop ((x X) (bs blocks) (layer 1))
+    (unless (null? bs)
+      (let ((x-out (transformer-block-forward x (car bs))))
+        (display "After block ") (display layer) (display ": norm = ")
+        (display (matrix-frob-norm x-out)) (newline)
+        (loop x-out (cdr bs) (+ layer 1))))))
+```
+
+Run with `mit-scheme --quiet --load transformer-block.scm`.
 
 ---
 

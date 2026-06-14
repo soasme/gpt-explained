@@ -130,106 +130,119 @@ After training, semantically related tokens will have much higher dot products.
 
 ---
 
-## 2.5 The Code: Embedding in Lisp
+## 2.5 The Code: Embedding in Scheme
 
-```lisp
-;;;; embeddings.lisp
-;;;; Embedding matrix: integer IDs → dense vectors
+Before writing a single line of embedding logic, we name what a matrix *is*. The key design move is choosing the right abstraction boundary — the wall between representation and use. A matrix is a rows-by-cols grid of numbers. We store it as a flat vector in row-major order, but nothing above this interface will ever need to know that.
 
-;;; ─── Data Structures ────────────────────────────────────────────
-;;
-;; A MATRIX is a 2D array: (make-array '(rows cols) :element-type 'single-float)
-;; A VECTOR is a 1D array: (make-array cols :element-type 'single-float)
+```scheme
+(define (make-matrix rows cols)
+  (list rows cols (make-vector (* rows cols) 0.0)))
+(define (matrix-rows M) (car M))
+(define (matrix-cols M) (cadr M))
+(define (matrix-data M) (caddr M))
+(define (matrix-ref  M i j)
+  (vector-ref  (matrix-data M) (+ (* i (matrix-cols M)) j)))
+(define (matrix-set! M i j v)
+  (vector-set! (matrix-data M) (+ (* i (matrix-cols M)) j) v))
+```
 
-(defun make-embedding-matrix (vocab-size d-model)
-  "Create a |V| × d_model embedding matrix, Xavier-initialized."
-  (let* ((arr (make-array (list vocab-size d-model)
-                          :element-type 'single-float))
-         (scale (sqrt (/ 2.0 (+ vocab-size d-model)))))
-    (dotimes (i vocab-size)
-      (dotimes (j d-model)
-        (setf (aref arr i j)
-              (* scale (- (random 2.0) 1.0)))))  ; uniform in [-scale, scale]
-    arr))
+With the abstraction in place, we can build the embedding matrix. The values are not hand-crafted — they start random and are shaped by gradient descent during training. Xavier initialization scales the random values by $\sqrt{2/(fan_{in}+fan_{out})}$, which keeps activations from exploding or vanishing as signals pass through many layers. We draw each entry uniformly from $[-scale, +scale]$ and store it through the abstraction we just defined.
 
-;;; ─── Core Operation: Token → Vector ────────────────────────────
+```scheme
+(define (make-random-matrix rows cols)
+  (let ((M     (make-matrix rows cols))
+        (scale (sqrt (/ 2.0 (+ rows cols)))))
+    (let row-loop ((i 0))
+      (when (< i rows)
+        (let col-loop ((j 0))
+          (when (< j cols)
+            (matrix-set! M i j
+              (* scale (- (* 2.0 (random 1.0)) 1.0)))
+            (col-loop (+ j 1))))
+        (row-loop (+ i 1))))
+    M))
+```
 
-(defun embed-token (E token-id)
-  "Look up row TOKEN-ID in embedding matrix E.
-   Returns a fresh 1D vector (copy of that row)."
-  (let* ((d-model (array-dimension E 1))
-         (vec (make-array d-model :element-type 'single-float)))
-    (dotimes (j d-model vec)
-      (setf (aref vec j) (aref E token-id j)))))
+The embedding of token $i$ is literally row $i$ of the matrix $E$ — a table lookup, nothing more. $e_i = E[i,:]$. We write a procedure that extracts one row as a fresh vector, making the operation explicit and independent of the matrix's internal storage format.
 
-;;; ─── Core Operation: Sequence → Matrix ─────────────────────────
+```scheme
+(define (embed-token E token-id)
+  (let* ((d (matrix-cols E))
+         (v (make-vector d)))
+    (let loop ((j 0))
+      (when (< j d)
+        (vector-set! v j (matrix-ref E token-id j))
+        (loop (+ j 1))))
+    v))
+```
 
-(defun embed-sequence (E token-ids)
-  "Embed a list of TOKEN-IDS using matrix E.
-   Returns a [T × d_model] matrix where T = length(token-ids)."
+A sequence of $T$ token IDs calls for $T$ row lookups stacked into a $[T \times d]$ matrix. The single-token operation composes naturally into a sequence operation because both work through the same abstraction. We iterate the list of IDs, copying each row in turn.
+
+```scheme
+(define (embed-sequence E token-ids)
   (let* ((T (length token-ids))
-         (d-model (array-dimension E 1))
-         (X (make-array (list T d-model) :element-type 'single-float)))
-    (loop for id in token-ids
-          for t from 0 do
-      (let ((row (embed-token E id)))
-        (dotimes (j d-model)
-          (setf (aref X t j) (aref row j)))))
+         (d (matrix-cols E))
+         (X (make-matrix T d)))
+    (let loop ((ids token-ids) (t 0))
+      (unless (null? ids)
+        (let copy-row ((j 0))
+          (when (< j d)
+            (matrix-set! X t j (matrix-ref E (car ids) j))
+            (copy-row (+ j 1))))
+        (loop (cdr ids) (+ t 1))))
     X))
-
-;;; ─── Utility: Print a matrix ────────────────────────────────────
-
-(defun print-matrix (M &optional (label "Matrix"))
-  (destructuring-bind (rows cols) (array-dimensions M)
-    (format t "~%~a [~a × ~a]:~%" label rows cols)
-    (dotimes (i rows)
-      (format t "  [")
-      (dotimes (j cols)
-        (format t "~8,3f" (aref M i j)))
-      (format t " ]~%"))))
-
-;;; ─── Utility: Dot product ───────────────────────────────────────
-
-(defun dot (u v)
-  "Dot product of two 1D vectors U and V."
-  (reduce #'+ (map '(vector single-float)
-                   (lambda (a b) (* a b)) u v)))
-
-;;; ─── Utility: Cosine similarity ─────────────────────────────────
-
-(defun norm (v)
-  "L2 norm of vector V."
-  (sqrt (reduce #'+ (map '(vector single-float) (lambda (x) (* x x)) v))))
-
-(defun cosine-similarity (u v)
-  "Cosine similarity of U and V: cos θ = (u·v) / (|u| |v|)"
-  (/ (dot u v) (* (norm u) (norm v))))
-
-;;; ─── Demo ────────────────────────────────────────────────────────
-
-(defparameter *vocab-size* 100)
-(defparameter *d-model* 8)
-
-(let* ((E (make-embedding-matrix *vocab-size* *d-model*))
-       ;; Pretend token IDs: "the"=1, "cat"=2, "sat"=3
-       (ids '(1 2 3))
-       (X (embed-sequence E ids)))
-  (print-matrix X "Embedding output X [T=3, d=8]")
-  (format t "~%Dot product E[1]·E[2]: ~,4f~%"
-          (dot (embed-token E 1) (embed-token E 2)))
-  (format t "Cosine similarity E[1]·E[2]: ~,4f~%"
-          (cosine-similarity (embed-token E 1) (embed-token E 2))))
 ```
 
-**Try it:**
+The dot product $u \cdot v = \sum_i u_i v_i$ measures geometric alignment between two vectors. After training, tokens that appear in similar contexts will have high dot products. Cosine similarity normalizes by magnitude so that $\cos\theta = 1$ means identical direction regardless of scale — both procedures will reappear throughout the remaining chapters.
 
-```bash
-# Run with SBCL:
-sbcl --load embeddings.lisp --quit
+```scheme
+(define (dot u v)
+  (let loop ((i 0) (acc 0.0))
+    (if (= i (vector-length u))
+        acc
+        (loop (+ i 1) (+ acc (* (vector-ref u i) (vector-ref v i)))))))
 
-# Or with CLISP:
-clisp embeddings.lisp
+(define (vector-norm v) (sqrt (dot v v)))
+
+(define (cosine-similarity u v)
+  (/ (dot u v) (* (vector-norm u) (vector-norm v))))
 ```
+
+A display utility lets us inspect any matrix by label. It loops over rows and columns, printing each entry separated by spaces, and will be reused in every chapter that follows.
+
+```scheme
+(define (display-matrix M label)
+  (display label)
+  (display " [") (display (matrix-rows M))
+  (display "x") (display (matrix-cols M)) (display "]:") (newline)
+  (let row-loop ((i 0))
+    (when (< i (matrix-rows M))
+      (display "  [")
+      (let col-loop ((j 0))
+        (when (< j (matrix-cols M))
+          (display (matrix-ref M i j)) (display " ")
+          (col-loop (+ j 1))))
+      (display "]") (newline)
+      (row-loop (+ i 1)))))
+```
+
+**Demo.** We build a small embedding matrix, embed a three-token sequence, then print the result and two similarity measures. Before training, the dot product and cosine similarity are near zero — the random vectors are roughly orthogonal to each other. After training they would reflect semantic proximity.
+
+```scheme
+(let* ((vocab-size 100)
+       (d-model    8)
+       (E          (make-random-matrix vocab-size d-model))
+       (ids        '(1 2 3))
+       (X          (embed-sequence E ids)))
+  (display-matrix X "Embedding output X [T=3, d=8]")
+  (newline)
+  (display "Dot product E[1].E[2]: ")
+  (display (dot (embed-token E 1) (embed-token E 2))) (newline)
+  (display "Cosine similarity E[1].E[2]: ")
+  (display (cosine-similarity (embed-token E 1) (embed-token E 2))) (newline))
+```
+
+Run with `mit-scheme --quiet --load embeddings.scm`.
 
 ---
 
