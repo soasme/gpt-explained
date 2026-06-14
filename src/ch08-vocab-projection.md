@@ -92,21 +92,7 @@ This is called **autoregressive generation**: each new token is fed back in as i
 
 ---
 
-## 8.4 Loss: Cross-Entropy
-
-During training, for each position `t`, the model produces a probability distribution. The **cross-entropy loss** measures how far the prediction is from the true next token:
-
-$$
-L(t) = -\log P(t_{t+1} | t_1, \ldots, t_t)
-$$
-
-If the model assigns probability `0.8` to the true next token: $L = -\log(0.8) \approx 0.22$. 
-If the model assigns `0.001`: $L = -\log(0.001) \approx 6.9$. 
-
-The total loss is the mean over all positions and all training examples. Minimizing this via gradient descent is exactly what shapes all the weights in the model — the embedding matrix, the attention weight matrices, the FFN weights — everything.
-
-> **Math Minute — Log**
-> `log(p)` for $p \in (0,1]$ is always negative. As `p → 0`, $\log(p) \to -\infty$. As `p → 1`, `log(p) → 0`. The negative log loss is 0 when the prediction is perfect and large when the model is confident about the wrong answer.
+> **Training loss** is covered in depth in [Chapter 9: Loss](./ch09-loss.md). The short version: the model is penalized by $-\log P(\text{true next token})$ at every position, and gradient descent nudges all weights to reduce this number.
 
 ---
 
@@ -380,7 +366,7 @@ Weight tying forces the model to use a single geometric space for both "what a t
 - **Softmax** converts logits to a probability distribution.
 - **Temperature** controls sampling sharpness; **top-K** restricts the candidate set.
 - **Autoregressive generation**: sample one token at a time, feeding each back as input.
-- **Training loss** is cross-entropy: `-log P(true next token | context)`.
+- **Training loss** is cross-entropy: see [Chapter 9](./ch09-loss.md) for full treatment.
 
 ---
 

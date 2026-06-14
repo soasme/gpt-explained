@@ -48,6 +48,7 @@ run_scene ch07_transformer_block.py Ch07TransformerBlock   ch07_block
 run_scene ch07_transformer_block.py Ch07ResidualStream     ch07_residual
 run_scene ch08_vocab_projection.py Ch08VocabProjection     ch08_projection
 run_scene ch08_vocab_projection.py Ch08GenerationLoop      ch08_generation
+run_scene ch09_loss.py             Ch09LossScene           ch09_loss
 
 echo ""
 echo "Done! Images in $IMG_DIR:"
