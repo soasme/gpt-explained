@@ -21,6 +21,7 @@
 - [Chapter 7: The Transformer Block — Putting It Together](./ch07-transformer-block.md)
 - [Chapter 8: Vocabulary Projection — From Vectors to Words](./ch08-vocab-projection.md)
 - [Chapter 9: Loss — How the Model Learns](./ch09-loss.md)
+- [Chapter 10: Training — Teaching the Model](./ch10-training.md)
 
 ---
 
