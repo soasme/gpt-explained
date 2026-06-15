@@ -12,8 +12,14 @@ import random
 from typing import Iterable, Sequence
 
 
+# tag::types[]
+# tag::vector_type[]
 Vector = list[float]
+# end::vector_type[]
+# tag::matrix_type[]
 Matrix = list[list[float]]
+# end::matrix_type[]
+# end::types[]
 
 
 # tag::matrix[]
@@ -41,30 +47,50 @@ def random_matrix(
 
 
 # tag::vectors[]
+# tag::vector_ops[]
+# tag::add_vectors[]
 def add_vectors(left: Vector, right: Vector) -> Vector:
     return [a + b for a, b in zip(left, right)]
+# end::add_vectors[]
 
 
+# tag::scale_vector[]
 def scale_vector(vector: Vector, scalar: float) -> Vector:
     return [scalar * value for value in vector]
+# end::scale_vector[]
 
 
+# tag::vector_norm[]
+def vector_norm(vector: Sequence[float]) -> float:
+    return math.sqrt(sum(value * value for value in vector))
+# end::vector_norm[]
+
+
+# tag::unit_vector[]
+def unit_vector(vector: Vector) -> Vector:
+    return scale_vector(vector, 1.0 / vector_norm(vector))
+# end::unit_vector[]
+# end::vector_ops[]
+
+
+# tag::dot[]
 def dot(left: Sequence[float], right: Sequence[float]) -> float:
     return sum(a * b for a, b in zip(left, right))
+# end::dot[]
 
 
-def vector_norm(vector: Sequence[float]) -> float:
-    return math.sqrt(dot(vector, vector))
-
-
+# tag::cosine_similarity[]
 def cosine_similarity(left: Sequence[float], right: Sequence[float]) -> float:
     return dot(left, right) / (vector_norm(left) * vector_norm(right))
+# end::cosine_similarity[]
 # end::vectors[]
 
 
 # tag::matrix_ops[]
+# tag::transpose[]
 def transpose(matrix: Matrix) -> Matrix:
     return [list(col) for col in zip(*matrix)]
+# end::transpose[]
 
 
 def matrix_add(left: Matrix, right: Matrix) -> Matrix:
@@ -75,9 +101,11 @@ def matrix_scale(matrix: Matrix, scalar: float) -> Matrix:
     return [[scalar * value for value in row] for row in matrix]
 
 
+# tag::matrix_multiply[]
 def matrix_multiply(left: Matrix, right: Matrix) -> Matrix:
     right_t = transpose(right)
     return [[dot(row, col) for col in right_t] for row in left]
+# end::matrix_multiply[]
 
 
 def hstack(matrices: Sequence[Matrix]) -> Matrix:
@@ -86,15 +114,19 @@ def hstack(matrices: Sequence[Matrix]) -> Matrix:
 
 
 # tag::softmax[]
+# tag::softmax_vector[]
 def softmax(logits: Sequence[float]) -> Vector:
     max_logit = max(logits)
     exp_values = [math.exp(value - max_logit) for value in logits]
     total = sum(exp_values)
     return [value / total for value in exp_values]
+# end::softmax_vector[]
 
 
+# tag::softmax_rows[]
 def softmax_rows(matrix: Matrix) -> Matrix:
     return [softmax(row) for row in matrix]
+# end::softmax_rows[]
 # end::softmax[]
 
 
@@ -118,19 +150,37 @@ def gelu_matrix(matrix: Matrix) -> Matrix:
 
 
 # tag::logarithm[]
+# tag::natural_log[]
 def natural_log(value: float) -> float:
     return math.log(value)
+# end::natural_log[]
+
+
+# tag::natural_exp[]
+def natural_exp(value: float) -> float:
+    return math.exp(value)
+# end::natural_exp[]
 # end::logarithm[]
 
 
 # tag::statistics[]
+# tag::mean[]
 def mean(values: Sequence[float]) -> float:
     return sum(values) / len(values)
+# end::mean[]
 
 
+# tag::variance[]
 def variance(values: Sequence[float]) -> float:
     avg = mean(values)
     return sum((value - avg) ** 2 for value in values) / len(values)
+# end::variance[]
+
+
+# tag::standard_deviation[]
+def standard_deviation(values: Sequence[float]) -> float:
+    return math.sqrt(variance(values))
+# end::standard_deviation[]
 # end::statistics[]
 
 

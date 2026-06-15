@@ -25,8 +25,10 @@ def sequence_loss(logits_list: Sequence[Sequence[float]], true_ids: Sequence[int
     return sum(losses) / len(losses)
 
 
+# tag::perplexity[]
 def perplexity(loss: float) -> float:
     return math.exp(loss)
+# end::perplexity[]
 # end::sequence_loss[]
 
 
