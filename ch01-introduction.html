@@ -1,0 +1,1018 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.9.38">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="Ju Lin">
+<meta name="description" content="A practical guide to GPT-style transformer architecture, from tokens to text generation, with math, matrices, Python, and diagrams.">
+
+<title>1&nbsp; Introduction – GPT Explained</title>
+<style>
+/* Default styles provided by pandoc.
+** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
+*/
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<link href="./ch02-notation.html" rel="next">
+<link href="./parts/foundations.html" rel="prev">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-95edd58b3b27b9774827898c46d4f452.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "sidebar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "start",
+  "type": "textbox",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
+  <script defer="" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
+
+<script type="text/javascript">
+const typesetMath = (el) => {
+  if (window.MathJax) {
+    // MathJax Typeset
+    window.MathJax.typeset([el]);
+  } else if (window.katex) {
+    // KaTeX Render
+    var mathElements = el.getElementsByClassName("math");
+    var macros = [];
+    for (var i = 0; i < mathElements.length; i++) {
+      var texText = mathElements[i].firstChild;
+      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
+        window.katex.render(texText.data, mathElements[i], {
+          displayMode: mathElements[i].classList.contains('display'),
+          throwOnError: false,
+          macros: macros,
+          fleqn: false
+        });
+      }
+    }
+  }
+}
+window.Quarto = {
+  typesetMath
+};
+</script>
+
+</head>
+
+<body class="nav-sidebar floating quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+  <nav class="quarto-secondary-nav">
+    <div class="container-fluid d-flex">
+      <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+        <i class="bi bi-layout-text-sidebar-reverse"></i>
+      </button>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./parts/foundations.html">Foundations</a></li><li class="breadcrumb-item"><a href="./ch01-introduction.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></a></li></ol></nav>
+        <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
+        </a>
+      <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
+        <i class="bi bi-search"></i>
+      </button>
+    </div>
+  </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article">
+<!-- sidebar -->
+  <nav id="quarto-sidebar" class="sidebar collapse collapse-horizontal quarto-sidebar-collapse-item sidebar-navigation floating overflow-auto">
+    <div class="pt-lg-2 mt-2 text-left sidebar-header">
+    <div class="sidebar-title mb-0 py-0">
+      <a href="./">GPT Explained</a> 
+        <div class="sidebar-tools-main tools-wide">
+    <a href="https://github.com/soasme/gpt-explained" title="Source Code" class="quarto-navigation-tool px-1" aria-label="Source Code"><i class="bi bi-github"></i></a>
+    <div class="dropdown">
+      <a href="" title="Download" id="quarto-navigation-tool-dropdown-0" class="quarto-navigation-tool dropdown-toggle px-1" data-bs-toggle="dropdown" aria-expanded="false" role="link" aria-label="Download"><i class="bi bi-download"></i></a>
+      <ul class="dropdown-menu" aria-labelledby="quarto-navigation-tool-dropdown-0">
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="./gpt-explained.pdf">
+              <i class="bi bi-file-pdf pe-1"></i>
+            Download PDF
+            </a>
+          </li>
+          <li>
+            <a class="dropdown-item sidebar-tools-main-item" href="./gpt-explained.epub">
+              <i class="bi bi-journal pe-1"></i>
+            Download ePub
+            </a>
+          </li>
+      </ul>
+    </div>
+  <a href="" class="quarto-reader-toggle quarto-navigation-tool px-1" onclick="window.quartoToggleReader(); return false;" title="Toggle reader mode">
+  <div class="quarto-reader-toggle-btn">
+  <i class="bi"></i>
+  </div>
+</a>
+</div>
+    </div>
+      </div>
+        <div class="mt-2 flex-shrink-0 align-items-center">
+        <div class="sidebar-search">
+        <div id="quarto-search" class="" title="Search"></div>
+        </div>
+        </div>
+    <div class="sidebar-menu-container"> 
+    <ul class="list-unstyled mt-1">
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./index.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Welcome</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./book/license.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">License</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./book/preface.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Preface</span></a>
+  </div>
+</li>
+        <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./book/contributors.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Contributors</span></a>
+  </div>
+</li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./parts/foundations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Foundations</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-1" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-1" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch01-introduction.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch02-notation.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Notation and Definitions</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./parts/representations.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Representations</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-2" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-2" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch03-tokens.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">3</span>&nbsp; <span class="chapter-title">Tokens — Text to Numbers</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch04-embeddings.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">4</span>&nbsp; <span class="chapter-title">Embeddings — Numbers to Meaning</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch05-positional-encoding.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">5</span>&nbsp; <span class="chapter-title">Positional Encoding — Giving Order to Meaning</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./parts/transformer-core.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Transformer Core</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-3" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-3" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch06-attention.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Attention — Tokens Talking to Each Other</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch07-multi-head-attention.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch08-feed-forward.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch09-transformer-block.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./parts/prediction-and-learning.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Prediction and Learning</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-4" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch10-vocab-projection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch11-loss.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch12-training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a href="./parts/modern-gpt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">Modern Extensions</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-5" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch13-modern-gpt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Modern GPT</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+        <li class="sidebar-item sidebar-item-section">
+      <div class="sidebar-item-container"> 
+            <a class="sidebar-item-text sidebar-link text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true">
+ <span class="menu-text">Appendices</span></a>
+          <a class="sidebar-item-toggle text-start" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar-section-6" role="navigation" aria-expanded="true" aria-label="Toggle section">
+            <i class="bi bi-chevron-right ms-2"></i>
+          </a> 
+      </div>
+      <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./A-microgpt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">microGPT in Python — Complete Runnable Code</span></span></a>
+  </div>
+</li>
+      </ul>
+  </li>
+    </ul>
+    </div>
+</nav>
+<div id="quarto-sidebar-glass" class="quarto-sidebar-collapse-item" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item"></div>
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">Table of contents</h2>
+   
+  <ul class="collapse">
+  <li><a href="#what-is-gpt" id="toc-what-is-gpt" class="nav-link active" data-scroll-target="#what-is-gpt"><span class="header-section-number">1.1</span> What Is GPT?</a></li>
+  <li><a href="#how-gpt-works" id="toc-how-gpt-works" class="nav-link" data-scroll-target="#how-gpt-works"><span class="header-section-number">1.2</span> How GPT Works</a></li>
+  <li><a href="#a-brief-history-of-gpt" id="toc-a-brief-history-of-gpt" class="nav-link" data-scroll-target="#a-brief-history-of-gpt"><span class="header-section-number">1.3</span> A Brief History of GPT</a></li>
+  </ul>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch01-introduction.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./parts/foundations.html">Foundations</a></li><li class="breadcrumb-item"><a href="./ch01-introduction.html"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></a></li></ol></nav>
+<div class="quarto-title">
+<h1 class="title"><span id="sec-ch01-introduction" class="quarto-section-identifier"><span class="chapter-number">1</span>&nbsp; <span class="chapter-title">Introduction</span></span></h1>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<blockquote class="blockquote">
+<p><em>“You don’t understand anything until you learn it more than one way.”</em></p>
+<p>— Marvin Minsky</p>
+</blockquote>
+<p>This chapter answers two questions before you touch any math or code: what is GPT, and how does it work? We keep the language concrete and the diagrams simple. The details come later.</p>
+<section id="what-is-gpt" class="level2" data-number="1.1">
+<h2 data-number="1.1" class="anchored" data-anchor-id="what-is-gpt"><span class="header-section-number">1.1</span> What Is GPT?</h2>
+<p>GPT stands for <em>Generative Pre-trained Transformer</em>.</p>
+<p><em>Generative</em> — it produces new text, one token at a time, rather than classifying or retrieving.</p>
+<p><em>Pre-trained</em> — before you ever use it, the model was trained on a vast corpus of text from the internet, books, and code. It learned the statistical patterns of language from billions of examples.</p>
+<p><em>Transformer</em> — the underlying neural network architecture. The transformer replaced recurrent networks in 2017 and became the backbone of every large language model since.</p>
+<p>At its core, a GPT model is a function:</p>
+<p><span class="math display">\[
+P(\text{next token} \mid \text{context tokens}) = f_\theta(\text{context})
+\]</span></p>
+<p>Given a sequence of tokens (integers representing text), it outputs a probability distribution over the vocabulary — every possible next token gets a score. The model then samples from this distribution to generate the next word. Repeat, and you get fluent text.</p>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p><em>What is a token?</em> A token is the smallest unit of text the model processes. It is not always a whole word — “unbelievable” might be two tokens: “unbel” and “ievable”. Chapter 3 explains exactly how text is split into tokens.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="how-gpt-works" class="level2" data-number="1.2">
+<h2 data-number="1.2" class="anchored" data-anchor-id="how-gpt-works"><span class="header-section-number">1.2</span> How GPT Works</h2>
+<p>Imagine texting with a really smart friend who has read every book, article, and website ever written. You send a message, they think for a split second, and they reply with exactly the right words. GPT works like that friend — except instead of a brain, it uses a chain of math operations called a <em>pipeline</em>.</p>
+<p>Every word GPT produces goes through these seven steps, in order:</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-ch01-gpt-pipeline" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ch01-gpt-pipeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<div>
+<svg width="672" height="480" viewbox="14.40 14.40 271.64 610.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(18.4 606)">
+<title>gpt_pipeline</title>
+<!-- input -->
+<g id="node1" class="node">
+<title>input</title>
+<path fill="#f0f8e8" stroke="#228811" stroke-width="1.5" d="M172.23,-587.5C172.23,-587.5 77,-587.5 77,-587.5 71,-587.5 65,-581.5 65,-575.5 65,-575.5 65,-556.9 65,-556.9 65,-550.9 71,-544.9 77,-544.9 77,-544.9 172.23,-544.9 172.23,-544.9 178.23,-544.9 184.23,-550.9 184.23,-556.9 184.23,-556.9 184.23,-575.5 184.23,-575.5 184.23,-581.5 178.23,-587.5 172.23,-587.5"></path>
+<text text-anchor="middle" x="124.62" y="-569.8" font-family="Courier,monospace" font-size="12.00">Your text</text>
+<text text-anchor="middle" x="124.62" y="-555.4" font-family="Courier,monospace" font-size="12.00">"the cat sat"</text>
+</g>
+<!-- tokenizer -->
+<g id="node2" class="node">
+<title>tokenizer</title>
+<path fill="#e8f4fd" stroke="#1177bb" stroke-width="1.5" d="M187.04,-508.7C187.04,-508.7 62.2,-508.7 62.2,-508.7 56.2,-508.7 50.2,-502.7 50.2,-496.7 50.2,-496.7 50.2,-478.1 50.2,-478.1 50.2,-472.1 56.2,-466.1 62.2,-466.1 62.2,-466.1 187.04,-466.1 187.04,-466.1 193.04,-466.1 199.04,-472.1 199.04,-478.1 199.04,-478.1 199.04,-496.7 199.04,-496.7 199.04,-502.7 193.04,-508.7 187.04,-508.7"></path>
+<text text-anchor="middle" x="124.62" y="-491" font-family="Courier,monospace" font-size="12.00">Step 1 &nbsp;Tokenizer</text>
+<text text-anchor="middle" x="124.62" y="-476.6" font-family="Courier,monospace" font-size="12.00">→ integer IDs</text>
+</g>
+<!-- input&#45;&gt;tokenizer -->
+<g id="edge1" class="edge">
+<title>input-&gt;tokenizer</title>
+<path fill="none" stroke="#cc8800" stroke-width="2" d="M124.62,-544.62C124.62,-536.11 124.62,-526.11 124.62,-516.92"></path>
+<polygon fill="#cc8800" stroke="#cc8800" stroke-width="2" points="127.42,-516.77 124.62,-508.77 121.82,-516.77 127.42,-516.77"></polygon>
+</g>
+<!-- embedding -->
+<g id="node3" class="node">
+<title>embedding</title>
+<path fill="#e8f4fd" stroke="#1177bb" stroke-width="1.5" d="M187.04,-429.9C187.04,-429.9 62.2,-429.9 62.2,-429.9 56.2,-429.9 50.2,-423.9 50.2,-417.9 50.2,-417.9 50.2,-399.3 50.2,-399.3 50.2,-393.3 56.2,-387.3 62.2,-387.3 62.2,-387.3 187.04,-387.3 187.04,-387.3 193.04,-387.3 199.04,-393.3 199.04,-399.3 199.04,-399.3 199.04,-417.9 199.04,-417.9 199.04,-423.9 193.04,-429.9 187.04,-429.9"></path>
+<text text-anchor="middle" x="124.62" y="-412.2" font-family="Courier,monospace" font-size="12.00">Step 2 &nbsp;Embedding</text>
+<text text-anchor="middle" x="124.62" y="-397.8" font-family="Courier,monospace" font-size="12.00">→ word vectors</text>
+</g>
+<!-- tokenizer&#45;&gt;embedding -->
+<g id="edge2" class="edge">
+<title>tokenizer-&gt;embedding</title>
+<path fill="none" stroke="#cc8800" stroke-width="2" d="M124.62,-465.82C124.62,-457.31 124.62,-447.31 124.62,-438.12"></path>
+<polygon fill="#cc8800" stroke="#cc8800" stroke-width="2" points="127.42,-437.97 124.62,-429.97 121.82,-437.97 127.42,-437.97"></polygon>
+</g>
+<!-- positional -->
+<g id="node4" class="node">
+<title>positional</title>
+<path fill="#e8f4fd" stroke="#1177bb" stroke-width="1.5" d="M223.05,-351.1C223.05,-351.1 26.19,-351.1 26.19,-351.1 20.19,-351.1 14.19,-345.1 14.19,-339.1 14.19,-339.1 14.19,-320.5 14.19,-320.5 14.19,-314.5 20.19,-308.5 26.19,-308.5 26.19,-308.5 223.05,-308.5 223.05,-308.5 229.05,-308.5 235.05,-314.5 235.05,-320.5 235.05,-320.5 235.05,-339.1 235.05,-339.1 235.05,-345.1 229.05,-351.1 223.05,-351.1"></path>
+<text text-anchor="middle" x="124.62" y="-333.4" font-family="Courier,monospace" font-size="12.00">Step 3 &nbsp;Positional Encoding</text>
+<text text-anchor="middle" x="124.62" y="-319" font-family="Courier,monospace" font-size="12.00">→ vectors with position</text>
+</g>
+<!-- embedding&#45;&gt;positional -->
+<g id="edge3" class="edge">
+<title>embedding-&gt;positional</title>
+<path fill="none" stroke="#cc8800" stroke-width="2" d="M124.62,-387.02C124.62,-378.51 124.62,-368.51 124.62,-359.32"></path>
+<polygon fill="#cc8800" stroke="#cc8800" stroke-width="2" points="127.42,-359.17 124.62,-351.17 121.82,-359.17 127.42,-359.17"></polygon>
+</g>
+<!-- transformer -->
+<g id="node5" class="node">
+<title>transformer</title>
+<path fill="#fff8e8" stroke="#cc8800" stroke-width="1.5" d="M237.35,-272.3C237.35,-272.3 11.88,-272.3 11.88,-272.3 5.88,-272.3 -0.12,-266.3 -0.12,-260.3 -0.12,-260.3 -0.12,-241.7 -0.12,-241.7 -0.12,-235.7 5.88,-229.7 11.88,-229.7 11.88,-229.7 237.35,-229.7 237.35,-229.7 243.35,-229.7 249.35,-235.7 249.35,-241.7 249.35,-241.7 249.35,-260.3 249.35,-260.3 249.35,-266.3 243.35,-272.3 237.35,-272.3"></path>
+<text text-anchor="middle" x="124.62" y="-254.6" font-family="Courier,monospace" font-size="12.00">Step 4 &nbsp;Transformer Blocks × N</text>
+<text text-anchor="middle" x="124.62" y="-240.2" font-family="Courier,monospace" font-size="12.00">(Attention + Feed-Forward)</text>
+</g>
+<!-- positional&#45;&gt;transformer -->
+<g id="edge4" class="edge">
+<title>positional-&gt;transformer</title>
+<path fill="none" stroke="#cc8800" stroke-width="2" d="M124.62,-308.22C124.62,-299.71 124.62,-289.71 124.62,-280.52"></path>
+<polygon fill="#cc8800" stroke="#cc8800" stroke-width="2" points="127.42,-280.37 124.62,-272.37 121.82,-280.37 127.42,-280.37"></polygon>
+</g>
+<!-- projection -->
+<g id="node6" class="node">
+<title>projection</title>
+<path fill="#e8f4fd" stroke="#1177bb" stroke-width="1.5" d="M215.65,-193.5C215.65,-193.5 33.59,-193.5 33.59,-193.5 27.59,-193.5 21.59,-187.5 21.59,-181.5 21.59,-181.5 21.59,-162.9 21.59,-162.9 21.59,-156.9 27.59,-150.9 33.59,-150.9 33.59,-150.9 215.65,-150.9 215.65,-150.9 221.65,-150.9 227.65,-156.9 227.65,-162.9 227.65,-162.9 227.65,-181.5 227.65,-181.5 227.65,-187.5 221.65,-193.5 215.65,-193.5"></path>
+<text text-anchor="middle" x="124.62" y="-175.8" font-family="Courier,monospace" font-size="12.00">Step 5 &nbsp;Vocab Projection</text>
+<text text-anchor="middle" x="124.62" y="-161.4" font-family="Courier,monospace" font-size="12.00">→ scores for every word</text>
+</g>
+<!-- transformer&#45;&gt;projection -->
+<g id="edge5" class="edge">
+<title>transformer-&gt;projection</title>
+<path fill="none" stroke="#cc8800" stroke-width="2" d="M124.62,-229.42C124.62,-220.91 124.62,-210.91 124.62,-201.72"></path>
+<polygon fill="#cc8800" stroke="#cc8800" stroke-width="2" points="127.42,-201.57 124.62,-193.57 121.82,-201.57 127.42,-201.57"></polygon>
+</g>
+<!-- softmax -->
+<g id="node7" class="node">
+<title>softmax</title>
+<path fill="#e8f4fd" stroke="#1177bb" stroke-width="1.5" d="M187.04,-114.7C187.04,-114.7 62.2,-114.7 62.2,-114.7 56.2,-114.7 50.2,-108.7 50.2,-102.7 50.2,-102.7 50.2,-84.1 50.2,-84.1 50.2,-78.1 56.2,-72.1 62.2,-72.1 62.2,-72.1 187.04,-72.1 187.04,-72.1 193.04,-72.1 199.04,-78.1 199.04,-84.1 199.04,-84.1 199.04,-102.7 199.04,-102.7 199.04,-108.7 193.04,-114.7 187.04,-114.7"></path>
+<text text-anchor="middle" x="124.62" y="-97" font-family="Courier,monospace" font-size="12.00">Step 6 &nbsp;Softmax</text>
+<text text-anchor="middle" x="124.62" y="-82.6" font-family="Courier,monospace" font-size="12.00">→ probabilities</text>
+</g>
+<!-- projection&#45;&gt;softmax -->
+<g id="edge6" class="edge">
+<title>projection-&gt;softmax</title>
+<path fill="none" stroke="#cc8800" stroke-width="2" d="M124.62,-150.62C124.62,-142.11 124.62,-132.11 124.62,-122.92"></path>
+<polygon fill="#cc8800" stroke="#cc8800" stroke-width="2" points="127.42,-122.77 124.62,-114.77 121.82,-122.77 127.42,-122.77"></polygon>
+</g>
+<!-- output -->
+<g id="node8" class="node">
+<title>output</title>
+<path fill="#f0f8e8" stroke="#228811" stroke-width="1.5" d="M161.63,-36C161.63,-36 87.61,-36 87.61,-36 81.61,-36 75.61,-30 75.61,-24 75.61,-24 75.61,-12 75.61,-12 75.61,-6 81.61,0 87.61,0 87.61,0 161.63,0 161.63,0 167.63,0 173.63,-6 173.63,-12 173.63,-12 173.63,-24 173.63,-24 173.63,-30 167.63,-36 161.63,-36"></path>
+<text text-anchor="middle" x="124.62" y="-14.4" font-family="Courier,monospace" font-size="12.00">Next word!</text>
+</g>
+<!-- softmax&#45;&gt;output -->
+<g id="edge7" class="edge">
+<title>softmax-&gt;output</title>
+<path fill="none" stroke="#cc8800" stroke-width="2" d="M124.62,-71.95C124.62,-63.47 124.62,-53.53 124.62,-44.57"></path>
+<polygon fill="#cc8800" stroke="#cc8800" stroke-width="2" points="127.42,-44.35 124.62,-36.35 121.82,-44.35 127.42,-44.35"></polygon>
+</g>
+</g>
+</svg>
+</div>
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch01-gpt-pipeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;1.1: The GPT pipeline: from input text to predicted next word, in seven steps
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<p><em>Step 1 — Tokenization (Chapter 3).</em> Before GPT can think about your text, it has to chop it into small pieces called <em>tokens</em>. Think of tokens like LEGO bricks: you break a sentence apart, and GPT works with the individual bricks. The phrase <code>"the cat"</code> might become three bricks with serial numbers like <code>[1, 428, 3797]</code>.</p>
+<p><em>Step 2 — Embedding (Chapter 4).</em> A number like <code>428</code> is just an ID — it has no meaning by itself. So GPT looks each ID up in a giant table and swaps it for a list of hundreds of numbers called a <em>vector</em>. Picture a map where every word has its own location. Similar words end up close together: “cat” and “kitten” are neighbors, while “cat” and “spaceship” are far apart.</p>
+<p><em>Step 3 — Positional Encoding (Chapter 5).</em> Here is a puzzle: does “dog bites man” mean the same thing as “man bites dog”? Obviously not — but if GPT only sees individual words and ignores their order, it cannot tell the difference. Positional encoding adds a tiny “position tag” to each word’s vector so GPT knows which word came first, second, and so on.</p>
+<p><em>Step 4 — Transformer Blocks (Chapters 6–9).</em> This is where the real thinking happens. GPT passes the vectors through a stack of identical layers called <em>transformer blocks</em>. Inside each block, two things happen back-to-back:</p>
+<ul>
+<li><em>Attention</em> — every word looks at every other word and asks “which of you matters most to me right now?” For example, the word “it” in “I kicked the ball and it bounced” needs to figure out that “it” refers to “ball”.</li>
+<li><em>Feed-forward</em> — each word’s vector gets processed through a small math circuit that stores facts from training.</li>
+</ul>
+<p>There can be dozens of these blocks stacked on top of each other. Each layer builds a slightly deeper understanding of the text.</p>
+<p><em>Step 5 — Vocab Projection (Chapter 10).</em> After passing through all the blocks, GPT has a rich, updated vector for the last word in your prompt. Now it needs to turn that into a real prediction: “what word should come next?” It does this by scoring every word in its vocabulary — all 50,000-plus of them. These raw scores are called <em>logits</em>.</p>
+<p><em>Step 6 — Softmax (Chapter 10).</em> Raw scores are hard to work with, so GPT converts them into proper probabilities that add up to 100%. The highest-probability word is the model’s best guess. It samples from the top options to avoid always giving the same robotic answer.</p>
+<p><em>Step 7 — Loss and Training (Chapters 11–12).</em> GPT did not start out smart. During training, it read billions of sentences and kept trying to predict the next word — getting it wrong most of the time at first. Each mistake triggered a feedback signal called <em>backpropagation</em> that nudged millions of internal numbers a tiny bit in the right direction. After trillions of these small nudges, the model got very good at the guessing game.</p>
+<p>That’s GPT from start to finish. The rest of this book builds each step from scratch — in math, in Python code, and in step-by-step diagrams.</p>
+</section>
+<section id="a-brief-history-of-gpt" class="level2" data-number="1.3">
+<h2 data-number="1.3" class="anchored" data-anchor-id="a-brief-history-of-gpt"><span class="header-section-number">1.3</span> A Brief History of GPT</h2>
+<p>GPT did not appear out of nowhere. It is the result of more than sixty years of research — a long chain of ideas, failures, and breakthroughs. Here is the story, told simply.</p>
+<p><em>1950s–1980s — The Birth of Machine Learning</em></p>
+<p>Early computers followed strict rules written by programmers. If you wanted a computer to recognise a cat, you had to describe a cat in code: “four legs, pointy ears, fur…” That worked for simple things but fell apart for anything complicated.</p>
+<p>Researchers started asking a different question: what if the computer could <em>learn the rules itself</em> by looking at lots of examples? That idea became <em>machine learning</em>. Instead of coding rules by hand, you feed the machine thousands of cat photos, label them “cat”, and let it figure out the pattern.</p>
+<p><em>1943–1986 — Neural Networks</em></p>
+<p>Inspired by the human brain, researchers built <em>neural networks</em> — programs made of many simple math nodes connected together, loosely like neurons. Each node takes some numbers in, does a small calculation, and passes the result on.</p>
+<p>In 1986, a key paper by Geoffrey Hinton and others showed how to train these networks using an algorithm called <em>backpropagation</em>. Think of it like a teacher who marks your test, finds every mistake, and tells you exactly how much to adjust each answer. This was huge — but computers at the time were too slow for it to become widely useful yet.</p>
+<p><em>2012 — The Deep Learning Explosion</em></p>
+<p>Fast-forward to 2012. A neural network called AlexNet entered an image-recognition contest and demolished the competition. It won by a margin so wide that the whole field changed overnight. The secret ingredient was <em>deep learning</em> — stacking many layers of neurons on top of each other — combined with powerful graphics cards (GPUs) that could run the math fast enough.</p>
+<p>Suddenly every company poured money into neural networks.</p>
+<p><em>2013 — Word Vectors (Word2Vec)</em></p>
+<p>A team at Google figured out how to teach a neural network to read text. They trained it to predict which words tend to appear near each other. The surprising result: the network assigned each word a list of numbers (a <em>vector</em>), and similar words ended up with similar numbers. You could even do word arithmetic: “king” − “man” + “woman” ≈ “queen”. Language had become math.</p>
+<p><em>2014–2015 — Sequence Models and Attention</em></p>
+<p>To translate a sentence — say, from English to French — models needed to process words in order. Researchers used networks called <em>RNNs</em> (Recurrent Neural Networks) and <em>LSTMs</em> for this. But they had a problem: long sentences broke them. By the time the model reached the end of a paragraph, it had mostly forgotten the beginning.</p>
+<p>In 2015, researchers introduced <em>attention</em>. Instead of forcing the model to squeeze everything into one memory slot, attention let it look back at any earlier word at any time — like being allowed to flip back to any page of your notes during an exam. This made translation much better.</p>
+<p><em>2017 — “Attention Is All You Need”</em></p>
+<p>A team at Google published a paper with that bold title. They asked: what if we got rid of the old word-by-word processing entirely and used <em>only</em> attention? The result was the <em>transformer</em> — the architecture that GPT is built on. The transformer could look at all the words in a sentence at the same time, in parallel, which made it dramatically faster to train and better at long-range reasoning.</p>
+<p><em>2018 — GPT-1 and BERT</em></p>
+<p>Two important models appeared within months of each other.</p>
+<p>OpenAI released <em>GPT-1</em>, which trained a transformer to do one simple task: read text and predict the next word. After seeing enough text, the model picked up grammar, facts, and reasoning as a side effect. It had 117 million <em>parameters</em> — the tunable numbers inside the network (imagine dials on a mixing board).</p>
+<p>Google released <em>BERT</em>, which trained a transformer to predict missing words in the middle of a sentence instead of just the next one. BERT became the backbone of Google Search for years.</p>
+<p><em>2019 — GPT-2</em></p>
+<p>OpenAI scaled GPT-1 up to 1.5 billion parameters and fed it text scraped from the internet. The result was striking: GPT-2 could write paragraphs that sounded like a real person wrote them. OpenAI were nervous enough about misuse that they released it in stages rather than all at once.</p>
+<p><em>2020 — GPT-3</em></p>
+<p>Another scale jump: 175 billion parameters, trained on a huge chunk of the internet, books, and code. GPT-3 could write essays, answer questions, translate, summarise, and generate code — without being specifically trained for any of those things. It had just absorbed so much human writing that it learned to generalise. Developers started building products on top of it via an API, and a new industry was born.</p>
+<p><em>2023 — LLaMA and the Open-Source Wave</em></p>
+<p>Until now, the most powerful models were locked behind the walls of big companies. Meta changed that by releasing <em>LLaMA</em> — a family of models that could run on a single powerful laptop. Researchers and hobbyists could finally experiment with a state-of-the-art model without needing a data centre. Hundreds of variants appeared within weeks: Alpaca, Vicuna, Mistral, and many more. The open-source AI ecosystem exploded.</p>
+<p><em>2022–2023 — ChatGPT and GPT-4</em></p>
+<p>OpenAI added a training step called <em>reinforcement learning from human feedback</em> (RLHF). Human raters scored the model’s replies, and the model learned to be more helpful and less likely to say harmful things. The result was <em>ChatGPT</em>, released in November 2022 — the fastest app to reach 100 million users in history.</p>
+<p>GPT-4 followed in 2023. It understood images as well as text, scored at or above human level on many standardised exams, and became the foundation for countless products and services.</p>
+<p><em>Now — A Fast-Moving Field</em></p>
+<p>Since then, new models have appeared every few months: Claude (Anthropic), Gemini (Google), Mistral, Qwen, DeepSeek, and many others. Each brings new ideas: longer context windows, better reasoning, cheaper inference, multilingual support.</p>
+<p>The race is still on. But no matter how fancy the model, the fundamentals stay the same. Everything you learn in this book — tokens, embeddings, attention, transformer blocks, training — is the engine underneath all of them.</p>
+
+
+</section>
+
+</main> <!-- /main -->
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+      const outerScaffold = trigger.parentElement.cloneNode(true);
+      const codeEl = outerScaffold.querySelector('code');
+      for (const childEl of codeEl.children) {
+        if (isCodeAnnotation(childEl)) {
+          childEl.remove();
+        }
+      }
+      return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp("https:\/\/soasme\.github\.io\/gpt-explained\/");
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+            // target, if specified
+            link.setAttribute("target", "_blank");
+            if (link.getAttribute("rel") === null) {
+              link.setAttribute("rel", "noopener");
+            }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script>
+<nav class="page-navigation">
+  <div class="nav-page nav-page-previous">
+      <a href="./parts/foundations.html" class="pagination-link" aria-label="Foundations">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Foundations</span>
+      </a>          
+  </div>
+  <div class="nav-page nav-page-next">
+      <a href="./ch02-notation.html" class="pagination-link" aria-label="Notation and Definitions">
+        <span class="nav-page-text"><span class="chapter-number">2</span>&nbsp; <span class="chapter-title">Notation and Definitions</span></span> <i class="bi bi-arrow-right-short"></i>
+      </a>
+  </div>
+</nav>
+</div> <!-- /content -->
+<footer class="footer">
+  <div class="nav-footer">
+    <div class="nav-footer-left">
+<p>GPT Explained was written by Ju Lin.</p>
+</div>   
+    <div class="nav-footer-center">
+      &nbsp;
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch01-introduction.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="nav-footer-right">
+<p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
+</div>
+  </div>
+</footer>
+
+
+
+
+</body></html>
