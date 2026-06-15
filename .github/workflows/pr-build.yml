@@ -38,5 +38,8 @@ jobs:
     - name: Run code examples
       run: .venv/bin/python src/python/run_book_code.py
 
+    - name: Generate contributors list
+      run: .venv/bin/python tools/refresh_code_snippets.py
+
     - name: Build book
       run: quarto render
