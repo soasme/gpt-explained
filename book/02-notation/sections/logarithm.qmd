@@ -30,15 +30,15 @@ def natural_exp(value: float) -> float:
 <!-- /snippet -->
 
 Two anchor values are worth remembering.
-If the exponent is $0$, the result is $1$.
-If the exponent is $1$, the result is $e$:
+If the exponent is $0.0$, the result is $1.0$.
+If the exponent is $1.0$, the result is $e$:
 
 $$
-e^0 = 1
+e^{0.0} = 1.0
 $$
 
 $$
-e^1 \approx 2.718
+e^{1.0} \approx 2.718
 $$
 
 ### Natural Logarithm
@@ -61,11 +61,11 @@ def natural_log(value: float) -> float:
 Some useful values:
 
 $$
-\ln(1) = 0
+\ln(1.0) = 0.0
 $$
 
 $$
-\ln(e) = 1
+\ln(e) = 1.0
 $$
 
 $$
@@ -76,12 +76,48 @@ $$
 \ln(0.1) \approx -2.303
 $$
 
-As the probability gets smaller, the negative log gets larger.
+As the probability gets smaller, the negative log gets larger, as shown in @fig-ch02-log-loss.
 For example:
 
 $$
 -\ln(0.01) = 4.605
 $$
+
+```{python}
+#| label: fig-ch02-log-loss
+#| fig-cap: "The natural log and its negative — as probability shrinks toward zero, the loss grows steeply"
+#| echo: false
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+DARK='#222222'; BLUE='#1177BB'; RED='#CC2222'; MONO='monospace'
+
+p = np.linspace(0.01, 1.0, 300)
+ln_p = np.log(p)
+neg_ln_p = -np.log(p)
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4), facecolor='white')
+
+ax1.set_facecolor('white')
+ax1.plot(p, ln_p, color=BLUE, lw=2.5)
+ax1.axhline(0, color=DARK, lw=0.5, alpha=0.4)
+ax1.set_xlabel('x', fontfamily=MONO, fontsize=12)
+ax1.set_ylabel('ln(x)', fontfamily=MONO, fontsize=12)
+ax1.set_title('Natural logarithm', fontfamily=MONO, fontsize=12, color=DARK)
+for sp in ['top','right']: ax1.spines[sp].set_visible(False)
+
+ax2.set_facecolor('white')
+ax2.plot(p, neg_ln_p, color=RED, lw=2.5)
+ax2.set_xlabel('probability p', fontfamily=MONO, fontsize=12)
+ax2.set_ylabel('-ln(p)  [loss]', fontfamily=MONO, fontsize=12)
+ax2.set_title('Negative log as loss', fontfamily=MONO, fontsize=12, color=DARK)
+for sp in ['top','right']: ax2.spines[sp].set_visible(False)
+
+plt.suptitle('ln(x) and -ln(p): low probability means high loss', fontfamily=MONO, fontsize=12, color=DARK)
+plt.tight_layout()
+plt.show()
+```
 
 Two identities appear often when simplifying logarithms:
 

@@ -6,6 +6,7 @@ output
 
 # build artifacts
 _book/
+_freeze/
 .quarto/
 .tools/
 gpt-explained.html

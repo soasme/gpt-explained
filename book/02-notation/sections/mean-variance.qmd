@@ -26,7 +26,7 @@ For $x = [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]$, the sum is $40.0$ and there 
 So:
 
 $$
-\mu = \frac{40.0}{8} = 5.0
+\mu = \frac{40.0}{8.0} = 5.0
 $$
 
 ### Variance
@@ -60,7 +60,7 @@ $$
 Their average is:
 
 $$
-\sigma^2 = \frac{9.0+1.0+1.0+1.0+0.0+0.0+4.0+16.0}{8} = 4.0
+\sigma^2 = \frac{9.0+1.0+1.0+1.0+0.0+0.0+4.0+16.0}{8.0} = 4.0
 $$
 
 ### Standard Deviation
@@ -85,3 +85,44 @@ $$
 $$
 
 Layer normalization uses this value to divide each centered activation by its standard deviation.
+@fig-ch02-mean-variance illustrates the example data with mean and standard deviation marked.
+
+```{python}
+#| label: fig-ch02-mean-variance
+#| fig-cap: "Data points with mean and standard deviation — layer normalization centers and rescales like this"
+#| echo: false
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+DARK='#222222'; BLUE='#1177BB'; RED='#CC2222'; GREEN='#228811'; MONO='monospace'
+
+values = [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]
+mu = 5.0
+sigma = 2.0
+
+fig, ax = plt.subplots(figsize=(9, 4), facecolor='white')
+ax.set_facecolor('white')
+
+ax.scatter(values, [0]*len(values), color=BLUE, s=80, zorder=3)
+ax.axvline(mu, color=RED, lw=2.0, label=f'mean μ = {mu}')
+ax.axvspan(mu - sigma, mu + sigma, alpha=0.12, color=GREEN,
+           label=f'μ ± σ = [{mu-sigma}, {mu+sigma}]')
+ax.axvline(mu - sigma, color=GREEN, lw=1.2, linestyle='--', alpha=0.7)
+ax.axvline(mu + sigma, color=GREEN, lw=1.2, linestyle='--', alpha=0.7)
+
+ax.annotate('', xy=(mu+sigma, 0.06), xytext=(mu-sigma, 0.06),
+            arrowprops=dict(arrowstyle='<->', color=GREEN, lw=1.5))
+ax.text(mu, 0.07, 'σ = 2.0', ha='center', fontfamily=MONO, fontsize=10, color=GREEN)
+
+ax.set_xlabel('value', fontfamily=MONO, fontsize=12)
+ax.set_yticks([])
+ax.set_title('Mean and standard deviation of [2,4,4,4,5,5,7,9]',
+             fontfamily=MONO, fontsize=12, color=DARK)
+ax.legend(fontsize=10, prop={'family': MONO})
+for sp in ['top','right','left']: ax.spines[sp].set_visible(False)
+ax.set_ylim(-0.05, 0.15)
+
+plt.tight_layout()
+plt.show()
+```

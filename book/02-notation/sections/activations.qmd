@@ -58,6 +58,33 @@ For $x = -1.0, 0.0, 1.0, 2.0$:
 | 2.0  | 2.0 |  1.955
 |===
 
-Note: GELU is smooth near 0, while ReLU has a hard kink.
+GELU is smooth near zero, while ReLU has a hard kink at zero, as shown in @fig-ch02-activations.
 
-![ReLU vs GELU — GELU is smooth; ReLU has a hard corner at zero](images/ch02_activations.png){#fig-ch02-activations fig-alt="Line chart comparing ReLU and GELU over the range x in -3 to 3."}
+```{python}
+#| label: fig-ch02-activations
+#| fig-cap: "ReLU vs GELU — GELU is smooth; ReLU has a hard corner at zero"
+#| echo: false
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+DARK='#222222'; BLUE='#1177BB'; GREEN='#228811'; MONO='monospace'
+
+x = np.linspace(-3, 3, 300)
+relu = np.maximum(0, x)
+gelu = 0.5 * x * (1 + np.tanh(np.sqrt(2/np.pi) * (x + 0.044715 * x**3)))
+
+fig, ax = plt.subplots(figsize=(8, 5), facecolor='white')
+ax.set_facecolor('white')
+ax.axhline(0, color=DARK, lw=0.5, alpha=0.3)
+ax.axvline(0, color=DARK, lw=0.5, alpha=0.3)
+ax.plot(x, relu, color=BLUE, lw=2.5, label='ReLU')
+ax.plot(x, gelu, color=GREEN, lw=2.5, label='GELU', linestyle='--')
+ax.legend(fontsize=12, prop={'family': MONO})
+ax.set_xlabel('x', fontfamily=MONO, fontsize=12)
+ax.set_ylabel('activation(x)', fontfamily=MONO, fontsize=12)
+ax.set_title('Activation functions: ReLU vs GELU', fontfamily=MONO, fontsize=12, color=DARK)
+for sp in ['top','right']: ax.spines[sp].set_visible(False)
+plt.tight_layout()
+plt.show()
+```

@@ -26,13 +26,17 @@ jobs:
         python-version: '3.12'
 
     - name: Install Python dependencies
-      run: pip install matplotlib pillow
+      run: |
+        python -m venv .venv
+        .venv/bin/pip install -r requirements.txt
 
     - name: Generate images
-      run: bash src/matplotlib/render_all.sh
+      run: |
+        mkdir -p images
+        .venv/bin/python src/matplotlib/render_all.py
 
     - name: Run code examples
-      run: python3 src/python/run_book_code.py
+      run: .venv/bin/python src/python/run_book_code.py
 
     - name: Build book
       run: quarto render
