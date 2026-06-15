@@ -20,7 +20,7 @@
 | 8 | **Vocabulary Projection** — From Vectors to Words |
 | 9 | **Loss** — Are we adjusting the model weights the right way? |
 | 10 | **Training** — Backpropagation to adjust weights |
-| A | **microGPT in Python** — Complete Runnable Code |
+| A | **GPT in Python** — Complete Runnable Code |
 | B | **Math Primer** — Every prerequisite in one place |
 
 ---
@@ -49,7 +49,7 @@ The Python files in `src/python/` are the source of truth for code shown in the 
 AsciiDoc listings include tagged regions from those files, so update the Python first and let the book reference it.
 
 ```bash
-# Run the complete microGPT demo
+# Run the complete GPT demo
 python3 src/python/microgpt.py
 
 # Run the tiny BPE tokenizer demo

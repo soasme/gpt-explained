@@ -1,6 +1,6 @@
 namespace :book do
 
-  version_string = `git describe --tags --abbrev=0`.chomp
+  version_string = `git describe --tags --abbrev=0 2>/dev/null`.chomp
   if version_string.empty?
     version_string = '0'
   else
@@ -38,12 +38,7 @@ namespace :book do
 
   desc 'build basic book formats'
   task :build => [:build_html, :build_epub, :build_fb2, :build_mobi, :build_pdf] do
-    begin
-        Rake::Task['book:check'].invoke
-        rescue => e
-        puts e.message
-        puts 'Error when checking books (ignored)'
-    end
+    Rake::Task['book:check'].invoke
   end
 
   desc 'build basic book formats (for ci)'
@@ -107,8 +102,8 @@ namespace :book do
   task :check => [:build_html, :build_epub] do
       puts 'Checking generated books'
 
-      sh "htmlproofer gpt-explained.html"
-      sh "epubcheck gpt-explained.epub"
+      sh "htmlproofer gpt-explained.html" if system('which htmlproofer > /dev/null 2>&1')
+      sh "epubcheck gpt-explained.epub" if system('java -version > /dev/null 2>&1')
   end
 
   desc 'Run every Python code example used by the book'
