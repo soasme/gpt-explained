@@ -1,0 +1,46 @@
+## 12.4 Backprop Through a Linear Layer
+
+The most common operation in a transformer is a *linear layer*: $y = Wx$.
+
+Given the upstream gradient $\delta = \frac{\partial \mathcal{L}}{\partial y}$ (arriving from the layer above), the chain rule gives:
+
+$$
+\frac{\partial \mathcal{L}}{\partial W} = \delta \cdot x^\top
+\qquad
+\frac{\partial \mathcal{L}}{\partial x} = W^\top \cdot \delta
+$$
+
+The first equation tells us how to update $W$.
+The second passes the gradient backward to whatever fed $x$ into this layer.
+
+### Step 2: Linear layer backward pass
+
+<!-- snippet: src/python/train.py#linear_backward -->
+```python
+def linear_backward(delta: Vector, weights: Matrix, x: Vector) -> tuple[Matrix, Vector]:
+    grad_w = [[delta_i * x_j for x_j in x] for delta_i in delta]
+    grad_x = [sum(weights[i][j] * delta[i] for i in range(len(delta))) for j in range(len(x))]
+    return grad_w, grad_x
+```
+<!-- /snippet -->
+
+## 12.6 Accumulating Gradients Across the Sequence
+
+We compute the softmax-CE gradient independently at each position $t$.
+But all positions share the same unembedding matrix $W_u$ (and the same transformer weights).
+Their gradient contributions must be _summed_ before updating any weight.
+
+### Step 4: Summing gradient contributions
+
+<!-- snippet: src/python/train.py#accumulate_gradients -->
+```python
+def accumulate_gradients(gradients: Sequence[Matrix]) -> Matrix:
+    rows, cols = shape(gradients[0])
+    total = make_matrix(rows, cols)
+    for gradient in gradients:
+        total = matrix_add(total, gradient)
+    return total
+```
+<!-- /snippet -->
+
+The more a weight influenced the output at many positions, the larger (and more reliable) its accumulated gradient.

@@ -1,0 +1,28 @@
+## 1.1 What Is GPT?
+
+GPT stands for *Generative Pre-trained Transformer*.
+
+*Generative* — it produces new text, one token at a time, rather than classifying or retrieving.
+
+*Pre-trained* — before you ever use it, the model was trained on a vast corpus of text from the internet, books, and code.
+It learned the statistical patterns of language from billions of examples.
+
+*Transformer* — the underlying neural network architecture.
+The transformer replaced recurrent networks in 2017 and became the backbone of every large language model since.
+
+At its core, a GPT model is a function:
+
+$$
+P(\text{next token} \mid \text{context tokens}) = f_\theta(\text{context})
+$$
+
+Given a sequence of tokens (integers representing text), it outputs a probability distribution over the vocabulary — every possible next token gets a score.
+The model then samples from this distribution to generate the next word.
+Repeat, and you get fluent text.
+
+::: {.callout-note}
+*What is a token?*
+A token is the smallest unit of text the model processes.
+It is not always a whole word — "unbelievable" might be two tokens: "unbel" and "ievable".
+Chapter 3 explains exactly how text is split into tokens.
+:::

@@ -1,7 +1,0 @@
-$$
-\begin{smallmatrix}
-   \circ & \circ & \bullet \\
-\circ  & \circ &\bullet \\
-\circ & \circ & \circ
- \end{smallmatrix}
-$$

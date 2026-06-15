@@ -1,0 +1,9 @@
+## 12.11 Key Takeaways
+
+- *Gradient descent* moves every weight downhill: $\theta \leftarrow \theta - \eta \nabla_\theta \mathcal{L}$.
+- *Partial derivatives* measure the sensitivity of the loss to each individual weight, holding all others fixed.
+- *Backpropagation* is the chain rule applied layer by layer from loss to inputs. Each layer only needs the upstream gradient $\delta$ and its own local derivative — no global information required.
+- *Linear layer backward:* $\frac{\partial \mathcal{L}}{\partial W} = \delta x^\top$, $\frac{\partial \mathcal{L}}{\partial x} = W^\top \delta$. The same two matrices as the forward pass, just transposed and multiplied in a different order.
+- *Softmax-CE gradient* is $P(j) - \mathbb{1}[j = t]$: the model's predicted probability minus the true label. Nearly zero when correct and confident; large when wrong.
+- *Shared weights accumulate gradients* from every position in the sequence before any update is applied.
+- The six-step cycle — forward, loss, backward, accumulate, update, repeat — is all of training. Every weight in the model, over billions of tokens, updated by exactly this loop.

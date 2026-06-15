@@ -1,0 +1,6 @@
+# GPT Explained {.unnumbered}
+
+*A hands-on guide to transformer architecture, from tokens to text generation, with math, matrices, Python, and diagrams.*
+
+This book builds a small GPT-style language model from first principles.
+It starts with tokenization, moves through embeddings and attention, and ends with loss, training, and generation.

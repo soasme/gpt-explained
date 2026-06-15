@@ -1,0 +1,97 @@
+## 1.2 How GPT Works
+
+Imagine texting with a really smart friend who has read every book, article, and website ever written.
+You send a message, they think for a split second, and they reply with exactly the right words.
+GPT works like that friend — except instead of a brain, it uses a chain of math operations called a *pipeline*.
+
+Every word GPT produces goes through these seven steps, in order:
+
+```{dot}
+digraph gpt_pipeline {
+  graph [
+    rankdir=TB,
+    bgcolor="transparent",
+    margin=0.2,
+    nodesep=0.4,
+    ranksep=0.5
+  ];
+  node [
+    shape=box,
+    style="rounded,filled",
+    fontname="Courier",
+    fontsize=12,
+    color="#1177BB",
+    fillcolor="#E8F4FD",
+    penwidth=1.5,
+    margin="0.18,0.10"
+  ];
+  edge [
+    color="#CC8800",
+    penwidth=2,
+    arrowsize=0.8
+  ];
+
+  input     [label="Your text\n\"the cat sat\"",
+             fillcolor="#F0F8E8", color="#228811"];
+  tokenizer [label="Step 1  Tokenizer\n→ integer IDs"];
+  embedding [label="Step 2  Embedding\n→ word vectors"];
+  positional[label="Step 3  Positional Encoding\n→ vectors with position"];
+  transformer[label="Step 4  Transformer Blocks × N\n(Attention + Feed-Forward)",
+              fillcolor="#FFF8E8", color="#CC8800"];
+  projection[label="Step 5  Vocab Projection\n→ scores for every word"];
+  softmax   [label="Step 6  Softmax\n→ probabilities"];
+  output    [label="Next word!",
+             fillcolor="#F0F8E8", color="#228811"];
+
+  input -> tokenizer -> embedding -> positional -> transformer
+        -> projection -> softmax -> output;
+}
+```
+
+*Step 1 — Tokenization (Chapter 3).*
+Before GPT can think about your text, it has to chop it into small pieces called *tokens*.
+Think of tokens like LEGO bricks: you break a sentence apart, and GPT works with the individual bricks.
+The phrase `"the cat"` might become three bricks with serial numbers like `[1, 428, 3797]`.
+
+*Step 2 — Embedding (Chapter 4).*
+A number like `428` is just an ID — it has no meaning by itself.
+So GPT looks each ID up in a giant table and swaps it for a list of hundreds of numbers called a *vector*.
+Picture a map where every word has its own location.
+Similar words end up close together: "cat" and "kitten" are neighbors, while "cat" and "spaceship" are far apart.
+
+*Step 3 — Positional Encoding (Chapter 5).*
+Here is a puzzle: does "dog bites man" mean the same thing as "man bites dog"?
+Obviously not — but if GPT only sees individual words and ignores their order, it cannot tell the difference.
+Positional encoding adds a tiny "position tag" to each word's vector so GPT knows which word came first, second, and so on.
+
+*Step 4 — Transformer Blocks (Chapters 6–9).*
+This is where the real thinking happens.
+GPT passes the vectors through a stack of identical layers called *transformer blocks*.
+Inside each block, two things happen back-to-back:
+
+- *Attention* — every word looks at every other word and asks "which of you matters most to me right now?"
+  For example, the word "it" in "I kicked the ball and it bounced" needs to figure out that "it" refers to "ball".
+- *Feed-forward* — each word's vector gets processed through a small math circuit that stores facts from training.
+
+There can be dozens of these blocks stacked on top of each other.
+Each layer builds a slightly deeper understanding of the text.
+
+*Step 5 — Vocab Projection (Chapter 10).*
+After passing through all the blocks, GPT has a rich, updated vector for the last word in your prompt.
+Now it needs to turn that into a real prediction: "what word should come next?"
+It does this by scoring every word in its vocabulary — all 50,000-plus of them.
+These raw scores are called *logits*.
+
+*Step 6 — Softmax (Chapter 10).*
+Raw scores are hard to work with, so GPT converts them into proper probabilities that add up to 100%.
+The highest-probability word is the model's best guess.
+It samples from the top options to avoid always giving the same robotic answer.
+
+*Step 7 — Loss and Training (Chapters 11–12).*
+GPT did not start out smart.
+During training, it read billions of sentences and kept trying to predict the next word — getting it wrong most of the time at first.
+Each mistake triggered a feedback signal called *backpropagation* that nudged millions of internal numbers a tiny bit in the right direction.
+After trillions of these small nudges, the model got very good at the guessing game.
+
+That's GPT from start to finish.
+The rest of this book builds each step from scratch — in math, in Python code, and in step-by-step diagrams.

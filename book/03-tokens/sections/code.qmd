@@ -1,0 +1,165 @@
+## 3.4 The Code: A Micro-BPE in Python
+
+Python is used throughout this book — it strips away syntactic ceremony so the _structure of computation_ is visible.
+We build from named abstractions upward, one chunk at a time.
+
+*The vocabulary abstraction.*
+Before writing any BPE logic, we name what a vocabulary _is_.
+A vocab maps string tokens to integer IDs.
+We expose three operations — create, extend, lookup — and never touch the underlying list structure from outside:
+
+<!-- snippet: src/python/micro_bpe.py#vocab -->
+```python
+def make_vocab() -> dict[str, int]:
+    return {}
+
+
+def vocab_extend(vocab: dict[str, int], token: str, token_id: int) -> dict[str, int]:
+    return vocab | {token: token_id}
+
+
+def vocab_lookup(vocab: dict[str, int], token: str) -> int | None:
+    return vocab.get(token)
+```
+<!-- /snippet -->
+
+The idea: name what you need, implement it once, and never revisit the representation again.
+
+*Characters and corpus.*
+A word enters BPE as a list of single-character strings, followed by `"_"` as an end-of-word marker.
+`words->corpus` is simply `map` over words.
+
+<!-- snippet: src/python/micro_bpe.py#corpus -->
+```python
+def word_to_tokens(word: str) -> list[str]:
+    return list(word) + ["_"]
+
+
+def words_to_corpus(words: Sequence[str]) -> list[list[str]]:
+    return [word_to_tokens(word) for word in words]
+```
+<!-- /snippet -->
+
+*Counting pairs.*
+Every adjacent pair `(a b)` in the corpus is a merge candidate.
+
+<!-- snippet: src/python/micro_bpe.py#pairs -->
+```python
+def adjacent_pairs(tokens: Sequence[str]) -> list[tuple[str, str]]:
+    return list(zip(tokens, tokens[1:]))
+
+
+def count_pairs(corpus: Sequence[Sequence[str]]) -> Counter[tuple[str, str]]:
+    return Counter(pair for tokens in corpus for pair in adjacent_pairs(tokens))
+
+
+def most_frequent(counts: Counter[tuple[str, str]]) -> tuple[str, str]:
+    return max(counts, key=counts.get)
+```
+<!-- /snippet -->
+
+*Applying a merge.*
+Replacing every `(a b)` pair in a token sequence with the concatenated string `"ab"` has a natural recursive structure.
+
+<!-- snippet: src/python/micro_bpe.py#merge -->
+```python
+def merge_pair(tokens: Sequence[str], left: str, right: str) -> list[str]:
+    merged = []
+    i = 0
+    while i < len(tokens):
+        if i + 1 < len(tokens) and tokens[i] == left and tokens[i + 1] == right:
+            merged.append(left + right)
+            i += 2
+        else:
+            merged.append(tokens[i])
+            i += 1
+    return merged
+
+
+def merge_corpus(corpus: Sequence[Sequence[str]], left: str, right: str) -> list[list[str]]:
+    return [merge_pair(tokens, left, right) for tokens in corpus]
+```
+<!-- /snippet -->
+
+*The training loop.*
+`train-bpe` is a single named-let with three accumulators: the current corpus, the growing vocabulary, and the ordered list of merges.
+
+<!-- snippet: src/python/micro_bpe.py#train -->
+```python
+def unique_tokens(corpus: Sequence[Sequence[str]]) -> list[str]:
+    return sorted({token for tokens in corpus for token in tokens})
+
+
+def train_bpe(words: Sequence[str], target_size: int) -> tuple[dict[str, int], list[tuple[str, str]]]:
+    corpus = words_to_corpus(words)
+    vocab = {token: token_id for token_id, token in enumerate(unique_tokens(corpus))}
+    merges = []
+
+    while len(vocab) < target_size:
+        counts = count_pairs(corpus)
+        if not counts:
+            break
+        left, right = most_frequent(counts)
+        new_token = left + right
+        if new_token not in vocab:
+            vocab[new_token] = len(vocab)
+        merges.append((left, right))
+        corpus = merge_corpus(corpus, left, right)
+
+    return vocab, merges
+```
+<!-- /snippet -->
+
+*Encoding.*
+Given trained merge rules, encoding applies them in order to a fresh character sequence.
+
+<!-- snippet: src/python/micro_bpe.py#encode -->
+```python
+def encode(word: str, merges: Sequence[tuple[str, str]], vocab: dict[str, int]) -> list[int]:
+    tokens = word_to_tokens(word)
+    for left, right in merges:
+        tokens = merge_pair(tokens, left, right)
+    missing = [token for token in tokens if token not in vocab]
+    if missing:
+        raise ValueError(f"unknown token(s): {missing}")
+    return [vocab[token] for token in tokens]
+```
+<!-- /snippet -->
+
+*Demo.*
+Run this with `python3 src/python/chapter_demos.py`:
+
+<!-- snippet: src/python/micro_bpe.py#demo -->
+```python
+def demo() -> dict[str, object]:
+    words = ["low", "lower", "newest", "widest"]
+    vocab, merges = train_bpe(words, 20)
+    return {
+        "vocab": vocab,
+        "merges": merges,
+        "low": encode("low", merges, vocab),
+        "lower": encode("lower", merges, vocab),
+    }
+```
+<!-- /snippet -->
+
+Expected output:
+
+```text
+Vocabulary:
+  0 -> l
+  1 -> o
+  ...
+  9 -> lo
+  10 -> low
+  ...
+
+Encoding "low":   (10)
+Encoding "lower": (10 3 4 8)
+```
+
+The following figure shows how each BPE step replaces the most frequent byte pair with a new token.
+{{< include book/03-tokens/diagrams/bpe-merges.qmd >}}
+
+The following figure shows the full tokenization pipeline from raw text to integer IDs.
+{{< include book/03-tokens/diagrams/tokenization-pipeline.qmd >}}

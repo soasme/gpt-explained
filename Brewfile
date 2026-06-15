@@ -1,18 +1,5 @@
-# Ruby runtime
-brew "ruby"
+# Quarto renders the book from Markdown sources.
+cask "quarto"
 
-# Native dependencies for asciidoctor-mathematical (LaTeX math in PDF)
-brew "cmake"
-brew "bison"
-brew "flex"
-brew "cairo"
-brew "pango"
-
-# gdk-pixbuf is needed to build lasem (bundled in mathematical gem)
-brew "gdk-pixbuf"
-
-# Font support for asciidoctor-pdf
-brew "fontconfig"
-
-# Diagram rendering for asciidoctor-diagram Graphviz blocks
+# Graphviz renders DOT diagram blocks used by Quarto.
 brew "graphviz"

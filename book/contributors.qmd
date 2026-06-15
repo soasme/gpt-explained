@@ -1,0 +1,3 @@
+# Contributors {.unnumbered}
+
+{{< include contributors.txt >}}

@@ -1,0 +1,56 @@
+## 8.2 The Math
+
+::: {.callout-note}
+*Math Minute — ReLU and GELU*
+
+A *non-linearity* is a function that makes the network capable of learning complex patterns beyond linear mappings.
+
+`ReLU(x) = max(0, x)` — simple: negative values → 0, positive values unchanged.
+
+$\operatorname{GELU}(x) = x \cdot \Phi(x)$ where $\Phi$ is the standard normal CDF. GELU is smooth and probabilistic. GPT uses GELU. LLaMA and most modern models use `SwiGLU`, a gated variant.
+
+`Sigmoid(x) = 1/(1+e⁻ˣ)` squashes any real number to (0,1). Used in gates.
+:::
+
+For a sequence input $X \in \mathbb{R}^{T\times d}$, the FFN applies identically to each row:
+
+$$
+FFN(X) = \operatorname{GELU}(X W_1 + \mathbf{1}\cdot b_1^{\top}) W_2 + \mathbf{1}\cdot b_2^{\top}
+$$
+
+Breaking it down:
+
+$$
+\begin{aligned}
+H  &= X W_1 + \mathbf{1} b_1^{\top} \in \mathbb{R}^{T \times d_{\text{ff}}} && \text{(expand)} \\
+H' &= \operatorname{GELU}(H)          \in \mathbb{R}^{T \times d_{\text{ff}}} && \text{(activate)} \\
+Y  &= H' W_2 + \mathbf{1} b_2^{\top} \in \mathbb{R}^{T \times d}            && \text{(contract)}
+\end{aligned}
+$$
+
+*Parameter count:*
+
+- $W_1$: $d \times d_{\text{ff}} = d \times 4d = 4d^2$
+- $W_2$: $d_{\text{ff}} \times d = 4d^2$
+- Total: $\approx 8d^2$ — *twice* the parameter count of all attention weight matrices combined!
+
+## 8.3 GELU Deep Dive
+
+The exact GELU formula is:
+
+$$
+\operatorname{GELU}(x) = x \cdot \frac{1}{2} \cdot \left[1 + \operatorname{erf}\!\left(\frac{x}{\sqrt{2}}\right)\right]
+$$
+
+A fast approximation (used in practice):
+
+$$
+\operatorname{GELU}(x) \approx 0.5 \cdot x \cdot (1 + \tanh(\sqrt{2/\pi} \cdot (x + 0.044715 \cdot x^3)))
+$$
+
+Key behaviors:
+
+- `GELU(0) = 0`
+- For large positive `x`: $\operatorname{GELU}(x) \approx x$ (passes through)
+- For large negative `x`: $\operatorname{GELU}(x) \approx 0$ (suppressed)
+- Smooth everywhere — gradient flows through during training

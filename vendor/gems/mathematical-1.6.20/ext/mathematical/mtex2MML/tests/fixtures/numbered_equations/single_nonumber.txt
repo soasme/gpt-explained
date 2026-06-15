@@ -1,6 +1,0 @@
-$$
-\begin{equation}
-        B'&=-\nabla \times E, \nonumber \\
-        E'&=\nabla \times B - 4\pi j,
-\end{equation}
-$$

@@ -1,3 +1,0 @@
-$$
-\ta_\alpha^{\dagger}|0\rangle \equiv  |\alpha\rangle  \tag{eq:2-1a}
-$$

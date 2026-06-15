@@ -1,0 +1,44 @@
+## 10.2 The Math
+
+Given the final hidden state $h_t = X_{\text{final}}[T-1] \in \mathbb{R}^d$:
+
+*Step 1 — Final Layer Norm:*
+
+$$
+\tilde{h}_t = \operatorname{LayerNorm}(h_t)    \in \mathbb{R}^d
+$$
+
+*Step 2 — Vocabulary Projection:*
+
+$$
+\text{logits} = \tilde{h}_t W_u    \in \mathbb{R}^{|V|}
+$$
+
+With weight tying: $W_u = E^{\top}$, so:
+
+$$
+\text{logits}[i] = \tilde{h}_t \cdot E_i
+$$
+
+The logit for token `i` is the dot product of the model's "prediction vector" with token `i`'s embedding.
+Tokens whose embeddings align with the prediction vector get high logits.
+
+*Step 3 — Softmax → Probabilities:*
+
+$$
+P(\text{next} = i \mid \text{context}) = \operatorname{softmax}(\text{logits})[i] = \frac{\exp(\text{logits}[i])}{\sum_j \exp(\text{logits}[j])}
+$$
+
+::: {.callout-note}
+*Math Minute — Temperature*
+
+We can control the "sharpness" of the distribution with a *temperature parameter* $T_{\text{temp}}$:
+
+$P(i) = \operatorname{softmax}(\text{logits} / T_{\text{temp}})[i]$
+
+- $T_{\text{temp}} \to 0$: argmax — always pick the highest-probability token (greedy)
+- $T_{\text{temp}} = 1$: standard softmax
+- $T_{\text{temp}} > 1$: flattens the distribution — more randomness/creativity
+
+Temperature is not a model parameter — it's a sampling hyperparameter set at inference time.
+:::

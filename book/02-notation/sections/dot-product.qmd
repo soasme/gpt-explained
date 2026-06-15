@@ -1,0 +1,61 @@
+## 2.2 Dot Product
+
+The *dot product* (also called inner product) combines two vectors into one scalar.
+It is the basic operation for asking, "how aligned are these two vectors?"
+In GPT, attention scores are dot products between query and key vectors (Chapter 6).
+
+### 2.2.1 Dot Product
+
+The dot product multiplies matching components and then adds the results:
+
+$u \cdot v = \sum_{i=1}^{n} u_i v_i = u_1 v_1 + u_2 v_2 + \ldots + u_n v_n$
+
+That is also the most direct way to write it in Python.
+The `zip` pairs matching components, and `sum` adds the pairwise products.
+
+<!-- snippet: src/python/common.py#dot -->
+```python
+def dot(left: Sequence[float], right: Sequence[float]) -> float:
+    return sum(a * b for a, b in zip(left, right))
+```
+<!-- /snippet -->
+
+With $u = [3, 4, 0]$ and $v = [1, -2, 5]$, the matching products are $3 \cdot 1$, $4 \cdot (-2)$, and $0 \cdot 5$.
+Adding them gives:
+
+$u \cdot v = (3)(1) + (4)(-2) + (0)(5) = 3 - 8 + 0 = -5$
+
+The sign matters.
+A positive dot product means the vectors point somewhat in the same direction.
+A negative dot product means they point somewhat against each other.
+If $u \cdot v = 0$, the vectors are orthogonal (perpendicular).
+
+### 2.2.2 Cosine Similarity
+
+The dot product mixes two things: vector length and direction.
+Cosine similarity removes the length part so we can compare direction alone.
+Starting from the geometric form:
+
+$u \cdot v = \|u\| \|v\| \cos\theta$
+
+we solve for $\cos\theta$:
+
+$\cos\theta = \frac{u \cdot v}{\|u\|\|v\|}$
+
+The implementation is just that formula: dot product divided by the two vector lengths.
+
+<!-- snippet: src/python/common.py#cosine_similarity -->
+```python
+def cosine_similarity(left: Sequence[float], right: Sequence[float]) -> float:
+    return dot(left, right) / (vector_norm(left) * vector_norm(right))
+```
+<!-- /snippet -->
+
+Using the same $u$ and $v$ as above, $\|u\| = 5$ and $\|v\| = \sqrt{30}$.
+Since the dot product is $-5$, the cosine similarity is:
+
+$\frac{u \cdot v}{\|u\|\|v\|} = \frac{-5}{5\sqrt{30}} \approx -0.183$
+
+The value is below zero, so the vectors point in moderately opposite directions.
+
+![Dot product as projection in 2D](images/ch02_dot_product.png){#fig-ch02-dot-product fig-alt="Two vectors with the projection of one onto the other labelled as the dot product."}

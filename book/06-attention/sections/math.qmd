@@ -1,0 +1,72 @@
+## 6.2 The Math
+
+### Step 1: Project to Q, K, V
+
+Given input $X \in \mathbb{R}^{T\times d}$, we learn three weight matrices:
+
+$$
+W_q \in \mathbb{R}^{d\times d_k}, \quad W_k \in \mathbb{R}^{d\times d_k}, \quad W_v \in \mathbb{R}^{d\times d_v}
+$$
+
+And compute:
+
+$$
+Q = X W_q  \in \mathbb{R}^{T\times d_k} \quad K = X W_k  \in \mathbb{R}^{T\times d_k} \quad V = X W_v  \in \mathbb{R}^{T\times d_v}
+$$
+
+In standard single-head attention, $d_k = d_v = d$.
+
+### Step 2: Compute Attention Scores
+
+$$
+S = Q K^{\top} / \sqrt{d_k}  \in \mathbb{R}^{T\times T}
+$$
+
+`S[i,j]` measures how relevant token `j` is to token `i`.
+The division by $\sqrt{d_k}$ prevents the dot products from growing too large.
+
+::: {.callout-note}
+*Math Minute — Matrix Multiplication*
+
+For matrices $A \in \mathbb{R}^{m\times n}$ and $B \in \mathbb{R}^{n\times p}$:
+$(AB)[i,j] = \sum_k A[i,k] \cdot B[k,j]$.
+The result has shape $[m\times p]$.
+Each entry is a dot product of a row of `A` and a column of `B`.
+:::
+
+### Step 3: Apply Causal Mask (for autoregressive models)
+
+GPT is *autoregressive*: when predicting token `t`, it must not look at tokens `t+1, t+2, …`.
+We enforce this by masking the upper triangle:
+
+$$
+M[i,j] = \begin{cases} 0 & \text{if } j \leq i \\ -\infty & \text{if } j > i \end{cases}
+$$
+
+$$
+S_{\text{masked}} = S + M
+$$
+
+Adding $-\infty$ before softmax effectively zeroes out those attention weights.
+
+### Step 4: Softmax → Attention Weights
+
+$$
+A = \operatorname{softmax}(S_{\text{masked}}) \in \mathbb{R}^{T\times T}
+$$
+
+`A[i,j]` is now a probability: how much token `i` attends to token `j`.
+
+### Step 5: Weighted Sum of Values
+
+$$
+\text{Output} = A V   \in \mathbb{R}^{T\times d_v}
+$$
+
+`Output[i]` is a weighted blend of all value vectors, guided by how much token `i` attends to each position.
+
+*Full formula:*
+
+$$
+\operatorname{Attention}(Q, K, V) = \operatorname{softmax}\!\left( \frac{QK^{\top}}{\sqrt{d_k}} + M \right) \cdot V
+$$

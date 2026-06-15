@@ -1,0 +1,23 @@
+# Positional Encoding — Giving Order to Meaning {#sec-ch05-positional-encoding}
+
+> _"The model sees all tokens at once. Without position, 'dog bites man' and 'man bites dog' are identical."_
+
+After the embedding step we have a matrix $X \in \mathbb{R}^{T\times d}$.
+Each row `X[t]` is a vector representing token `t`.
+But here is the problem: attention processes all tokens *simultaneously* — there is no inherent notion of "token 3 comes after token 2."
+If you shuffled the rows, the model would not know.
+
+We fix this by *adding a position vector* to each token's embedding.
+The combined vector carries both _what_ (the token identity) and _where_ (the position).
+
+{{< include book/05-positional-encoding/sections/idea.qmd >}}
+
+{{< include book/05-positional-encoding/sections/sinusoidal.qmd >}}
+
+{{< include book/05-positional-encoding/sections/math.qmd >}}
+
+{{< include book/05-positional-encoding/sections/matrix.qmd >}}
+
+{{< include book/05-positional-encoding/sections/code.qmd >}}
+
+{{< include book/05-positional-encoding/sections/takeaways.qmd >}}

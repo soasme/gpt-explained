@@ -1,0 +1,7 @@
+# Representations {#part-representations .unnumbered}
+
+This part turns token IDs into vectors the model can compute with.
+The goal is to make each row of the model's input matrix carry both identity and position.
+
+- In @sec-ch04-embeddings, token IDs become learned vectors through an embedding matrix.
+- In @sec-ch05-positional-encoding, those vectors gain order so the model can distinguish "dog bites man" from "man bites dog."

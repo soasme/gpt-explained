@@ -1,0 +1,57 @@
+## 2.5 Activation Functions
+
+An *activation function* introduces non-linearity after a linear transformation, allowing neural networks to model complex relationships.
+
+*ReLU* (Rectified Linear Unit):
+
+$\text{ReLU}(x) = \max(0, x)$
+
+*GELU* (Gaussian Error Linear Unit), used in GPT's feed-forward layers:
+
+$\text{GELU}(x) = x \cdot \Phi(x)$
+
+where $\Phi(x)$ is the standard normal CDF.
+A fast approximation used in practice:
+
+$\text{GELU}(x) \approx 0.5 x \left(1 + \tanh\!\left(\sqrt{2/\pi}(x + 0.044715 x^3)\right)\right)$
+
+Without activations, stacking linear layers collapses to a single linear transformation — depth would buy nothing.
+
+### Python Implementation
+
+<!-- snippet: src/python/common.py#activations -->
+```python
+def sigmoid(x: float) -> float:
+    return 1.0 / (1.0 + math.exp(-x))
+
+
+def relu(x: float) -> float:
+    return max(0.0, x)
+
+
+def gelu(x: float) -> float:
+    scale = math.sqrt(2.0 / math.pi)
+    return 0.5 * x * (1.0 + math.tanh(scale * (x + 0.044715 * x**3)))
+
+
+def gelu_matrix(matrix: Matrix) -> Matrix:
+    return [[gelu(value) for value in row] for row in matrix]
+```
+<!-- /snippet -->
+
+### Example
+
+For $x = -1, 0, 1, 2$:
+
+|===
+| x | ReLU(x) | GELU(x)
+
+| -1.0 | 0.0 | -0.159
+| 0.0  | 0.0 |  0.0
+| 1.0  | 1.0 |  0.841
+| 2.0  | 2.0 |  1.955
+|===
+
+Note: GELU is smooth near 0, while ReLU has a hard kink.
+
+![ReLU vs GELU — GELU is smooth; ReLU has a hard corner at zero](images/ch02_activations.png){#fig-ch02-activations fig-alt="Line chart comparing ReLU and GELU over the range x in -3 to 3."}

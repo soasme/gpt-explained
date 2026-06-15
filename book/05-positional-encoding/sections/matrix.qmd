@@ -1,0 +1,48 @@
+## 5.4 The Matrix: Worked Example
+
+Let `T = 4` (4 tokens), `d = 8` (8-dimensional).
+
+First compute the frequencies $\omega_k$ for `k = 0, 1, 2, 3`:
+
+$$
+\begin{aligned}
+\omega_0 &= 1 / 10000^{0/8} = 1.0 \\
+\omega_1 &= 1 / 10000^{2/8} \approx 0.1 \\
+\omega_2 &= 1 / 10000^{4/8} = 0.01 \\
+\omega_3 &= 1 / 10000^{6/8} \approx 0.001
+\end{aligned}
+$$
+
+Now compute PE row by row (position `t = 0, 1, 2, 3`):
+
+```text
+PE[0] = [sin(0·1.0), cos(0·1.0), sin(0·0.1), cos(0·0.1), ...]
+      = [0.000,      1.000,       0.000,       1.000,       0.000, 1.000, 0.000, 1.000]
+
+PE[1] = [sin(1·1.0), cos(1·1.0), sin(1·0.1), cos(1·0.1), ...]
+      = [0.841,      0.540,       0.0998,      0.995,       0.00999, 0.99995, ...]
+
+PE[2] = [sin(2·1.0), cos(2·1.0), sin(2·0.1), cos(2·0.1), ...]
+      = [0.909,     -0.416,       0.198,       0.980,       0.01999, 0.99980, ...]
+
+PE[3] = [sin(3·1.0), cos(3·1.0), sin(3·0.1), cos(3·0.1), ...]
+      = [0.141,     -0.990,       0.296,       0.955,       0.02999, 0.99955, ...]
+```
+
+Notice: dimension 0-1 (high frequency) changes dramatically between positions.
+Dimension 6-7 (low frequency) barely changes.
+Together they form a *unique fingerprint* for each position.
+
+The final input matrix $\tilde{X} = X + PE$:
+
+```text
+X̃[t] = embed_vector[t] + PE[t]
+
+For t=0: [-0.90, 0.10, 0.20, -0.30, ...]
+       + [ 0.00, 1.00, 0.00,  1.00, ...]
+       = [-0.90, 1.10, 0.20,  0.70, ...]
+```
+
+Figure @fig-ch05-matrix-pe-heatmap shows the sinusoidal positional encoding values as a heatmap over positions and dimensions.
+
+![Sinusoidal positional encoding heatmap](images/ch03_pe_matrix.png){#fig-ch05-matrix-pe-heatmap fig-alt="Sinusoidal positional encoding heatmap"}

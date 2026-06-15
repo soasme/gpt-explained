@@ -1,0 +1,70 @@
+## 2.5 Logarithm and Exponential
+
+The natural exponential $e^x$ and natural logarithm $\ln x$ are inverse operations:
+
+$e^{\ln x} = x \quad \text{and} \quad \ln(e^x) = x$
+
+These functions convert between additive and multiplicative scales.
+That makes them useful when probabilities become losses and when losses become perplexity.
+The loss function later in the book uses $\ln p$, where $p$ is the probability assigned to the correct next token (Chapter 11).
+Since probabilities are between $0$ and $1$, their logarithms are zero or negative.
+That is why cross-entropy uses a negative sign.
+
+### 2.5.1 Natural Exponential
+
+The natural exponential raises $e$ to a power:
+
+$\exp(x) = e^x$
+
+In Python, this is `math.exp`.
+
+<!-- snippet: src/python/common.py#natural_exp -->
+```python
+def natural_exp(value: float) -> float:
+    return math.exp(value)
+```
+<!-- /snippet -->
+
+Two anchor values are worth remembering.
+If the exponent is $0$, the result is $1$.
+If the exponent is $1$, the result is $e$:
+
+$e^0 = 1$
+
+$e^1 \approx 2.718$
+
+### 2.5.2 Natural Logarithm
+
+The natural logarithm asks the reverse question: what power of $e$ gives this value?
+
+$\ln x = y \quad \text{means} \quad e^y = x$
+
+In Python, this is `math.log`.
+
+<!-- snippet: src/python/common.py#natural_log -->
+```python
+def natural_log(value: float) -> float:
+    return math.log(value)
+```
+<!-- /snippet -->
+
+Some useful values:
+
+$\ln(1) = 0$
+
+$\ln(e) = 1$
+
+$\ln(0.5) \approx -0.693$
+
+$\ln(0.1) \approx -2.303$
+
+As the probability gets smaller, the negative log gets larger.
+For example:
+
+$-\ln(0.01) = 4.605$
+
+Two identities appear often when simplifying logarithms:
+
+$\ln(ab) = \ln a + \ln b$
+
+$\ln(a^n) = n \ln a$

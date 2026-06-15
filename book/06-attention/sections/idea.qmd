@@ -1,0 +1,31 @@
+## 6.1 The Idea
+
+Imagine you are at a library.
+You arrive with a *query*: "I'm looking for books about Renaissance painting."
+Every book in the library has a *key* on its spine — a short descriptor of its contents.
+You compare your query against every key, giving each book a *score*.
+Then you take a weighted blend of the books' *values* (actual content) — spending more time on high-scoring books.
+
+In the attention mechanism:
+
+- *Query (Q):* "What am I looking for?" — produced from the current token.
+- *Key (K):* "What do I contain?" — produced from every token in the sequence.
+- *Value (V):* "What information can I give?" — produced from every token in the sequence.
+
+The output for each token is a *weighted sum* of all value vectors, where the weights come from comparing that token's query against every token's key.
+
+::: {.callout-note}
+*Math Minute — Softmax*
+
+`softmax(z)` turns a vector of raw scores into a probability distribution.
+For vector $z = [z_1, z_2, \ldots, z_n]$:
+
+[source]
+----
+softmax(z)ᵢ = exp(zᵢ) / Σⱼ exp(zⱼ)
+----
+
+Output values are all positive and sum to 1.
+Large scores get amplified; small scores get suppressed.
+The largest score "wins" most of the weight.
+:::

@@ -1,3 +1,0 @@
-\begin{align}
-3x + 9y &=  -12
-\end{align}

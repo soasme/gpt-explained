@@ -1,0 +1,56 @@
+## 2.4 Softmax
+
+The *softmax* function turns arbitrary real numbers into probabilities.
+The input numbers are called logits.
+The output values are all positive and sum to 1.
+This is how the model turns raw scores into choices: attention choices over previous tokens, and prediction choices over the vocabulary.
+
+In GPT, softmax appears in attention weights (Chapter 6) and final next-token probabilities (Chapter 10).
+
+### 2.4.1 Vector Softmax
+
+Softmax exponentiates each logit and divides by the total exponentiated mass:
+
+$\text{softmax}(z)_i = \frac{e^{z_i}}{\sum_{j} e^{z_j}}$
+
+In code, we subtract the maximum logit before exponentiating.
+This does not change the final probabilities, because the same constant shift appears in the numerator and denominator.
+It does prevent very large exponentials from overflowing.
+
+$\text{softmax}(z)_i = \frac{e^{z_i - \max(z)}}{\sum_{j} e^{z_j - \max(z)}}$
+
+<!-- snippet: src/python/common.py#softmax_vector -->
+```python
+def softmax(logits: Sequence[float]) -> Vector:
+    max_logit = max(logits)
+    exp_values = [math.exp(value - max_logit) for value in logits]
+    total = sum(exp_values)
+    return [value / total for value in exp_values]
+```
+<!-- /snippet -->
+
+For $z = [2.0, 1.0, 0.1]$, the maximum is $2.0$, so the shifted values are $[0.0, -1.0, -1.9]$.
+After exponentiating, we get approximately $[1.000, 0.368, 0.150]$, whose sum is $1.518$.
+Dividing each value by that sum gives:
+
+$\text{softmax}(z) \approx [0.659, 0.242, 0.099]$
+
+The largest logit gets the largest probability, but the smaller logits still receive nonzero probability.
+
+### 2.4.2 Row-wise Softmax
+
+Attention uses a matrix of scores.
+Each row describes what one token is allowed to attend to, so each row needs to become its own probability distribution.
+Row-wise softmax applies the vector softmax independently to every row.
+
+<!-- snippet: src/python/common.py#softmax_rows -->
+```python
+def softmax_rows(matrix: Matrix) -> Matrix:
+    return [softmax(row) for row in matrix]
+```
+<!-- /snippet -->
+
+After this step, each row sums to 1.
+That is what lets a later matrix multiplication compute a weighted average of value vectors.
+
+![Softmax turns logits into probabilities — higher values dominate, none reach zero](images/ch02_softmax.png){#fig-ch02-softmax fig-alt="Bar chart comparing raw logits to softmax probabilities for three values."}

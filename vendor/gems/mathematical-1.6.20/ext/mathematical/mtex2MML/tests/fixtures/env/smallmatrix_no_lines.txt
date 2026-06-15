@@ -1,5 +1,0 @@
-$$
-\begin{smallmatrix}
-   \circ & \bullet & \bullet
- \end{smallmatrix}
-$$

@@ -1,0 +1,47 @@
+## 2.8 Gradient and Gradient Descent
+
+The *gradient* of a scalar function $L(\theta)$ with respect to parameters $\theta$ is the vector of partial derivatives:
+
+$\nabla_\theta L = \left[\frac{\partial L}{\partial \theta_1}, \frac{\partial L}{\partial \theta_2}, \ldots\right]$
+
+It points in the direction of steepest increase of $L$.
+
+*Gradient descent* moves in the opposite direction to minimise $L$:
+
+$\theta \leftarrow \theta - \eta \nabla_\theta L$
+
+where $\eta > 0$ is the *learning rate*.
+
+In GPT training (Chapter 12), $L$ is the cross-entropy loss over a batch, and $\theta$ contains all model weights.
+The gradient is computed via backpropagation and applied by an optimiser (Adam).
+
+### Python Implementation
+
+A scalar SGD update (for illustration):
+
+<!-- snippet: src/python/train.py#sgd_update_scalar -->
+```python
+def sgd_update_scalar(weight: float, gradient: float, learning_rate: float) -> float:
+    return weight - learning_rate * gradient
+```
+<!-- /snippet -->
+
+### Example
+
+Let $L(\theta) = (\theta - 3)^2$.
+The gradient is $dL/d\theta = 2(\theta - 3)$.
+
+Starting from $\theta = 0$, learning rate $\eta = 0.1$:
+
+|===
+| Step | $\theta$ | $L$ | $\nabla L$
+
+| 0 | 0.0 | 9.0 | -6.0
+| 1 | 0.6 | 5.76 | -4.8
+| 2 | 1.08 | 3.69 | -3.84
+| 10 | ~2.58 | ~0.17 | ~-0.84
+|===
+
+After many steps, $\theta$ converges to 3 (the minimum).
+
+![Gradient descent on a quadratic loss — each step moves down the slope](images/ch02_gradient.png){#fig-ch02-gradient fig-alt="Parabola L=(theta-3)^2 with gradient descent steps shown as dots converging to minimum."}

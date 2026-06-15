@@ -1,0 +1,117 @@
+## 4.5 The Code: Embedding in Python
+
+Before writing a single line of embedding logic, we name what a matrix _is_.
+A matrix is a rows-by-cols grid of numbers.
+We store it as a flat vector in row-major order, but nothing above this interface will ever need to know that.
+
+<!-- snippet: src/python/common.py#make_matrix -->
+```python
+def make_matrix(rows: int, cols: int, fill: float = 0.0) -> Matrix:
+    return [[fill for _ in range(cols)] for _ in range(rows)]
+
+
+def shape(matrix: Matrix) -> tuple[int, int]:
+    return len(matrix), len(matrix[0]) if matrix else 0
+```
+<!-- /snippet -->
+
+`random_matrix` uses Xavier initialization: it scales the random values by $\sqrt{2/(fan_{in}+fan_{out})}$, which keeps activations from exploding or vanishing.
+
+<!-- snippet: src/python/common.py#random_matrix -->
+```python
+def random_matrix(
+    rows: int,
+    cols: int,
+    rng: random.Random,
+    scale: float | None = None,
+) -> Matrix:
+    scale = math.sqrt(2.0 / (rows + cols)) if scale is None else scale
+    return [[rng.uniform(-scale, scale) for _ in range(cols)] for _ in range(rows)]
+```
+<!-- /snippet -->
+
+The embedding of token $i$ is literally row $i$ of the matrix — a table lookup.
+
+<!-- snippet: src/python/common.py#embed_token -->
+```python
+def embed_token(embedding: Matrix, token_id: int) -> Vector:
+    return list(embedding[token_id])
+```
+<!-- /snippet -->
+
+A sequence of $T$ token IDs calls for $T$ row lookups stacked into a $[T \times d]$ matrix.
+
+<!-- snippet: src/python/common.py#embed_sequence -->
+```python
+def embed_sequence(embedding: Matrix, token_ids: Sequence[int]) -> Matrix:
+    return [embed_token(embedding, token_id) for token_id in token_ids]
+```
+<!-- /snippet -->
+
+The dot product $u \cdot v = \sum_i u_i v_i$ measures geometric alignment.
+
+<!-- snippet: src/python/common.py#vectors -->
+```python
+# tag::vector_ops[]
+# tag::add_vectors[]
+def add_vectors(left: Vector, right: Vector) -> Vector:
+    return [a + b for a, b in zip(left, right)]
+# end::add_vectors[]
+
+
+# tag::scale_vector[]
+def scale_vector(vector: Vector, scalar: float) -> Vector:
+    return [scalar * value for value in vector]
+# end::scale_vector[]
+
+
+# tag::vector_norm[]
+def vector_norm(vector: Sequence[float]) -> float:
+    return math.sqrt(sum(value * value for value in vector))
+# end::vector_norm[]
+
+
+# tag::unit_vector[]
+def unit_vector(vector: Vector) -> Vector:
+    return scale_vector(vector, 1.0 / vector_norm(vector))
+# end::unit_vector[]
+# end::vector_ops[]
+
+
+# tag::dot[]
+def dot(left: Sequence[float], right: Sequence[float]) -> float:
+    return sum(a * b for a, b in zip(left, right))
+# end::dot[]
+
+
+# tag::cosine_similarity[]
+def cosine_similarity(left: Sequence[float], right: Sequence[float]) -> float:
+    return dot(left, right) / (vector_norm(left) * vector_norm(right))
+# end::cosine_similarity[]
+```
+<!-- /snippet -->
+
+*Demo.*
+Run with `python3 src/python/chapter_demos.py`:
+
+<!-- snippet: src/python/chapter_demos.py#chapter_04 -->
+```python
+def chapter_04(seed: int = 4) -> dict[str, object]:
+    rng = random.Random(seed)
+    embedding = random_matrix(100, 8, rng)
+    x = embed_sequence(embedding, [1, 2, 3])
+    return {
+        "sequence_shape": (len(x), len(x[0])),
+        "dot": dot(embedding[1], embedding[2]),
+        "cosine": cosine_similarity(embedding[1], embedding[2]),
+    }
+```
+<!-- /snippet -->
+
+Figure @fig-ch04-code-embedding-lookup shows how each token ID indexes into one row of the embedding weight matrix.
+
+![Embedding matrix lookup](images/ch02_embedding_lookup.png){#fig-ch04-code-embedding-lookup fig-alt="Embedding matrix lookup — each token ID indexes into a row of the weight matrix."}
+
+Figure @fig-ch04-code-semantic-space shows how semantic relationships can appear as vector directions in embedding space.
+
+![Semantic arithmetic in embedding space](images/ch02_semantic_space.png){#fig-ch04-code-semantic-space fig-alt="Semantic arithmetic in embedding space — king − man + woman ≈ queen."}

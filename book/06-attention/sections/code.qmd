@@ -1,0 +1,85 @@
+## 6.4 The Code: Scaled Dot-Product Attention in Python
+
+Attention is a composition of named operations.
+The matrix abstraction from Chapter 2 carries forward; we add multiply, transpose, scale, and add.
+
+<!-- snippet: src/python/common.py#matrix_ops -->
+```python
+# tag::transpose[]
+def transpose(matrix: Matrix) -> Matrix:
+    return [list(col) for col in zip(*matrix)]
+# end::transpose[]
+
+
+def matrix_add(left: Matrix, right: Matrix) -> Matrix:
+    return [[a + b for a, b in zip(row_a, row_b)] for row_a, row_b in zip(left, right)]
+
+
+def matrix_scale(matrix: Matrix, scalar: float) -> Matrix:
+    return [[scalar * value for value in row] for row in matrix]
+
+
+# tag::matrix_multiply[]
+def matrix_multiply(left: Matrix, right: Matrix) -> Matrix:
+    right_t = transpose(right)
+    return [[dot(row, col) for col in right_t] for row in left]
+# end::matrix_multiply[]
+
+
+def hstack(matrices: Sequence[Matrix]) -> Matrix:
+    return [sum((matrix[row] for matrix in matrices), []) for row in range(len(matrices[0]))]
+```
+<!-- /snippet -->
+
+`softmax` converts a vector of raw scores into a probability distribution.
+We subtract the maximum value before exponentiating to prevent overflow.
+
+<!-- snippet: src/python/common.py#softmax -->
+```python
+# tag::softmax_vector[]
+def softmax(logits: Sequence[float]) -> Vector:
+    max_logit = max(logits)
+    exp_values = [math.exp(value - max_logit) for value in logits]
+    total = sum(exp_values)
+    return [value / total for value in exp_values]
+# end::softmax_vector[]
+
+
+# tag::softmax_rows[]
+def softmax_rows(matrix: Matrix) -> Matrix:
+    return [softmax(row) for row in matrix]
+# end::softmax_rows[]
+```
+<!-- /snippet -->
+
+`causal_mask` fills the upper triangle with $-10^9$ so future tokens cannot be attended to.
+
+<!-- snippet: src/python/common.py#causal_mask -->
+```python
+def causal_mask(size: int) -> Matrix:
+    return [[0.0 if j <= i else -1.0e9 for j in range(size)] for i in range(size)]
+```
+<!-- /snippet -->
+
+`scaled_dot_product_attention` and `self_attention` are direct translations of the attention formula.
+
+<!-- snippet: src/python/common.py#sdpa -->
+```python
+def scaled_dot_product_attention(query: Matrix, key: Matrix, value: Matrix) -> tuple[Matrix, Matrix]:
+    d_key = shape(query)[1]
+    scores = matrix_scale(matrix_multiply(query, transpose(key)), 1.0 / math.sqrt(d_key))
+    masked_scores = matrix_add(scores, causal_mask(len(scores)))
+    weights = softmax_rows(masked_scores)
+    return matrix_multiply(weights, value), weights
+
+
+def self_attention(x: Matrix, wq: Matrix, wk: Matrix, wv: Matrix) -> tuple[Matrix, Matrix]:
+    return scaled_dot_product_attention(
+        matrix_multiply(x, wq),
+        matrix_multiply(x, wk),
+        matrix_multiply(x, wv),
+    )
+```
+<!-- /snippet -->
+
+Run with `python3 src/python/chapter_demos.py`.

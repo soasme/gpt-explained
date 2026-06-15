@@ -1,3 +1,0 @@
-Inline: $\sin(x)$
-Block: $$\sin(x)$$
-Markup: $$<em>\sin(x)</em>$$

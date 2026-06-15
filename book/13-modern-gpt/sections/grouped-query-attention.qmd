@@ -1,0 +1,18 @@
+## 13.2 Multi-Query and Grouped-Query Attention
+
+Standard multi-head attention (Chapter 7) creates separate $Q, K, V$ projections for every head.
+The key and value matrices dominate GPU memory during inference.
+
+*Multi-Query Attention (MQA)* (Shazeer, 2019) uses a single $K$ and $V$ shared across all heads, reducing the KV cache by a factor of $H$ (number of heads).
+
+*Grouped-Query Attention (GQA)* (Ainslie et al., 2023) is a middle ground: $G$ groups of heads share a single $K, V$, where $1 \leq G \leq H$.
+Setting $G=1$ recovers MQA; setting $G=H$ recovers standard MHA.
+
+| Method | KV heads | Memory | Quality |
+| --- | --- | --- | --- |
+| MHA | H | 1x | Baseline |
+| GQA | H/G | 1/G x | Near-MHA |
+| MQA | 1 | 1/H x | Slight drop |
+
+GQA is used in LLaMA 3, Mistral, and Gemma.
+It allows inference to fit in less memory without significant quality degradation.

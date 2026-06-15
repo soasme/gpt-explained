@@ -1,0 +1,24 @@
+## 5.2 Sinusoidal Positional Encoding
+
+For position `t` and dimension `i` (where $0 \leq i < d$):
+
+$$
+\begin{aligned}
+PE(t,\, 2i)   &= \sin\!\left(\frac{t}{10000^{2i/d}}\right) \\
+PE(t,\, 2i+1) &= \cos\!\left(\frac{t}{10000^{2i/d}}\right)
+\end{aligned}
+$$
+
+Even-indexed dimensions use sine; odd-indexed dimensions use cosine.
+The denominator `10000^(2i/d)` controls the frequency — it grows exponentially with `i`, so low dimensions have high frequency (vary rapidly with `t`) and high dimensions have low frequency (vary slowly).
+
+*Why this formula works:*
+
+1. *Unique per position:* Every `t` produces a distinct vector.
+2. *Bounded:* All values lie in `[−1, 1]`, so they do not dominate the token embeddings.
+3. *Smooth:* Nearby positions have similar encodings, so the model can learn "close in position → related in meaning."
+4. *Extrapolatable:* The formula works for any `t`, even positions not seen during training.
+
+*A key property:*
+The encoding for position `t+k` can be expressed as a *linear transformation* of the encoding for position `t`.
+This means the model can learn to attend to "the token 3 positions back" using a simple linear operation — no memorization of absolute positions required.

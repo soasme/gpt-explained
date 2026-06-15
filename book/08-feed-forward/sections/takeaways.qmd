@@ -1,0 +1,39 @@
+## 8.6 The FFN as a Key-Value Memory
+
+A striking insight from Geva et al. (2021): the FFN layers act like *associative memories*.
+
+The first layer $W_1$ stores "keys" — each column of $W_1$ is a pattern to match against the input.
+GELU fires when the input matches.
+The second layer $W_2$ stores "values" — the corresponding information to retrieve.
+
+Concretely:
+
+$$
+h = \operatorname{GELU}(x W_1)
+$$
+
+where each component $h_k \approx x \cdot W_1[:,k]$ — a dot-product "match score" for pattern $k$.
+High $h_k$ means "input matches pattern $k$."
+
+$$
+y = h W_2
+$$
+
+Pull out value $W_2[k,:]$ weighted by $h_k$.
+
+This means the model can learn: "if the input contains patterns related to France, activate neuron 47, which retrieves 'Paris' associations."
+
+## 8.7 Key Takeaways
+
+- The FFN is a two-layer MLP applied *identically to every position*: $FFN(x) = \operatorname{GELU}(xW_1 + b_1) W_2 + b_2$.
+- The inner dimension $d_{\text{ff}} = 4d$ means the FFN has *more parameters than the attention layers*.
+- GELU is a smooth activation function that "softly gates" negative values.
+- The FFN acts as an *associative memory*: first layer matches patterns, second layer retrieves associated information.
+- No cross-position communication happens here — that's attention's job.
+
+::: {.callout-note}
+*What's next?*
+We now have all the pieces: attention that mixes information, and an FFN that processes each token's vector.
+How are they wired together?
+With *residual connections* and *layer normalization* to form the *transformer block* — Chapter 7.
+:::

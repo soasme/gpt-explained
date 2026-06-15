@@ -1,0 +1,9 @@
+# Transformer Core {#part-transformer-core .unnumbered}
+
+This part builds the transformer block from its major components.
+The chapters move from one attention head to a full block that can be stacked into a GPT model.
+
+- In @sec-ch06-attention, each token learns which other tokens to read from.
+- In @sec-ch07-multi-head-attention, several attention patterns run in parallel.
+- In @sec-ch08-feed-forward, each token representation is transformed by a position-wise neural network.
+- In @sec-ch09-transformer-block, attention, feed-forward layers, residual connections, and normalization become one reusable block.

@@ -1,0 +1,20 @@
+## 5.3 The Math
+
+Full formula for the positional encoding matrix $PE \in \mathbb{R}^{T\times d}$:
+
+$$
+\begin{aligned}
+PE[t, i] &= \sin(t \cdot \omega_{i/2})                && \text{if } i \text{ is even} \\
+PE[t, i] &= \cos(t \cdot \omega_{\lfloor i/2\rfloor}) && \text{if } i \text{ is odd}
+\end{aligned}
+$$
+
+where $\omega_k = 1 / 10000^{2k/d}$.
+
+After building `PE`, the position-encoded input is:
+
+$$
+\tilde{X} = X + PE \quad \in \mathbb{R}^{T \times d}
+$$
+
+The model now works with $\tilde{X}$ instead of `X`.

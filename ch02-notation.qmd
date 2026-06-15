@@ -1,0 +1,25 @@
+# Notation and Definitions {#sec-ch02-notation}
+
+> _"Mathematics is the language in which God has written the universe."_
+>
+> — Galileo Galilei
+
+This chapter is a compact reference for the core math used at the start of the book.
+It focuses on notation, definitions, and small numerical examples.
+Later chapters introduce the additional math they need at the point where it becomes useful.
+
+{{< include book/02-notation/sections/vectors.qmd >}}
+
+{{< include book/02-notation/sections/dot-product.qmd >}}
+
+{{< include book/02-notation/sections/matrix-multiply.qmd >}}
+
+{{< include book/02-notation/sections/softmax.qmd >}}
+
+{{< include book/02-notation/sections/logarithm.qmd >}}
+
+{{< include book/02-notation/sections/mean-variance.qmd >}}
+
+{{< include book/02-notation/sections/cross-entropy.qmd >}}
+
+{{< include book/02-notation/sections/takeaways.qmd >}}

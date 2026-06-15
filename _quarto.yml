@@ -1,0 +1,89 @@
+project:
+  type: book
+  output-dir: _book
+  pre-render:
+    - python3 tools/refresh_code_snippets.py
+
+lang: en
+license: "CC BY-NC-SA 3.0"
+
+book:
+  title: "GPT Explained"
+  subtitle: "A hands-on guide to transformer architecture"
+  author: "Ju Lin"
+  description: "A practical guide to GPT-style transformer architecture, from tokens to text generation, with math, matrices, Python, and diagrams."
+  reader-mode: true
+  output-file: gpt-explained
+  site-url: "https://soasme.github.io/gpt-explained/"
+  repo-url: "https://github.com/soasme/gpt-explained"
+  repo-branch: main
+  repo-actions: [edit, issue]
+  page-footer:
+    left: |
+      GPT Explained was written by Ju Lin.
+    right: |
+      This book was built with [Quarto](https://quarto.org/).
+  downloads:
+    - pdf
+    - epub
+  search: true
+  page-navigation: true
+  chapters:
+    - index.qmd
+    - book/license.qmd
+    - book/preface.qmd
+    - book/contributors.qmd
+    - ch01-introduction.qmd
+    - part: parts/foundations.qmd
+      chapters:
+        - ch02-notation.qmd
+        - ch03-tokens.qmd
+    - part: parts/representations.qmd
+      chapters:
+        - ch04-embeddings.qmd
+        - ch05-positional-encoding.qmd
+    - part: parts/transformer-core.qmd
+      chapters:
+        - ch06-attention.qmd
+        - ch07-multi-head-attention.qmd
+        - ch08-feed-forward.qmd
+        - ch09-transformer-block.qmd
+    - part: parts/prediction-and-learning.qmd
+      chapters:
+        - ch10-vocab-projection.qmd
+        - ch11-loss.qmd
+        - ch12-training.qmd
+    - part: parts/modern-gpt.qmd
+      chapters:
+        - ch13-modern-gpt.qmd
+  appendices:
+    - A-microgpt.qmd
+
+format:
+  html:
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    theme:
+      - cosmo
+      - gpt-explained.scss
+    code-copy: true
+    code-link: true
+    code-overflow: wrap
+    callout-appearance: simple
+    link-external-newwindow: true
+    author-meta: "Ju Lin"
+  epub:
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    css: gpt-explained.css
+  pdf:
+    documentclass: scrreprt
+    toc: true
+    toc-depth: 2
+    number-sections: true
+    colorlinks: true
+
+execute:
+  freeze: auto

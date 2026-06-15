@@ -1,0 +1,8 @@
+# Prediction and Learning {#part-prediction-and-learning .unnumbered}
+
+This part follows the model from final hidden states to training updates.
+It explains how GPT chooses the next token, measures mistakes, and changes its weights.
+
+- In @sec-ch10-vocab-projection, the final vector becomes logits and next-token probabilities.
+- In @sec-ch11-loss, predictions become a scalar training signal through cross-entropy and perplexity.
+- In @sec-ch12-training, gradients and weight updates connect the loss back to the model parameters.

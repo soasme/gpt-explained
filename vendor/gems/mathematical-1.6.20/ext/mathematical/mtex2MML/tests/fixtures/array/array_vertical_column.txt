@@ -1,5 +1,0 @@
-$$
-\begin{array}{c|c}
-Bad & Good
-\end{array}
-$$

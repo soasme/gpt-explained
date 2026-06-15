@@ -5,14 +5,12 @@ output
 *.swp
 
 # build artifacts
-Gemfile.lock
+_book/
+.quarto/
+.tools/
 gpt-explained.html
 gpt-explained.pdf
-gpt-explained.pdfmarks
 gpt-explained.epub
-gpt-explained.fb2.zip
-gpt-explained-kf8.epub
-gpt-explained.mobi
 book/contributors.txt
 
 # manim render output
@@ -26,23 +24,7 @@ venv/
 
 # generated images (rebuilt by CI)
 images/
-.asciidoctor/
 ch03_*.svg
 
-# local bundler config (contains machine-specific paths)
-.bundle/config
-
-# bundler installed gems cache (written by ruby/setup-ruby bundler-cache: true)
-vendor/bundle/
-
-# compiled C extension in vendored mathematical gem
-vendor/gems/mathematical-1.6.20/ext/mathematical/mathematical.bundle
-vendor/gems/mathematical-1.6.20/ext/mathematical/mathematical.bundle.dSYM/
-vendor/gems/mathematical-1.6.20/ext/mathematical/Makefile
-vendor/gems/mathematical-1.6.20/ext/mathematical/mkmf.log
-vendor/gems/mathematical-1.6.20/ext/mathematical/*.o
-vendor/gems/mathematical-1.6.20/ext/mathematical/*.o.d
-vendor/gems/mathematical-1.6.20/ext/mathematical/lasem/build/
-vendor/gems/mathematical-1.6.20/ext/mathematical/mtex2MML/build/
-vendor/gems/mathematical-1.6.20/ext/mathematical/lib/
-vendor/gems/mathematical-1.6.20/lib/mathematical/mathematical.bundle
+/.quarto/
+**/*.quarto_ipynb

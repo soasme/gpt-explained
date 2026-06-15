@@ -1,0 +1,33 @@
+## 2.10 Sine and Cosine
+
+Sine and cosine are periodic functions with period $2\pi$:
+
+$\sin^2 x + \cos^2 x = 1$ (Pythagorean identity)
+
+$\sin(x + y) = \sin x \cos y + \cos x \sin y$
+
+In GPT, sinusoidal positional encoding (Chapter 5) uses sine and cosine at different frequencies to encode token position $pos$ and embedding dimension $i$:
+
+$\text{PE}(pos, 2i) = \sin\!\left(\frac{pos}{10000^{2i/d}}\right)$
+
+$\text{PE}(pos, 2i+1) = \cos\!\left(\frac{pos}{10000^{2i/d}}\right)$
+
+Because $\sin$ and $\cos$ are bounded in $[-1, 1]$, they add a predictable, scale-limited signal to the embedding without dominating the learned content.
+
+### Python Implementation
+
+<!-- snippet: src/python/common.py#sinusoidal_position -->
+```python
+def sinusoidal_position(position: int, d_model: int) -> Vector:
+    row = []
+    for i in range(d_model):
+        k = i // 2
+        omega = 1.0 / (10000.0 ** (2.0 * k / d_model))
+        row.append(math.sin(position * omega) if i % 2 == 0 else math.cos(position * omega))
+    return row
+```
+<!-- /snippet -->
+
+### Example
+
+With $d = 4$ (four embedding dimensions), position $pos = 0, 1, 2$, each position produces a unique pattern of sine/cosine values, allowing the model to distinguish tokens by position.

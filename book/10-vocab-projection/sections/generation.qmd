@@ -1,0 +1,17 @@
+## 10.3 The Generation Loop
+
+Training and inference use the same forward pass differently.
+
+*Training:* Given a sequence $[t_1, t_2, \ldots, t_n]$, the model predicts all next tokens simultaneously (thanks to causal masking): $P(t_2|t_1), P(t_3|t_1,t_2), \ldots$.
+The loss is cross-entropy averaged over all positions.
+
+*Inference (generation):*
+
+1. Start with prompt tokens $[t_1, \ldots, t_n]$
+2. Forward pass → logits for position $n$
+3. Sample or $\mathrm{argmax}$ → $t_{n+1}$
+4. Append $t_{n+1}$ to the sequence
+5. Forward pass → logits for position $n+1$
+6. Repeat until stop token or max length
+
+This is called *autoregressive generation*: each new token is fed back in as input to generate the next.

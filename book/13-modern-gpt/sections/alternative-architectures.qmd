@@ -1,0 +1,37 @@
+## 13.4 Alternative Architectures
+
+The transformer is not the only architecture for sequence modelling.
+Several alternatives challenge or complement it.
+
+### Mamba (State Space Models)
+
+*Mamba* (Gu & Dao, 2023) is based on *selective state space models* (SSMs).
+Instead of attending to all past tokens, it maintains a compressed hidden state that is updated recurrently — like an RNN, but with a selective mechanism that decides what to remember.
+
+Key properties:
+
+- Linear time in sequence length ($O(n)$ vs $O(n^2)$ for attention).
+- No attention matrix — the context is compressed into a fixed-size state.
+- Competitive with transformers on language modelling benchmarks.
+- Less effective at in-context retrieval tasks (where attention excels).
+
+### Diffusion Language Models (DiffusionGemma)
+
+Autoregressive models like GPT generate text *left-to-right*, one token at a time.
+*Diffusion language models* (DLMs) generate all tokens in parallel by iterative denoising.
+
+*MDLM* and *Gemma-based diffusion models* start from a fully masked sequence and refine it over $T$ denoising steps.
+Each step predicts a cleaner version of the entire sequence.
+
+Advantages:
+- Can revise earlier tokens after seeing later context.
+- Faster generation at inference time (fewer sequential steps than token length).
+- Emerging area — quality trails autoregressive models as of 2025.
+
+### Mixture of Experts (MoE)
+
+*Mixture of Experts* replaces the single feed-forward network in each transformer block with $E$ expert networks and a *router* that activates only $K$ of them per token.
+
+- Mistral 8x7B and GPT-4 are believed to use MoE.
+- Total parameters can be large while compute per token stays small.
+- Trade-off: routing instability, expert load imbalance.

@@ -17,11 +17,12 @@ jobs:
     - name: Install system dependencies
       run: |
         sudo apt-get update -q
-        sudo apt-get install -y --no-install-recommends \
-          cmake bison flex \
-          libpango1.0-dev libcairo2-dev \
-          libgdk-pixbuf2.0-dev libxml2-dev \
-          pkg-config graphviz
+        sudo apt-get install -y --no-install-recommends graphviz
+
+    - name: Set up Quarto
+      uses: quarto-dev/quarto-actions/setup@v2
+      with:
+        tinytex: true
 
     - name: Set up Python
       uses: actions/setup-python@v5
@@ -34,24 +35,11 @@ jobs:
     - name: Generate images
       run: bash src/matplotlib/render_all.sh
 
-    - name: Set up Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        ruby-version: 3.1
-        bundler-cache: true
-
-    - name: Ensure mathematical native lib
-      run: |
-        LIB_DIR="vendor/gems/mathematical-1.6.20/ext/mathematical/lib"
-        if [ ! -f "$LIB_DIR/liblasem.so" ]; then
-          echo "liblasem.so missing — recompiling mathematical native extension"
-          cd vendor/gems/mathematical-1.6.20/ext/mathematical
-          bundle exec ruby extconf.rb
-          make
-        fi
+    - name: Run code examples
+      run: python3 src/python/run_book_code.py
 
     - name: Build release assets
-      run: bundle exec rake book:build
+      run: quarto render
 
     - name: Compute tag name
       id: compute-tag
@@ -67,14 +55,12 @@ jobs:
         token: ${{ secrets.GITHUB_TOKEN }}
         tag: ${{ steps.compute-tag.outputs.tagname }}
         commit: main
-        artifacts: './gpt-explained.epub,./gpt-explained.fb2.zip,./gpt-explained.pdf,./gpt-explained.html'
+        artifacts: './_book/gpt-explained.epub,./_book/gpt-explained.pdf'
 
     - name: Prepare GitHub Pages content
       run: |
         mkdir -p gh-pages-content
-        cp gpt-explained.html gh-pages-content/index.html
-        cp gpt-explained.pdf gh-pages-content/gpt-explained.pdf
-        cp gpt-explained.epub gh-pages-content/gpt-explained.epub
+        cp -R _book/. gh-pages-content/
 
     - name: Publish to GitHub Pages
       uses: peaceiris/actions-gh-pages@v4

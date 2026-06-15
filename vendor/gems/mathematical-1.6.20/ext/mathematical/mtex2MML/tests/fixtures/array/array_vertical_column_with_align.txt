@@ -1,5 +1,0 @@
-$$
-\begin{array}[b]{:c:c}
-Bad & Good
-\end{array}
-$$

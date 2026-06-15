@@ -1,5 +1,0 @@
-$$
-\begin{gathered}
-3x^2 + 9y =  3a + c
-\end{gathered}
-$$

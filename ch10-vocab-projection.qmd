@@ -1,0 +1,21 @@
+# Vocabulary Projection — From Vectors to Words {#sec-ch10-vocab-projection}
+
+> _"After all that computation, the model must answer a simple question: what word comes next?"_
+
+After `N` transformer blocks, we have a matrix $X_{\text{final}} \in \mathbb{R}^{T\times d}$.
+The final row, `X_final[T-1]`, is a rich contextualized representation of the last token.
+The last step is to project this vector into a probability distribution over the vocabulary: which token is most likely to come next?
+
+This projection is called the *language model head*, or *unembedding layer*.
+
+{{< include book/10-vocab-projection/sections/idea.qmd >}}
+
+{{< include book/10-vocab-projection/sections/math.qmd >}}
+
+{{< include book/10-vocab-projection/sections/generation.qmd >}}
+
+{{< include book/10-vocab-projection/sections/matrix.qmd >}}
+
+{{< include book/10-vocab-projection/sections/code.qmd >}}
+
+{{< include book/10-vocab-projection/sections/takeaways.qmd >}}
