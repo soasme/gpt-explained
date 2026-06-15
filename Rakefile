@@ -111,6 +111,11 @@ namespace :book do
       sh "epubcheck gpt-explained.epub"
   end
 
+  desc 'Run every Python code example used by the book'
+  task :run_code do
+      sh "python3 src/python/run_book_code.py"
+  end
+
   desc 'Clean all generated files'
   task :clean do
     begin

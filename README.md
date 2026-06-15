@@ -1,6 +1,6 @@
 # GPT Explained
 
-> *A hands-on guide to transformer architecture — from tokens to text generation, with math, matrices, Scheme, and animations.*
+> *A hands-on guide to transformer architecture — from tokens to text generation, with math, matrices, Python, and animations.*
 
 **Read online:** https://www.soasme.com/gpt-explained/
 
@@ -20,7 +20,7 @@
 | 8 | **Vocabulary Projection** — From Vectors to Words |
 | 9 | **Loss** — Are we adjusting the model weights the right way? |
 | 10 | **Training** — Backpropagation to adjust weights |
-| A | **microGPT in Scheme** — Complete Runnable Code |
+| A | **microGPT in Python** — Complete Runnable Code |
 | B | **Math Primer** — Every prerequisite in one place |
 
 ---
@@ -35,9 +35,34 @@ brew bundle
 
 # Install Ruby gem dependencies
 bundle install
+
+# Python 3 is required for the runnable book code.
+python3 --version
 ```
 
 The `Brewfile` installs Ruby, cmake, bison, flex, cairo, pango, gdk-pixbuf, and fontconfig — all required to compile the `mathematical` gem for LaTeX rendering in PDF output.
+The book code uses only the Python standard library.
+
+### Run code examples
+
+The Python files in `src/python/` are the source of truth for code shown in the book.
+AsciiDoc listings include tagged regions from those files, so update the Python first and let the book reference it.
+
+```bash
+# Run the complete microGPT demo
+python3 src/python/microgpt.py
+
+# Run the tiny BPE tokenizer demo
+python3 src/python/micro_bpe.py
+
+# Run every chapter's end-to-end code check
+python3 src/python/run_book_code.py
+
+# Same check through Rake
+bundle exec rake book:run_code
+```
+
+If Bundler is not available in your shell, `rake book:run_code` runs the same Python check.
 
 ### Build all formats
 
@@ -56,29 +81,27 @@ Output files:
 
 ### Generate diagrams
 
-Diagrams are animated Manim scenes. To regenerate:
+Diagrams are generated with Matplotlib scripts. To regenerate:
 
 ```bash
-cd src/manim
-python -m manim <scene>.py <SceneName> --format=png -ql   # fast preview
-python -m manim <scene>.py <SceneName> --format=png -qh   # production
+src/matplotlib/render_all.sh
 ```
 
 CI rebuilds all images on each push before building the book.
 
 ---
 
-## Running microGPT
+## Python Source Layout
 
-```bash
-# With Guile Scheme
-guile book/A-microgpt/microgpt.scm
+| File | Purpose |
+|------|---------|
+| `src/python/microgpt.py` | Core matrix, transformer, loss, training, and generation code |
+| `src/python/micro_bpe.py` | Chapter 3 byte-pair encoding tokenizer |
+| `src/python/chapter_demos.py` | Runnable chapter demos used by the end-to-end check |
+| `src/python/run_book_code.py` | End-to-end runner for all chapter code |
 
-# With Racket (in R5RS mode)
-racket --language r5rs book/A-microgpt/microgpt.scm
-```
-
-The model is randomly initialized — for non-trivial outputs, train it on text.
+The demo model is randomly initialized with fixed seeds for reproducible checks.
+For non-trivial outputs, it would need real training data and a training loop beyond the book demo.
 
 ---
 
@@ -87,9 +110,10 @@ The model is randomly initialized — for non-trivial outputs, train it on text.
 Every push to `main`:
 
 1. Installs system and Ruby dependencies
-2. Builds all book formats via `bundle exec rake book:build`
-3. Creates a versioned GitHub Release with HTML, EPUB, FB2, and PDF as assets
-4. Publishes HTML, PDF, and EPUB to GitHub Pages
+2. Runs the Python chapter code check via `bundle exec rake book:run_code`
+3. Builds all book formats via `bundle exec rake book:build`
+4. Creates a versioned GitHub Release with HTML, EPUB, FB2, and PDF as assets
+5. Publishes HTML, PDF, and EPUB to GitHub Pages
 
 ---
 
