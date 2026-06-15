@@ -24,11 +24,11 @@ jobs:
       with:
         python-version: '3.12'
 
-    - name: Install Manim
-      run: pip install manim
+    - name: Install Python dependencies
+      run: pip install matplotlib pillow
 
     - name: Generate images
-      run: bash src/manim/render_all.sh
+      run: bash src/matplotlib/render_all.sh
 
     - name: Set up Ruby
       uses: ruby/setup-ruby@v1
