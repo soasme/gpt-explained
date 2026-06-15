@@ -1,5 +1,4 @@
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
 import numpy as np
 
 DARK='#222222'; BLUE='#1177BB'; GREEN='#228811'; MONO='monospace'
