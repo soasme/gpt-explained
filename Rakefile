@@ -36,14 +36,28 @@ namespace :book do
     end
   end
 
+  def cleanup_stem_images
+    FileList['**/stem-*.png'].each do |file|
+      rm_f file
+    end
+  end
+
   desc 'build basic book formats'
   task :build => [:build_html, :build_epub, :build_fb2, :build_mobi, :build_pdf] do
-    Rake::Task['book:check'].invoke
+    begin
+      Rake::Task['book:check'].invoke
+    ensure
+      cleanup_stem_images
+    end
   end
 
   desc 'build basic book formats (for ci)'
   task :ci => [:build_html, :build_epub, :build_fb2, :build_mobi, :build_pdf] do
+    begin
       Rake::Task['book:check'].invoke
+    ensure
+      cleanup_stem_images
+    end
   end
 
   desc 'generate contributors list'
@@ -67,8 +81,12 @@ namespace :book do
       check_contrib()
 
       puts 'Converting to EPub...'
-      sh "PKG_CONFIG_PATH='#{pkg_config_path}' bundle exec asciidoctor-epub3 -r mathematical -r asciidoctor-mathematical #{params} gpt-explained.asc"
-      puts ' -- Epub output at gpt-explained.epub'
+      begin
+        sh "PKG_CONFIG_PATH='#{pkg_config_path}' bundle exec asciidoctor-epub3 -r mathematical -r asciidoctor-mathematical #{params} gpt-explained.asc"
+        puts ' -- Epub output at gpt-explained.epub'
+      ensure
+        cleanup_stem_images
+      end
   end
 
   desc 'build FB2 format'
@@ -94,8 +112,12 @@ namespace :book do
       check_contrib()
 
       puts 'Converting to PDF... (this one takes a while)'
-      sh "PKG_CONFIG_PATH='#{pkg_config_path}' bundle exec asciidoctor-pdf -r mathematical -r asciidoctor-mathematical #{params} gpt-explained.asc 2>/dev/null"
-      puts ' -- PDF output at gpt-explained.pdf'
+      begin
+        sh "PKG_CONFIG_PATH='#{pkg_config_path}' bundle exec asciidoctor-pdf -r mathematical -r asciidoctor-mathematical #{params} gpt-explained.asc 2>/dev/null"
+        puts ' -- PDF output at gpt-explained.pdf'
+      ensure
+        cleanup_stem_images
+      end
   end
 
   desc 'Check generated books'
@@ -127,6 +149,7 @@ namespace :book do
                   puts 'Error removing files (ignored)'
               end
         end
+        cleanup_stem_images
     end
   end
 
