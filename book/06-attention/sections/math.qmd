@@ -1,4 +1,4 @@
-## 6.2 The Math
+## The Math
 
 ### Step 1: Project to Q, K, V
 

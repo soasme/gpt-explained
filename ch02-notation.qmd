@@ -1,8 +1,8 @@
 # Notation and Definitions {#sec-ch02-notation}
 
-> _"Mathematics is the language in which God has written the universe."_
+> _"The book of nature is written in the language of mathematics, and its characters are triangles, circles, and other geometric figures."_
 >
-> — Galileo Galilei
+> — Galileo Galilei, *Il Saggiatore* (1623)
 
 This chapter is a compact reference for the core math used at the start of the book.
 It focuses on notation, definitions, and small numerical examples.

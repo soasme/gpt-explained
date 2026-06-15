@@ -1,4 +1,4 @@
-## 6.4 The Code: Scaled Dot-Product Attention in Python
+## The Code: Scaled Dot-Product Attention in Python
 
 Attention is a composition of named operations.
 The matrix abstraction from Chapter 2 carries forward; we add multiply, transpose, scale, and add.

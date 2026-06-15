@@ -1,4 +1,4 @@
-## 10.3 The Generation Loop
+## The Generation Loop
 
 Training and inference use the same forward pass differently.
 

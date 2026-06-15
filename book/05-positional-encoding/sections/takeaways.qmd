@@ -1,4 +1,4 @@
-## 5.6 Learned vs Sinusoidal Positional Embeddings
+## Learned vs Sinusoidal Positional Embeddings
 
 GPT-2 and GPT-3 use *learned* positional embeddings — a second embedding matrix $P \in \mathbb{R}^{T_{max} \times d}$, trained alongside the token embedding matrix.
 
@@ -13,7 +13,7 @@ Cons:
 Sinusoidal encoding is deterministic and extrapolates naturally.
 Modern architectures (LLaMA, Mistral) use a more sophisticated variant called *Rotary Positional Encoding (RoPE)* which applies the positional information inside the attention computation rather than at the input stage.
 
-## 5.7 Key Takeaways
+## Key Takeaways
 
 - Without position information, the model is *permutation-invariant* — it cannot distinguish `"dog bites man"` from `"man bites dog"`.
 - Sinusoidal PE encodes position using sine/cosine at exponentially-spaced frequencies.

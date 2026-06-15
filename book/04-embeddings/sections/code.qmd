@@ -1,4 +1,4 @@
-## 4.5 The Code: Embedding in Python
+## The Code: Embedding in Python
 
 Before writing a single line of embedding logic, we name what a matrix _is_.
 A matrix is a rows-by-cols grid of numbers.

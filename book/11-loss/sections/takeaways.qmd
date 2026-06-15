@@ -1,4 +1,4 @@
-## 11.10 Key Takeaways
+## Key Takeaways
 
 - *Cross-entropy loss* is $-\log P(\text{true next token})$. Zero when perfect, unbounded when wrong.
 - *Teacher forcing* feeds ground-truth context at training time, enabling full parallelism via causal masking.

@@ -1,4 +1,4 @@
-## 10.7 Weight Tying in Detail
+## Weight Tying in Detail
 
 Why does weight tying work so well?
 
@@ -8,7 +8,7 @@ Why does weight tying work so well?
 
 Weight tying forces the model to use a single geometric space for both "what a token means" and "how to predict a token" — an elegant constraint that regularizes learning.
 
-## 10.8 Key Takeaways
+## Key Takeaways
 
 - The *unembedding* projects the final hidden state to logits: $\text{logits} = h W_u \in \mathbb{R}^{|V|}$.
 - *Weight tying* ($W_u = E^{\top}$) reuses the embedding matrix and reduces parameters.
@@ -16,7 +16,7 @@ Weight tying forces the model to use a single geometric space for both "what a t
 - *Temperature* controls sampling sharpness; *top-K* restricts the candidate set.
 - *Autoregressive generation*: sample one token at a time, feeding each back as input.
 
-## 10.9 The Complete Picture
+## The Complete Picture
 
 You have now seen every piece:
 

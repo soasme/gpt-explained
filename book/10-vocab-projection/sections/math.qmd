@@ -1,4 +1,4 @@
-## 10.2 The Math
+## The Math
 
 Given the final hidden state $h_t = X_{\text{final}}[T-1] \in \mathbb{R}^d$:
 
@@ -34,7 +34,9 @@ $$
 
 We can control the "sharpness" of the distribution with a *temperature parameter* $T_{\text{temp}}$:
 
-$P(i) = \operatorname{softmax}(\text{logits} / T_{\text{temp}})[i]$
+$$
+P(i) = \operatorname{softmax}(\text{logits} / T_{\text{temp}})[i]
+$$
 
 - $T_{\text{temp}} \to 0$: argmax — always pick the highest-probability token (greedy)
 - $T_{\text{temp}} = 1$: standard softmax

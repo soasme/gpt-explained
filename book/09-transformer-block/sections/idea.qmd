@@ -1,4 +1,4 @@
-## 9.1 The Idea
+## The Idea
 
 A GPT model is a stack of identical blocks — GPT-2 small has 12, GPT-3 has 96.
 Stacking many layers should make the model more powerful, but in practice it causes two problems: information gets distorted as it passes through many transformations, and very deep networks are notoriously hard to train.

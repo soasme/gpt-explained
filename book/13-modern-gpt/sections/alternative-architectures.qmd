@@ -1,4 +1,4 @@
-## 13.4 Alternative Architectures
+## Alternative Architectures
 
 The transformer is not the only architecture for sequence modelling.
 Several alternatives challenge or complement it.

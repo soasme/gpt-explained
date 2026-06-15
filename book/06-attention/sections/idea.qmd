@@ -1,4 +1,4 @@
-## 6.1 The Idea
+## The Idea
 
 Imagine you are at a library.
 You arrive with a *query*: "I'm looking for books about Renaissance painting."

@@ -1,19 +1,25 @@
-## 2.5 Activation Functions
+## Activation Functions
 
 An *activation function* introduces non-linearity after a linear transformation, allowing neural networks to model complex relationships.
 
 *ReLU* (Rectified Linear Unit):
 
-$\text{ReLU}(x) = \max(0, x)$
+$$
+\text{ReLU}(x) = \max(0, x)
+$$
 
 *GELU* (Gaussian Error Linear Unit), used in GPT's feed-forward layers:
 
-$\text{GELU}(x) = x \cdot \Phi(x)$
+$$
+\text{GELU}(x) = x \cdot \Phi(x)
+$$
 
 where $\Phi(x)$ is the standard normal CDF.
 A fast approximation used in practice:
 
-$\text{GELU}(x) \approx 0.5 x \left(1 + \tanh\!\left(\sqrt{2/\pi}(x + 0.044715 x^3)\right)\right)$
+$$
+\text{GELU}(x) \approx 0.5 x \left(1 + \tanh\!\left(\sqrt{2/\pi}(x + 0.044715 x^3)\right)\right)
+$$
 
 Without activations, stacking linear layers collapses to a single linear transformation — depth would buy nothing.
 
@@ -41,7 +47,7 @@ def gelu_matrix(matrix: Matrix) -> Matrix:
 
 ### Example
 
-For $x = -1, 0, 1, 2$:
+For $x = -1.0, 0.0, 1.0, 2.0$:
 
 |===
 | x | ReLU(x) | GELU(x)

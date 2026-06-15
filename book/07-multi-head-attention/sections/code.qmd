@@ -1,4 +1,4 @@
-## 7.4 The Code: Multi-Head Attention in Python
+## The Code: Multi-Head Attention in Python
 
 Each attention head is a triple of weight matrices $(W_q, W_k, W_v)$, each of shape $[d \times d_k]$.
 `MultiHeadAttention` groups the heads with the output projection $W_o$; `make_multi_head_attention` allocates them.

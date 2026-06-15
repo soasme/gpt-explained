@@ -1,4 +1,4 @@
-## 11.5 Perplexity
+## Perplexity
 
 Loss as nats is hard to interpret intuitively.
 *Perplexity* converts it to something more concrete:

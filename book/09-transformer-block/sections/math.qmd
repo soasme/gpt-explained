@@ -1,4 +1,4 @@
-## 9.2 The Math
+## The Math
 
 A single transformer block (Pre-LN variant, used by most modern GPTs):
 
@@ -31,7 +31,7 @@ The standard deviation $\sigma = \sqrt{Var}$ is in the same units as the origina
 Dividing by $\sigma$ makes the spread equal to 1 — "standardizing."
 :::
 
-## 9.3 The Residual Stream
+## The Residual Stream
 
 A powerful way to understand the GPT architecture is through the lens of the *residual stream* (Elhage et al., Anthropic 2021):
 

@@ -1,8 +1,10 @@
-## 13.3 Flash Attention
+## Flash Attention
 
 Standard self-attention computes the full $n \times n$ attention matrix explicitly:
 
-$\text{Attn} = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right)V$
+$$
+\text{Attn} = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right)V
+$$
 
 For a sequence of length $n$, this requires $O(n^2)$ memory — prohibitive for long contexts.
 

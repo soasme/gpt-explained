@@ -1,4 +1,4 @@
-## 3.3 The Matrix: A Tiny Vocabulary Table
+## The Matrix: A Tiny Vocabulary Table
 
 Let's trace through a micro-example.
 Suppose our entire training corpus is:

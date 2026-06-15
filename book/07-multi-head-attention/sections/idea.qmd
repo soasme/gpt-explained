@@ -1,4 +1,4 @@
-## 7.1 The Idea
+## The Idea
 
 A single attention operation produces one pattern of "who attends to whom."
 But a sentence carries many different kinds of relationships at the same time.

@@ -1,4 +1,4 @@
-## 6.3 The Matrix: Worked Example
+## The Matrix: Worked Example
 
 Let `T = 3` tokens, `d = 4`, $d_k = d_v = 4$.
 Input (position-encoded):

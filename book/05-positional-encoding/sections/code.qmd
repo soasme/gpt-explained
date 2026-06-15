@@ -1,4 +1,4 @@
-## 5.5 The Code: Positional Encoding in Python
+## The Code: Positional Encoding in Python
 
 The matrix data abstraction from Chapter 2 carries over unchanged.
 

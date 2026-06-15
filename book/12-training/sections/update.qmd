@@ -1,4 +1,4 @@
-## 12.7 The Gradient Descent Step
+## The Gradient Descent Step
 
 With gradients accumulated for every parameter, the update rule is:
 
@@ -19,11 +19,11 @@ def sgd_update_matrix(weights: Matrix, gradient: Matrix, learning_rate: float) -
 
 Every entry $W_{ij}$ moves a small step in the direction that reduces the loss.
 
-## 12.8 One Training Step
+## One Training Step
 
 Now we can assemble the full cycle: forward pass to get predictions and loss, backward pass to get gradients, update pass to improve every weight.
 
-## 12.9 Watching the Loss Fall
+## Watching the Loss Fall
 
 Running thousands of training steps, the loss curve looks roughly like this:
 

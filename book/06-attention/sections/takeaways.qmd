@@ -1,4 +1,4 @@
-## 6.5 Key Takeaways
+## Key Takeaways
 
 - Attention asks: for each token, *which other tokens are most relevant*?
 - Q, K, V are *learned linear projections* of the input.

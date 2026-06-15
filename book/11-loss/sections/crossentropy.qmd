@@ -1,4 +1,4 @@
-## 11.3 Cross-Entropy Loss
+## Cross-Entropy Loss
 
 ### The Formula
 

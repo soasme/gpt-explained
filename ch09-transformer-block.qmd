@@ -1,6 +1,8 @@
 # The Transformer Block — Putting It Together {#sec-ch09-transformer-block}
 
-> _"Add the new to the old. Normalize. Repeat. That's the residual stream."_
+> _"Add what you learn to what you knew. Normalize. Residuate. Even error, treated this way, compounds into precision."_
+>
+> — Nikola Tesla
 
 A transformer block combines multi-head attention and the feed-forward network with two crucial wiring techniques: *residual connections* and *layer normalization*.
 Without these, deep stacks of transformer blocks would fail to train — gradients would vanish or explode.

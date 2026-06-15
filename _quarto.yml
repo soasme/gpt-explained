@@ -33,13 +33,13 @@ book:
     - book/license.qmd
     - book/preface.qmd
     - book/contributors.qmd
-    - ch01-introduction.qmd
     - part: parts/foundations.qmd
       chapters:
+        - ch01-introduction.qmd
         - ch02-notation.qmd
-        - ch03-tokens.qmd
     - part: parts/representations.qmd
       chapters:
+        - ch03-tokens.qmd
         - ch04-embeddings.qmd
         - ch05-positional-encoding.qmd
     - part: parts/transformer-core.qmd

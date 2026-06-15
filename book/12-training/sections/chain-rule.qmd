@@ -1,4 +1,4 @@
-## 12.3 The Chain Rule
+## The Chain Rule
 
 Backpropagation is the chain rule from calculus, applied to a computation graph.
 
@@ -36,7 +36,7 @@ The learning rate $\eta$ scales how large the step is.
 This is the entire idea.
 Everything that follows is this rule, applied to millions of weights simultaneously.
 
-## 12.5 Backprop Through Softmax and Cross-Entropy
+## Backprop Through Softmax and Cross-Entropy
 
 Chapter 9 stated the softmax-CE gradient without proof:
 

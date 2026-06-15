@@ -1,4 +1,4 @@
-## 2.8 Key Takeaways
+## Key Takeaways
 
 This chapter defined the core mathematical toolkit needed to begin reading the model chapters.
 

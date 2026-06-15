@@ -1,4 +1,4 @@
-## 7.3 The Matrix: Worked Example
+## The Matrix: Worked Example
 
 Let `T = 3`, `d = 4`, `H = 2` heads, so $d_k = d_v = 2$.
 

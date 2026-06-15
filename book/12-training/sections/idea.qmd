@@ -1,4 +1,4 @@
-## 12.1 The Idea
+## The Idea
 
 The loss tells us _how wrong_ the model was at its last prediction.
 Training uses that wrongness to _improve_ the model — so it does better next time.
@@ -14,7 +14,7 @@ Weights that caused big errors get bigger nudges; weights that barely mattered g
 
 That is the entire training algorithm.
 
-## 12.2 The Goal: Move the Loss Down
+## The Goal: Move the Loss Down
 
 The model has millions of parameters.
 Call them collectively $\theta$.

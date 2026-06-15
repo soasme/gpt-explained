@@ -1,4 +1,4 @@
-## 9.4 The Matrix: Worked Example
+## The Matrix: Worked Example
 
 Let `T = 2`, `d = 4`.
 

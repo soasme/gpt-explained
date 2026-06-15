@@ -1,4 +1,4 @@
-## 2.3 Matrix Multiplication
+## Matrix Multiplication
 
 A matrix is a rectangular grid of numbers.
 Matrices let the model transform many vectors at once, which is why they are the main shape of learned weights.
@@ -14,7 +14,7 @@ Matrix = list[list[float]]
 In GPT, almost every learned computation is a matrix multiplication:
 embedding lookup, query/key/value projections (Chapter 6), feed-forward layers (Chapter 8), and the final vocabulary projection (Chapter 10).
 
-### 2.3.1 Transpose
+### Transpose
 
 Transposing a matrix swaps rows and columns.
 The first row becomes the first column, the second row becomes the second column, and so on.
@@ -32,18 +32,24 @@ def transpose(matrix: Matrix) -> Matrix:
 
 For:
 
-$A = \begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix}$
+$$
+A = \begin{bmatrix} 1.0 & 2.0 \\ 3.0 & 4.0 \end{bmatrix}
+$$
 
 the transpose is:
 
-$A^T = \begin{bmatrix} 1 & 3 \\ 2 & 4 \end{bmatrix}$
+$$
+A^T = \begin{bmatrix} 1.0 & 3.0 \\ 2.0 & 4.0 \end{bmatrix}
+$$
 
-### 2.3.2 Matrix Multiplication
+### Matrix Multiplication
 
 Matrix multiplication combines rows from the left matrix with columns from the right matrix.
 Given $A \in \mathbb{R}^{m \times k}$ and $B \in \mathbb{R}^{k \times n}$, their product $C = AB$ has shape $m \times n$, and each entry is:
 
-$C_{ij} = \sum_{r=1}^{k} A_{ir} B_{rj}$
+$$
+C_{ij} = \sum_{r=1}^{k} A_{ir} B_{rj}
+$$
 
 That equation says: take row $i$ from $A$, take column $j$ from $B$, and compute their dot product.
 The implementation transposes the right matrix first so its columns become easy to iterate over as rows.
@@ -58,24 +64,38 @@ def matrix_multiply(left: Matrix, right: Matrix) -> Matrix:
 
 For:
 
-$A = \begin{bmatrix} 1 & 2 \\ 3 & 4 \end{bmatrix}$
+$$
+A = \begin{bmatrix} 1.0 & 2.0 \\ 3.0 & 4.0 \end{bmatrix}
+$$
 
 and:
 
-$B = \begin{bmatrix} 5 & 6 \\ 7 & 8 \end{bmatrix}$
+$$
+B = \begin{bmatrix} 5.0 & 6.0 \\ 7.0 & 8.0 \end{bmatrix}
+$$
 
 the four output cells are:
 
-$C_{00} = 1 \cdot 5 + 2 \cdot 7 = 19$
+$$
+C_{00} = 1.0 \cdot 5.0 + 2.0 \cdot 7.0 = 19.0
+$$
 
-$C_{01} = 1 \cdot 6 + 2 \cdot 8 = 22$
+$$
+C_{01} = 1.0 \cdot 6.0 + 2.0 \cdot 8.0 = 22.0
+$$
 
-$C_{10} = 3 \cdot 5 + 4 \cdot 7 = 43$
+$$
+C_{10} = 3.0 \cdot 5.0 + 4.0 \cdot 7.0 = 43.0
+$$
 
-$C_{11} = 3 \cdot 6 + 4 \cdot 8 = 50$
+$$
+C_{11} = 3.0 \cdot 6.0 + 4.0 \cdot 8.0 = 50.0
+$$
 
 So:
 
-$AB = \begin{bmatrix} 19 & 22 \\ 43 & 50 \end{bmatrix}$
+$$
+AB = \begin{bmatrix} 19.0 & 22.0 \\ 43.0 & 50.0 \end{bmatrix}
+$$
 
 ![Matrix multiplication: each output cell is a dot product of a row with a column](images/ch02_matrix_multiply.png){#fig-ch02-matrix-multiply fig-alt="Diagram showing two 2x2 matrices multiplying with highlighted row-column pairs."}

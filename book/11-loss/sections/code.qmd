@@ -1,4 +1,4 @@
-## 11.8 Python Implementation
+## Python Implementation
 
 `cross_entropy_loss` computes $-\log P(\text{true token})$ for a single position.
 

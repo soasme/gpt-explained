@@ -1,4 +1,4 @@
-## 3.4 The Code: A Micro-BPE in Python
+## The Code: A Micro-BPE in Python
 
 Python is used throughout this book — it strips away syntactic ceremony so the _structure of computation_ is visible.
 We build from named abstractions upward, one chunk at a time.

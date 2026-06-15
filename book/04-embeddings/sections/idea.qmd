@@ -1,4 +1,4 @@
-## 4.1 The Idea
+## The Idea
 
 A token ID is just a number — say, `42`.
 That integer is an address, not a meaning.
@@ -17,7 +17,7 @@ The model discovers these relationships entirely from how words appear together 
 
 This learned table is the *embedding matrix*, and the step that converts a sequence of IDs into a sequence of vectors is called *embedding*.
 
-## 4.2 Why Learned Vectors?
+## Why Learned Vectors?
 
 The values in the embedding matrix are not hand-crafted.
 They are initialized randomly and then *learned via gradient descent* during training, just like any other model parameter.

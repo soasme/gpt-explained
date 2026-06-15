@@ -1,6 +1,8 @@
 # Embeddings — Numbers to Meaning {#sec-ch04-embeddings}
 
-> _"A number is an address. A vector is a room."_
+> _"Every word, once geometrified, ceases to be a label and becomes a direction."_
+>
+> — Jorge Luis Borges
 
 We have token IDs: `[10, 3, 4, 8]`.
 They are integers.

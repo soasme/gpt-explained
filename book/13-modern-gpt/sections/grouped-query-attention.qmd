@@ -1,4 +1,4 @@
-## 13.2 Multi-Query and Grouped-Query Attention
+## Multi-Query and Grouped-Query Attention
 
 Standard multi-head attention (Chapter 7) creates separate $Q, K, V$ projections for every head.
 The key and value matrices dominate GPU memory during inference.

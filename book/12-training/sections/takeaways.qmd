@@ -1,4 +1,4 @@
-## 12.11 Key Takeaways
+## Key Takeaways
 
 - *Gradient descent* moves every weight downhill: $\theta \leftarrow \theta - \eta \nabla_\theta \mathcal{L}$.
 - *Partial derivatives* measure the sensitivity of the loss to each individual weight, holding all others fixed.

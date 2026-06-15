@@ -1,4 +1,4 @@
-## 5.3 The Math
+## The Math
 
 Full formula for the positional encoding matrix $PE \in \mathbb{R}^{T\times d}$:
 

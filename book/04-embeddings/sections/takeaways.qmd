@@ -1,4 +1,4 @@
-## 4.6 Key Takeaways
+## Key Takeaways
 
 - An embedding matrix $E \in \mathbb{R}^{|V| \times d}$ maps token IDs to dense vectors.
 - The embedding of token `i` is row `i` of `E` — a single *lookup*, no computation.

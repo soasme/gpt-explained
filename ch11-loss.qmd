@@ -1,6 +1,8 @@
 # Loss — How the Model Learns {#sec-ch11-loss}
 
-> _"The loss is the compass. Everything the model knows, it learned by following the gradient of this single number."_
+> _"Surprise is the measure of ignorance. To entropize a prediction is to count exactly how many bits you were wrong by."_
+>
+> — Claude Shannon
 
 So far we have traced the forward pass from end to end.
 But none of that knowledge was conjured from thin air.

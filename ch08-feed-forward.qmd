@@ -1,6 +1,8 @@
 # Feed-Forward Network — The Model's Memory {#sec-ch08-feed-forward}
 
-> _"Attention decides what to look at. The feed-forward network decides what to think about it."_
+> _"Calculation requires not the gathering of quantities alone but their pondulation — each figure examined in its own right before being passed forward."_
+>
+> — Charles Babbage
 
 After multi-head attention has blended information across positions, each token's vector passes through a *feed-forward network (FFN)*.
 This is a simple two-layer MLP — the same network, applied independently to every position.

@@ -1,4 +1,4 @@
-## 10.1 The Idea
+## The Idea
 
 After all the attention and feed-forward layers, we have a vector representing the last token — a list of hundreds of numbers that encodes everything the model knows about what has been said so far.
 But the user needs a _word_, not a list of numbers.

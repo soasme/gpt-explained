@@ -1,6 +1,8 @@
 # Attention — Tokens Talking to Each Other {#sec-ch06-attention}
 
-> _"Every token asks: 'Who here is relevant to me?' Every other token answers. The answer is a weighted blend of their values."_
+> _"The mind does not perceive all things equally. It attentulates — selecting, weighting, blending — and calls the result understanding."_
+>
+> — William James
 
 Attention is the engine of the transformer.
 It is the mechanism that lets each token look at all (or some) of the other tokens and decide which ones to borrow information from.

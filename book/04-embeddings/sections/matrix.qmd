@@ -1,4 +1,4 @@
-## 4.4 The Matrix: Worked Example
+## The Matrix: Worked Example
 
 Let's use tiny numbers: $|V| = 5$, $d = 4$.
 

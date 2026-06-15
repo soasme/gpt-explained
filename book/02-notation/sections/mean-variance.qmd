@@ -1,15 +1,17 @@
-## 2.6 Mean and Variance
+## Mean and Variance
 
 Mean and variance summarize a vector of numbers.
 They tell us where the values are centered and how spread out they are.
 Layer normalization uses these ideas in every transformer block: it centers an activation vector around zero and rescales it to a predictable size.
 
-### 2.6.1 Mean
+### Mean
 
 The mean is the average value.
 Add all values, then divide by how many values there are:
 
-$\mu = \frac{1}{n}\sum_{i=1}^n x_i$
+$$
+\mu = \frac{1}{n}\sum_{i=1}^n x_i
+$$
 
 The implementation is just that calculation.
 
@@ -20,19 +22,23 @@ def mean(values: Sequence[float]) -> float:
 ```
 <!-- /snippet -->
 
-For $x = [2, 4, 4, 4, 5, 5, 7, 9]$, the sum is $40$ and there are $8$ values.
+For $x = [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]$, the sum is $40.0$ and there are $8$ values.
 So:
 
-$\mu = \frac{40}{8} = 5$
+$$
+\mu = \frac{40.0}{8} = 5.0
+$$
 
-### 2.6.2 Variance
+### Variance
 
 Variance measures how spread out the values are.
 First subtract the mean from each value.
 Then square those deviations so negative and positive deviations do not cancel out.
 Finally, average the squared deviations:
 
-$\sigma^2 = \frac{1}{n}\sum_{i=1}^n (x_i - \mu)^2$
+$$
+\sigma^2 = \frac{1}{n}\sum_{i=1}^n (x_i - \mu)^2
+$$
 
 The Python helper computes the mean first, then follows the formula.
 
@@ -44,20 +50,26 @@ def variance(values: Sequence[float]) -> float:
 ```
 <!-- /snippet -->
 
-Continuing with $x = [2, 4, 4, 4, 5, 5, 7, 9]$, the mean is $5$.
+Continuing with $x = [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]$, the mean is $5.0$.
 The squared deviations are:
 
-$9, 1, 1, 1, 0, 0, 4, 16$
+$$
+9.0, 1.0, 1.0, 1.0, 0.0, 0.0, 4.0, 16.0
+$$
 
 Their average is:
 
-$\sigma^2 = \frac{9+1+1+1+0+0+4+16}{8} = 4$
+$$
+\sigma^2 = \frac{9.0+1.0+1.0+1.0+0.0+0.0+4.0+16.0}{8} = 4.0
+$$
 
-### 2.6.3 Standard Deviation
+### Standard Deviation
 
 Standard deviation puts variance back on the original scale by taking the square root:
 
-$\sigma = \sqrt{\sigma^2}$
+$$
+\sigma = \sqrt{\sigma^2}
+$$
 
 <!-- snippet: src/python/common.py#standard_deviation -->
 ```python
@@ -66,8 +78,10 @@ def standard_deviation(values: Sequence[float]) -> float:
 ```
 <!-- /snippet -->
 
-In this example, the variance is $4$, so the standard deviation is:
+In this example, the variance is $4.0$, so the standard deviation is:
 
-$\sigma = \sqrt{4} = 2$
+$$
+\sigma = \sqrt{4.0} = 2.0
+$$
 
 Layer normalization uses this value to divide each centered activation by its standard deviation.

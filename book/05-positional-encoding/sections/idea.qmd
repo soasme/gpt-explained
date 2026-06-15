@@ -1,4 +1,4 @@
-## 5.1 The Idea
+## The Idea
 
 After embedding, every token is a vector.
 But those vectors carry no information about _where_ in the sentence the token appears.

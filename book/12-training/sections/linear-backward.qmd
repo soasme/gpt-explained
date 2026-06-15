@@ -1,4 +1,4 @@
-## 12.4 Backprop Through a Linear Layer
+## Backprop Through a Linear Layer
 
 The most common operation in a transformer is a *linear layer*: $y = Wx$.
 
@@ -24,7 +24,7 @@ def linear_backward(delta: Vector, weights: Matrix, x: Vector) -> tuple[Matrix, 
 ```
 <!-- /snippet -->
 
-## 12.6 Accumulating Gradients Across the Sequence
+## Accumulating Gradients Across the Sequence
 
 We compute the softmax-CE gradient independently at each position $t$.
 But all positions share the same unembedding matrix $W_u$ (and the same transformer weights).

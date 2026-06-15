@@ -1,4 +1,4 @@
-## 3.2 Byte Pair Encoding (BPE)
+## Byte Pair Encoding (BPE)
 
 The most common tokenization algorithm used in GPT models is *Byte Pair Encoding*.
 The algorithm has two phases:

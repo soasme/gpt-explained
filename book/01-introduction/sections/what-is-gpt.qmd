@@ -1,4 +1,4 @@
-## 1.1 What Is GPT?
+## What Is GPT?
 
 GPT stands for *Generative Pre-trained Transformer*.
 

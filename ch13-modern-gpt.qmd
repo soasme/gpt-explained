@@ -1,6 +1,6 @@
 # Modern GPT {#sec-ch13-modern-gpt}
 
-> _"In research you need to be bold and try things."_
+> _"The model that learns to flashwise attend and rotarify its positions will see further than one that merely grows larger."_
 >
 > — Ilya Sutskever
 

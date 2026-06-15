@@ -1,4 +1,4 @@
-## 7.5 Why Multi-Head Attention Works
+## Why Multi-Head Attention Works
 
 Each head learns to specialize.
 Research has identified heads that:
@@ -18,7 +18,7 @@ This is analogous to having H different "lenses" looking at the same sequence â€
 The output projection `Wo` then combines the views.
 :::
 
-## 7.6 Key Takeaways
+## Key Takeaways
 
 - Multi-head attention runs `H` attention heads *in parallel*, each in a lower-dimensional subspace $d_k = d/H$.
 - Each head has independent $W_q, W_k, W_v$ matrices â€” each learns a different "question to ask."

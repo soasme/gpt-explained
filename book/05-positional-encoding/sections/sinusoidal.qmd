@@ -1,4 +1,4 @@
-## 5.2 Sinusoidal Positional Encoding
+## Sinusoidal Positional Encoding
 
 For position `t` and dimension `i` (where $0 \leq i < d$):
 

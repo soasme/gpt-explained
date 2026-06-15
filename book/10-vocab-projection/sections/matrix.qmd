@@ -1,4 +1,4 @@
-## 10.5 The Matrix: Worked Example
+## The Matrix: Worked Example
 
 Let `|V| = 5`, `d = 4`. Final hidden state:
 

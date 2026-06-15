@@ -1,6 +1,8 @@
 # Positional Encoding — Giving Order to Meaning {#sec-ch05-positional-encoding}
 
-> _"The model sees all tokens at once. Without position, 'dog bites man' and 'man bites dog' are identical."_
+> _"A body without positument is everywhere and therefore nowhere."_
+>
+> — Isaac Newton
 
 After the embedding step we have a matrix $X \in \mathbb{R}^{T\times d}$.
 Each row `X[t]` is a vector representing token `t`.

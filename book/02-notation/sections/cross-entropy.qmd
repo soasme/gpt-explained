@@ -1,20 +1,24 @@
-## 2.7 Cross-Entropy Loss
+## Cross-Entropy Loss
 
 Cross-entropy measures how wrong a predicted probability distribution is.
 It gives training a single number to minimize, so better predictions become lower loss.
 For next-token prediction, it becomes the model's training loss: the model is punished when it assigns low probability to the actual next token.
 
-### 2.7.1 Cross-Entropy
+### Cross-Entropy
 
 Given a true probability distribution $p$ and the model's predicted distribution $q$, cross-entropy is:
 
-$H(p, q) = -\sum_i p_i \ln q_i$
+$$
+H(p, q) = -\sum_i p_i \ln q_i
+$$
 
 In next-token prediction, $p$ is one-hot: the correct token has probability $1$, and every other token has probability $0$.
 That makes the sum collapse to one term.
 If the correct token is $c$, the loss is:
 
-$H = -\ln q_c$
+$$
+H = -\ln q_c
+$$
 
 The implementation receives raw logits, turns them into probabilities with softmax, and returns the negative log probability of the correct token.
 
@@ -30,17 +34,21 @@ Suppose the vocabulary has four tokens and the model assigns probabilities $[0.1
 If the correct token index is $1$, then the probability of the correct answer is $0.6$.
 The loss is:
 
-$H = -\ln(0.6) \approx 0.511$
+$$
+H = -\ln(0.6) \approx 0.511
+$$
 
 If the model assigned probability $1.0$ to the correct token, the loss would be $0$.
 If it assigned $0.01$, the loss would jump to $4.605$.
 Low confidence in the correct answer is expensive.
 
-### 2.7.2 Perplexity
+### Perplexity
 
 Perplexity converts cross-entropy back into an easier-to-read scale:
 
-$\text{perplexity} = e^H$
+$$
+\text{perplexity} = e^H
+$$
 
 The implementation is one line because this is exactly the natural exponential from Section 2.5.
 

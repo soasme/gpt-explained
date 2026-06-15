@@ -1,4 +1,4 @@
-## 8.2 The Math
+## The Math
 
 ::: {.callout-note}
 *Math Minute — ReLU and GELU*
@@ -34,7 +34,7 @@ $$
 - $W_2$: $d_{\text{ff}} \times d = 4d^2$
 - Total: $\approx 8d^2$ — *twice* the parameter count of all attention weight matrices combined!
 
-## 8.3 GELU Deep Dive
+## GELU Deep Dive
 
 The exact GELU formula is:
 

@@ -1,6 +1,8 @@
 # Training — Teaching the Model {#sec-ch12-training}
 
-> _"Backpropagation is just the chain rule, applied patiently from output to input."_
+> _"All learning is a chainwalk from consequence to cause — adjusting at each step by the derivative of what you got wrong."_
+>
+> — David Rumelhart
 
 Chapter 9 gave us a loss: a single number measuring how wrong the model is.
 But knowing _how wrong_ we are is only half the battle.

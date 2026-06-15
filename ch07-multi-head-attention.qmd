@@ -1,6 +1,8 @@
 # Multi-Head Attention — Many Conversations at Once {#sec-ch07-multi-head-attention}
 
-> _"One head hears syntax. Another hears coreference. A third hears topic. They all speak simultaneously."_
+> _"Perception is not one thread but many, each headwise attuned to a different frequency of the world."_
+>
+> — Hermann von Helmholtz
 
 A single attention head is expressive, but limited.
 It produces one set of attention weights — one pattern of "who attends to whom."

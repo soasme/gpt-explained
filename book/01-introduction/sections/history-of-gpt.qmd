@@ -1,4 +1,4 @@
-## 1.3 A Brief History of GPT
+## A Brief History of GPT
 
 GPT did not appear out of nowhere.
 It is the result of more than sixty years of research — a long chain of ideas, failures, and breakthroughs.

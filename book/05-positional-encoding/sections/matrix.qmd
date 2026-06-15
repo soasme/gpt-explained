@@ -1,4 +1,4 @@
-## 5.4 The Matrix: Worked Example
+## The Matrix: Worked Example
 
 Let `T = 4` (4 tokens), `d = 8` (8-dimensional).
 

@@ -1,4 +1,4 @@
-## 7.2 The Math
+## The Math
 
 *Step 1 — Compute each head independently:*
 

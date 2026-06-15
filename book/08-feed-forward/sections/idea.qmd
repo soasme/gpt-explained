@@ -1,4 +1,4 @@
-## 8.1 The Idea
+## The Idea
 
 Attention is about _communication_ — each token collects information from other tokens.
 The feed-forward network is about _computation_ — each token processes what it just collected, entirely on its own.

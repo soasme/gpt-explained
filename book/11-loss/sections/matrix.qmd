@@ -1,4 +1,4 @@
-## 11.6 The Matrix: Worked Example
+## The Matrix: Worked Example
 
 Let's trace the loss for a 4-token sequence `["The", "cat", "sat", "on"]` with $|V| = 5$ (toy vocabulary).
 

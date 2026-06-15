@@ -1,4 +1,4 @@
-## 10.6 The Code: Full microGPT Forward Pass in Python
+## The Code: Full microGPT Forward Pass in Python
 
 Configuration is data.
 We represent the model's five hyperparameters as a plain list and define selectors once.

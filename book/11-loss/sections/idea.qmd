@@ -1,4 +1,4 @@
-## 11.1 The Idea
+## The Idea
 
 The model reads a sentence and, at each position, guesses what word comes next.
 Those guesses are never perfect — but how do we measure _how wrong_ a guess is?
@@ -15,7 +15,7 @@ The *cross-entropy loss* formalizes this: it measures how much probability the m
 A perfect model assigns 100% to the right word — loss is zero.
 A confused model spreads probability thinly — loss is high.
 
-## 11.2 The Problem: Evaluating a Probability Distribution
+## The Problem: Evaluating a Probability Distribution
 
 After the forward pass, the model produces a probability distribution over the vocabulary:
 

@@ -1,4 +1,4 @@
-## 1.2 How GPT Works
+## How GPT Works
 
 Imagine texting with a really smart friend who has read every book, article, and website ever written.
 You send a message, they think for a split second, and they reply with exactly the right words.

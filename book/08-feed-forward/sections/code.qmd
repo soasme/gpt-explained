@@ -1,4 +1,4 @@
-## 8.5 The Code: FFN in Python
+## The Code: FFN in Python
 
 GELU is the activation function used in GPT-2.
 For large positive $x$, GELU approaches $x$ — the value passes through.

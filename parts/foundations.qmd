@@ -1,7 +1,7 @@
 # Foundations {#part-foundations .unnumbered}
 
 This part establishes the vocabulary used throughout the rest of the book.
-It starts with the compact math notation needed to read the diagrams and Python code, then turns raw text into token IDs.
+It starts with the high-level idea of GPT-style models, then introduces the compact math notation needed to read the diagrams and Python code.
 
+- In @sec-ch01-introduction, you will see what a GPT model does and how the main pieces fit together.
 - In @sec-ch02-notation, you will learn the vector, matrix, probability, and calculus notation used in the later chapters.
-- In @sec-ch03-tokens, you will see how text becomes token IDs, and how a small byte-pair encoding tokenizer works.
