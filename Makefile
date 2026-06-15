@@ -1,4 +1,4 @@
-.PHONY: all book html epub pdf check snippets images clean
+.PHONY: all book html epub pdf check snippets images publish clean
 
 all: check book
 
@@ -22,6 +22,15 @@ snippets:
 
 images:
 	bash src/matplotlib/render_all.sh
+
+publish: book
+	git -C _book init
+	git -C _book checkout -B gh-pages
+	git -C _book remote remove origin 2>/dev/null || true
+	git -C _book remote add origin git@github.com:soasme/gpt-explained.git
+	git -C _book add -A
+	git -C _book commit -m "Publish book"
+	git -C _book push origin gh-pages -f
 
 clean:
 	rm -rf _book .quarto
