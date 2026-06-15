@@ -104,17 +104,14 @@ ax1.plot(p, ln_p, color=BLUE, lw=2.5)
 ax1.axhline(0, color=DARK, lw=0.5, alpha=0.4)
 ax1.set_xlabel('x', fontfamily=MONO, fontsize=12)
 ax1.set_ylabel('ln(x)', fontfamily=MONO, fontsize=12)
-ax1.set_title('Natural logarithm', fontfamily=MONO, fontsize=12, color=DARK)
 for sp in ['top','right']: ax1.spines[sp].set_visible(False)
 
 ax2.set_facecolor('white')
 ax2.plot(p, neg_ln_p, color=RED, lw=2.5)
 ax2.set_xlabel('probability p', fontfamily=MONO, fontsize=12)
 ax2.set_ylabel('-ln(p)  [loss]', fontfamily=MONO, fontsize=12)
-ax2.set_title('Negative log as loss', fontfamily=MONO, fontsize=12, color=DARK)
 for sp in ['top','right']: ax2.spines[sp].set_visible(False)
 
-plt.suptitle('ln(x) and -ln(p): low probability means high loss', fontfamily=MONO, fontsize=12, color=DARK)
 plt.tight_layout()
 plt.show()
 ```

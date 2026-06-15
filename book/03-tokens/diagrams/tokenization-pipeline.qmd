@@ -1,4 +1,6 @@
 ```{dot}
+//| label: fig-ch03-tokenization-pipeline
+//| fig-cap: "Tokenization maps raw text to a sequence of integer IDs; identical words get the same ID"
 digraph tokenization_pipeline {
   graph [
     rankdir=TB,

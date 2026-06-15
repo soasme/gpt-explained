@@ -1,6 +1,25 @@
-# GPT Explained {.unnumbered}
+# Welcome {.unnumbered}
 
 *A hands-on guide to transformer architecture, from tokens to text generation, with math, matrices, Python, and diagrams.*
 
-This book builds a small GPT-style language model from first principles.
-It starts with tokenization, moves through embeddings and attention, and ends with loss, training, and generation.
+**This is the website for *GPT Explained***, an open book about how GPT-style language models actually work — from the inside out.
+
+**This book will teach you** how transformers are built and trained.
+Not at a high level — at the level where you can read the code, follow the math, and trace a single token all the way through a real model.
+
+**You will learn** tokenization, embeddings, positional encoding, attention, multi-head attention, feed-forward networks, transformer blocks, vocabulary projection, cross-entropy loss, and backpropagation.
+Each concept arrives as a focused chapter: a plain-language explanation, the math in full, a Python implementation you can run, and diagrams generated from code.
+
+In this book, you will build a small but complete GPT from scratch.
+Not a toy metaphor — actual matrix multiplications, actual softmax, actual multi-head attention, actual gradient descent.
+By the final chapter you will have a working miniature language model you can inspect line by line, and a clear mental model of every step a modern LLM takes between reading your prompt and writing its reply.
+The only prerequisites are basic Python and enough math to follow an equation when it is explained in words next to it.
+No machine-learning background is assumed.
+
+*GPT Explained* is free to read online under the [Creative Commons Attribution-NonCommercial-ShareAlike 3.0](https://creativecommons.org/licenses/by-nc-sa/3.0/) license.
+You may share and adapt the material for non-commercial purposes as long as you give credit and keep the same license.
+Ebook and PDF versions are available for download on the releases page.
+
+Contributions are welcome — whether that is a typo fix, a clearer explanation, a better diagram, or a new section.
+Open an issue or a pull request on [GitHub](https://github.com/soasme/gpt-explained).
+Please read the [Code of Conduct](https://github.com/soasme/gpt-explained/blob/main/CODE_OF_CONDUCT.md) before contributing; we want this project to be a welcoming place for everyone learning how these models work.

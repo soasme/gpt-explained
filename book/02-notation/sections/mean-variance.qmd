@@ -117,8 +117,6 @@ ax.text(mu, 0.07, 'σ = 2.0', ha='center', fontfamily=MONO, fontsize=10, color=G
 
 ax.set_xlabel('value', fontfamily=MONO, fontsize=12)
 ax.set_yticks([])
-ax.set_title('Mean and standard deviation of [2,4,4,4,5,5,7,9]',
-             fontfamily=MONO, fontsize=12, color=DARK)
 ax.legend(fontsize=10, prop={'family': MONO})
 for sp in ['top','right','left']: ax.spines[sp].set_visible(False)
 ax.set_ylim(-0.05, 0.15)

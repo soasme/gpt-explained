@@ -7,6 +7,8 @@ GPT works like that friend — except instead of a brain, it uses a chain of mat
 Every word GPT produces goes through these seven steps, in order:
 
 ```{dot}
+//| label: fig-ch01-gpt-pipeline
+//| fig-cap: "The GPT pipeline: from input text to predicted next word, in seven steps"
 digraph gpt_pipeline {
   graph [
     rankdir=TB,

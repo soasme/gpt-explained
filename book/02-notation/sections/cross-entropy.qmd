@@ -66,20 +66,16 @@ ax1.plot(0.6, -np.log(0.6), 'o', color=RED, markersize=7)
 ax1.text(0.62, -np.log(0.6)+0.1, f'p=0.6 → H≈{-np.log(0.6):.3f}',
          fontfamily=MONO, fontsize=9, color=RED)
 ax1.set_xlabel('probability of correct token', fontfamily=MONO, fontsize=11)
-ax1.set_ylabel('cross-entropy loss H', fontfamily=MONO, fontsize=11)
-ax1.set_title('Loss = -ln(q)', fontfamily=MONO, fontsize=12, color=DARK)
+ax1.set_ylabel('cross-entropy loss H = -ln(q)', fontfamily=MONO, fontsize=11)
 for sp in ['top','right']: ax1.spines[sp].set_visible(False)
 
 ax2.set_facecolor('white')
 ax2.plot(q, perp, color=BLUE, lw=2.5)
 ax2.set_ylim(0, 30)
 ax2.set_xlabel('probability of correct token', fontfamily=MONO, fontsize=11)
-ax2.set_ylabel('perplexity', fontfamily=MONO, fontsize=11)
-ax2.set_title('Perplexity = exp(H)', fontfamily=MONO, fontsize=12, color=DARK)
+ax2.set_ylabel('perplexity = exp(H)', fontfamily=MONO, fontsize=11)
 for sp in ['top','right']: ax2.spines[sp].set_visible(False)
 
-plt.suptitle('Cross-entropy and perplexity vs correct-token probability',
-             fontfamily=MONO, fontsize=11, color=DARK)
 plt.tight_layout()
 plt.show()
 ```

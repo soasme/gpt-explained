@@ -1,4 +1,5 @@
 ```{dot}
+//| fig-cap: "BPE merges the most frequent adjacent pairs of characters or subwords until the vocabulary is full"
 digraph bpe_merges {
   graph [
     rankdir=TB,

@@ -84,7 +84,6 @@ ax.annotate('minimum', xy=(3, 0), xytext=(3.5, 1.5),
 
 ax.set_xlabel('theta', fontfamily=MONO, fontsize=12)
 ax.set_ylabel('L(theta)', fontfamily=MONO, fontsize=12)
-ax.set_title('Gradient descent converges to the minimum', fontfamily=MONO, fontsize=12, color=DARK)
 ax.legend(fontsize=10, prop={'family': MONO})
 for sp in ['top','right']: ax.spines[sp].set_visible(False)
 

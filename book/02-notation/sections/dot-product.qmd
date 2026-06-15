@@ -115,7 +115,6 @@ ax.plot([proj[0], corner[0], corner[0]+v_unit[0]*sq],
         [proj[1], corner[1], corner[1]+v_unit[1]*sq],
         color=DARK, lw=1.0, alpha=0.5)
 
-ax.set_title('Dot product as scalar projection', fontfamily=MONO, fontsize=12, color=DARK)
 plt.tight_layout()
 plt.show()
 ```

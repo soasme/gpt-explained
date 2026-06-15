@@ -146,8 +146,6 @@ ax.text(5.0, -0.5,
         'C[0][0] = row 0 of A  dot  col 0 of B = 1x5 + 2x7 = 19',
         fontfamily=MONO, fontsize=10, color=DARK)
 
-ax.set_title('Matrix multiplication: C[i][j] = dot(row i of A, col j of B)',
-             fontfamily=MONO, fontsize=11, color=DARK)
 plt.tight_layout()
 plt.show()
 ```
