@@ -6,20 +6,16 @@ import math
 import random
 
 from micro_bpe import demo as bpe_demo
-from microgpt import (
+from common import (
     GPTConfig,
-    accumulate_gradients,
     causal_mask,
     cosine_similarity,
-    cross_entropy_loss,
-    demo as gpt_demo,
     dot,
     embed_sequence,
     feed_forward,
     gelu,
     gpt_forward,
     layer_norm_matrix,
-    linear_backward,
     make_feed_forward,
     make_gpt_params,
     make_layer_norm,
@@ -29,21 +25,27 @@ from microgpt import (
     matrix_multiply,
     mean,
     multi_head_attention,
-    perplexity,
     random_matrix,
     relu,
     scaled_dot_product_attention,
     self_attention,
-    sequence_loss,
-    sgd_update_matrix,
-    sgd_update_scalar,
     sigmoid,
     sinusoidal_encoding,
     softmax,
-    softmax_cross_entropy_grad,
     transformer_block,
     variance,
 )
+from train import (
+    accumulate_gradients,
+    cross_entropy_loss,
+    linear_backward,
+    perplexity,
+    sequence_loss,
+    sgd_update_matrix,
+    sgd_update_scalar,
+    softmax_cross_entropy_grad,
+)
+from inference import demo as gpt_demo
 
 
 # tag::chapter_02[]

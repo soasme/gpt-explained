@@ -72,7 +72,7 @@ namespace :book do
       check_contrib()
 
       puts 'Converting to HTML...'
-      sh "bundle exec asciidoctor #{params} -a data-uri gpt-explained.asc"
+      sh "bundle exec asciidoctor -r asciidoctor-diagram #{params} -a data-uri gpt-explained.asc"
       puts ' -- HTML output at gpt-explained.html'
   end
 
@@ -82,7 +82,7 @@ namespace :book do
 
       puts 'Converting to EPub...'
       begin
-        sh "PKG_CONFIG_PATH='#{pkg_config_path}' bundle exec asciidoctor-epub3 -r mathematical -r asciidoctor-mathematical #{params} gpt-explained.asc"
+        sh "PKG_CONFIG_PATH='#{pkg_config_path}' bundle exec asciidoctor-epub3 -r asciidoctor-diagram -r mathematical -r asciidoctor-mathematical #{params} gpt-explained.asc"
         puts ' -- Epub output at gpt-explained.epub'
       ensure
         cleanup_stem_images
@@ -94,7 +94,7 @@ namespace :book do
       check_contrib()
 
       puts 'Converting to FB2...'
-      sh "bundle exec asciidoctor-fb2 #{params} gpt-explained.asc"
+      sh "bundle exec asciidoctor-fb2 -r asciidoctor-diagram #{params} gpt-explained.asc"
       puts ' -- FB2 output at gpt-explained.fb2.zip'
   end
 
@@ -103,7 +103,7 @@ namespace :book do
       check_contrib()
 
       puts "Converting to Mobi (kf8)..."
-      sh "bundle exec asciidoctor-epub3 #{params} -a ebook-format=kf8 gpt-explained.asc"
+      sh "bundle exec asciidoctor-epub3 -r asciidoctor-diagram #{params} -a ebook-format=kf8 gpt-explained.asc"
       puts " -- Mobi output at gpt-explained.mobi"
   end
 
@@ -113,7 +113,7 @@ namespace :book do
 
       puts 'Converting to PDF... (this one takes a while)'
       begin
-        sh "PKG_CONFIG_PATH='#{pkg_config_path}' bundle exec asciidoctor-pdf -r mathematical -r asciidoctor-mathematical #{params} gpt-explained.asc 2>/dev/null"
+        sh "PKG_CONFIG_PATH='#{pkg_config_path}' bundle exec asciidoctor-pdf -r asciidoctor-diagram -r mathematical -r asciidoctor-mathematical #{params} gpt-explained.asc 2>/dev/null"
         puts ' -- PDF output at gpt-explained.pdf'
       ensure
         cleanup_stem_images

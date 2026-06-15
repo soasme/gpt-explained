@@ -26,6 +26,8 @@ venv/
 
 # generated images (rebuilt by CI)
 images/
+.asciidoctor/
+ch03_*.svg
 
 # local bundler config (contains machine-specific paths)
 .bundle/config

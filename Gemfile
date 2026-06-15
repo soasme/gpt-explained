@@ -7,6 +7,7 @@ gem 'json', '2.9.1'
 gem 'awesome_print', '1.9.2'
 
 gem 'asciidoctor-fb2', '0.8.0'
+gem 'asciidoctor-diagram', '3.2.1'
 gem 'asciidoctor-pdf', '2.3.24'
 gem 'mathematical', path: 'vendor/gems/mathematical-1.6.20'
 gem 'asciidoctor-mathematical', '0.3.5'

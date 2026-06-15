@@ -13,3 +13,6 @@ brew "gdk-pixbuf"
 
 # Font support for asciidoctor-pdf
 brew "fontconfig"
+
+# Diagram rendering for asciidoctor-diagram Graphviz blocks
+brew "graphviz"

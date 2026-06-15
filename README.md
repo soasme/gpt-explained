@@ -81,11 +81,13 @@ Output files:
 
 ### Generate diagrams
 
-Diagrams are generated with Matplotlib scripts. To regenerate:
+Plot, heatmap, matrix, and neural-network diagrams are generated with Matplotlib scripts. The wrapper renders them in one Python process. To regenerate:
 
 ```bash
 src/matplotlib/render_all.sh
 ```
+
+Block-and-arrow diagrams are written inline as `asciidoctor-diagram` Graphviz blocks and render during the book build. Install Graphviz with `brew bundle` before building locally.
 
 CI rebuilds all images on each push before building the book.
 
