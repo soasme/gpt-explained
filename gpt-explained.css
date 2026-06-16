@@ -17,9 +17,11 @@ code, pre, tt {
 }
 
 pre {
-  background-color: #f5f5f5;
+  background-color: transparent;
+  border: 0;
+  border-radius: 0;
+  line-height: 1.5;
   padding: 0.75em 1em;
-  border-radius: 4px;
   overflow-x: auto;
 }
 
