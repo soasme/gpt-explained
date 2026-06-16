@@ -2,102 +2,102 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://soasme.github.io/gpt-explained/index.html</loc>
-    <lastmod>2026-06-16T10:53:21.394Z</lastmod>
+    <lastmod>2026-06-16T21:32:56.423Z</lastmod>
   </url>
   <url>
     <loc>https://soasme.github.io/gpt-explained/book/license.html</loc>
-    <lastmod>2026-06-16T10:53:21.391Z</lastmod>
+    <lastmod>2026-06-16T21:32:56.420Z</lastmod>
   </url>
   <url>
     <loc>https://soasme.github.io/gpt-explained/book/preface.html</loc>
-    <lastmod>2026-06-16T10:53:21.391Z</lastmod>
+    <lastmod>2026-06-16T21:32:56.420Z</lastmod>
   </url>
   <url>
     <loc>https://soasme.github.io/gpt-explained/book/contributors.html</loc>
-    <lastmod>2026-06-16T10:53:21.391Z</lastmod>
+    <lastmod>2026-06-16T21:32:56.420Z</lastmod>
   </url>
   <url>
     <loc>https://soasme.github.io/gpt-explained/parts/foundations.html</loc>
-    <lastmod>2026-06-16T10:53:21.394Z</lastmod>
+    <lastmod>2026-06-16T21:32:56.423Z</lastmod>
   </url>
   <url>
     <loc>https://soasme.github.io/gpt-explained/ch01-introduction.html</loc>
-    <lastmod>2026-06-16T10:53:21.391Z</lastmod>
+    <lastmod>2026-06-16T21:32:56.420Z</lastmod>
   </url>
   <url>
     <loc>https://soasme.github.io/gpt-explained/ch02-notation.html</loc>
-    <lastmod>2026-06-16T10:53:21.391Z</lastmod>
+    <lastmod>2026-06-16T21:32:56.420Z</lastmod>
   </url>
   <url>
     <loc>https://soasme.github.io/gpt-explained/parts/representations.html</loc>
-    <lastmod>2026-06-16T10:53:21.395Z</lastmod>
+    <lastmod>2026-06-16T21:32:56.424Z</lastmod>
   </url>
   <url>
     <loc>https://soasme.github.io/gpt-explained/ch03-tokens.html</loc>
-    <lastmod>2026-06-16T10:53:21.391Z</lastmod>
+    <lastmod>2026-06-16T21:32:56.420Z</lastmod>
   </url>
   <url>
     <loc>https://soasme.github.io/gpt-explained/ch04-embeddings.html</loc>
-    <lastmod>2026-06-16T10:53:21.391Z</lastmod>
+    <lastmod>2026-06-16T21:32:56.420Z</lastmod>
   </url>
   <url>
     <loc>https://soasme.github.io/gpt-explained/ch05-positional-encoding.html</loc>
-    <lastmod>2026-06-16T10:53:21.392Z</lastmod>
+    <lastmod>2026-06-16T21:32:56.420Z</lastmod>
   </url>
   <url>
     <loc>https://soasme.github.io/gpt-explained/parts/transformer-core.html</loc>
-    <lastmod>2026-06-16T10:53:21.395Z</lastmod>
+    <lastmod>2026-06-16T21:32:56.424Z</lastmod>
   </url>
   <url>
     <loc>https://soasme.github.io/gpt-explained/ch06-attention.html</loc>
-    <lastmod>2026-06-16T10:53:21.392Z</lastmod>
+    <lastmod>2026-06-16T21:32:56.420Z</lastmod>
   </url>
   <url>
     <loc>https://soasme.github.io/gpt-explained/ch07-multi-head-attention.html</loc>
-    <lastmod>2026-06-16T10:53:21.392Z</lastmod>
+    <lastmod>2026-06-16T21:32:56.420Z</lastmod>
   </url>
   <url>
     <loc>https://soasme.github.io/gpt-explained/ch08-feed-forward.html</loc>
-    <lastmod>2026-06-16T10:53:21.392Z</lastmod>
+    <lastmod>2026-06-16T21:32:56.420Z</lastmod>
   </url>
   <url>
     <loc>https://soasme.github.io/gpt-explained/ch09-transformer-block.html</loc>
-    <lastmod>2026-06-16T10:53:21.392Z</lastmod>
+    <lastmod>2026-06-16T21:32:56.421Z</lastmod>
   </url>
   <url>
     <loc>https://soasme.github.io/gpt-explained/parts/prediction-and-learning.html</loc>
-    <lastmod>2026-06-16T10:53:21.395Z</lastmod>
+    <lastmod>2026-06-16T21:32:56.424Z</lastmod>
   </url>
   <url>
     <loc>https://soasme.github.io/gpt-explained/ch10-vocab-projection.html</loc>
-    <lastmod>2026-06-16T10:53:21.392Z</lastmod>
+    <lastmod>2026-06-16T21:32:56.421Z</lastmod>
   </url>
   <url>
     <loc>https://soasme.github.io/gpt-explained/ch11-loss.html</loc>
-    <lastmod>2026-06-16T10:53:21.392Z</lastmod>
+    <lastmod>2026-06-16T21:32:56.421Z</lastmod>
   </url>
   <url>
     <loc>https://soasme.github.io/gpt-explained/ch12-training.html</loc>
-    <lastmod>2026-06-16T10:53:21.392Z</lastmod>
+    <lastmod>2026-06-16T21:32:56.421Z</lastmod>
   </url>
   <url>
     <loc>https://soasme.github.io/gpt-explained/parts/modern-gpt.html</loc>
-    <lastmod>2026-06-16T10:53:21.395Z</lastmod>
+    <lastmod>2026-06-16T21:32:56.424Z</lastmod>
   </url>
   <url>
     <loc>https://soasme.github.io/gpt-explained/ch13-modern-gpt.html</loc>
-    <lastmod>2026-06-16T10:53:21.392Z</lastmod>
+    <lastmod>2026-06-16T21:32:56.421Z</lastmod>
   </url>
   <url>
     <loc>https://soasme.github.io/gpt-explained/A-microgpt.html</loc>
-    <lastmod>2026-06-16T10:53:21.387Z</lastmod>
+    <lastmod>2026-06-16T21:32:56.416Z</lastmod>
   </url>
   <url>
     <loc>https://soasme.github.io/gpt-explained/gpt-explained.epub</loc>
-    <lastmod>2026-06-16T10:55:21.218Z</lastmod>
+    <lastmod>2026-06-16T21:34:49.798Z</lastmod>
   </url>
   <url>
     <loc>https://soasme.github.io/gpt-explained/gpt-explained.pdf</loc>
-    <lastmod>2026-06-16T10:56:29.092Z</lastmod>
+    <lastmod>2026-06-16T21:35:53.679Z</lastmod>
   </url>
 </urlset>

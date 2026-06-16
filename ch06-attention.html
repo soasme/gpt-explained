@@ -81,7 +81,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-327a23648f728c563436848380818549.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-5c6455a84bcea5f5637e4293716dd56f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -386,10 +386,10 @@ window.Quarto = {
    
   <ul class="collapse">
   <li><a href="#the-idea" id="toc-the-idea" class="nav-link active" data-scroll-target="#the-idea"><span class="header-section-number">6.1</span> The Idea</a></li>
-  <li><a href="#the-math" id="toc-the-math" class="nav-link" data-scroll-target="#the-math"><span class="header-section-number">6.4</span> The Math</a></li>
-  <li><a href="#the-matrix-worked-example" id="toc-the-matrix-worked-example" class="nav-link" data-scroll-target="#the-matrix-worked-example"><span class="header-section-number">6.5</span> The Matrix: Worked Example</a></li>
-  <li><a href="#the-code-scaled-dot-product-attention-in-python" id="toc-the-code-scaled-dot-product-attention-in-python" class="nav-link" data-scroll-target="#the-code-scaled-dot-product-attention-in-python"><span class="header-section-number">6.6</span> The Code: Scaled Dot-Product Attention in Python</a></li>
-  <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways"><span class="header-section-number">6.7</span> Key Takeaways</a></li>
+  <li><a href="#the-math" id="toc-the-math" class="nav-link" data-scroll-target="#the-math"><span class="header-section-number">6.2</span> The Math</a></li>
+  <li><a href="#the-matrix-worked-example" id="toc-the-matrix-worked-example" class="nav-link" data-scroll-target="#the-matrix-worked-example"><span class="header-section-number">6.3</span> The Matrix: Worked Example</a></li>
+  <li><a href="#the-code-scaled-dot-product-attention-in-python" id="toc-the-code-scaled-dot-product-attention-in-python" class="nav-link" data-scroll-target="#the-code-scaled-dot-product-attention-in-python"><span class="header-section-number">6.4</span> The Code: Scaled Dot-Product Attention in Python</a></li>
+  <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways"><span class="header-section-number">6.5</span> Key Takeaways</a></li>
   </ul>
 <div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch06-attention.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -427,29 +427,11 @@ window.Quarto = {
 <li><em>Value (V):</em> “What information can I give?” — produced from every token in the sequence.</li>
 </ul>
 <p>The output for each token is a <em>weighted sum</em> of all value vectors, where the weights come from comparing that token’s query against every token’s key.</p>
-<div class="callout callout-style-simple callout-note">
-<div class="callout-body d-flex">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-body-container">
-<p><em>Math Minute — Softmax</em></p>
-<p><code>softmax(z)</code> turns a vector of raw scores into a probability distribution. For vector <span class="math inline">\(z = [z_1, z_2, \ldots, z_n]\)</span>:</p>
-<section id="source" class="level2" data-number="6.2">
-<h2 data-number="6.2" class="anchored" data-anchor-id="source"><span class="header-section-number">6.2</span> [source]</h2>
 </section>
-<section id="softmaxzᵢ-expzᵢ-σⱼ-expzⱼ" class="level2" data-number="6.3">
-<h2 data-number="6.3" class="anchored" data-anchor-id="softmaxzᵢ-expzᵢ-σⱼ-expzⱼ"><span class="header-section-number">6.3</span> softmax(z)ᵢ = exp(zᵢ) / Σⱼ exp(zⱼ)</h2>
-<p>Output values are all positive and sum to 1. Large scores get amplified; small scores get suppressed. The largest score “wins” most of the weight.</p>
-</section>
-</div>
-</div>
-</div>
-</section>
-<section id="the-math" class="level2" data-number="6.4">
-<h2 data-number="6.4" class="anchored" data-anchor-id="the-math"><span class="header-section-number">6.4</span> The Math</h2>
-<section id="step-1-project-to-q-k-v" class="level3" data-number="6.4.1">
-<h3 data-number="6.4.1" class="anchored" data-anchor-id="step-1-project-to-q-k-v"><span class="header-section-number">6.4.1</span> Step 1: Project to Q, K, V</h3>
+<section id="the-math" class="level2" data-number="6.2">
+<h2 data-number="6.2" class="anchored" data-anchor-id="the-math"><span class="header-section-number">6.2</span> The Math</h2>
+<section id="step-1-project-to-q-k-v" class="level3" data-number="6.2.1">
+<h3 data-number="6.2.1" class="anchored" data-anchor-id="step-1-project-to-q-k-v"><span class="header-section-number">6.2.1</span> Step 1: Project to Q, K, V</h3>
 <p>Given input <span class="math inline">\(X \in \mathbb{R}^{T\times d}\)</span>, we learn three weight matrices:</p>
 <p><span class="math display">\[
 W_q \in \mathbb{R}^{d\times d_k}, \quad W_k \in \mathbb{R}^{d\times d_k}, \quad W_v \in \mathbb{R}^{d\times d_v}
@@ -460,8 +442,8 @@ Q = X W_q  \in \mathbb{R}^{T\times d_k} \quad K = X W_k  \in \mathbb{R}^{T\times
 \]</span></p>
 <p>In standard single-head attention, <span class="math inline">\(d_k = d_v = d\)</span>.</p>
 </section>
-<section id="step-2-compute-attention-scores" class="level3" data-number="6.4.2">
-<h3 data-number="6.4.2" class="anchored" data-anchor-id="step-2-compute-attention-scores"><span class="header-section-number">6.4.2</span> Step 2: Compute Attention Scores</h3>
+<section id="step-2-compute-attention-scores" class="level3" data-number="6.2.2">
+<h3 data-number="6.2.2" class="anchored" data-anchor-id="step-2-compute-attention-scores"><span class="header-section-number">6.2.2</span> Step 2: Compute Attention Scores</h3>
 <p><span class="math display">\[
 S = Q K^{\top} / \sqrt{d_k}  \in \mathbb{R}^{T\times T}
 \]</span></p>
@@ -478,8 +460,8 @@ S = Q K^{\top} / \sqrt{d_k}  \in \mathbb{R}^{T\times T}
 </div>
 </div>
 </section>
-<section id="step-3-apply-causal-mask-for-autoregressive-models" class="level3" data-number="6.4.3">
-<h3 data-number="6.4.3" class="anchored" data-anchor-id="step-3-apply-causal-mask-for-autoregressive-models"><span class="header-section-number">6.4.3</span> Step 3: Apply Causal Mask (for autoregressive models)</h3>
+<section id="step-3-apply-causal-mask-for-autoregressive-models" class="level3" data-number="6.2.3">
+<h3 data-number="6.2.3" class="anchored" data-anchor-id="step-3-apply-causal-mask-for-autoregressive-models"><span class="header-section-number">6.2.3</span> Step 3: Apply Causal Mask (for autoregressive models)</h3>
 <p>GPT is <em>autoregressive</em>: when predicting token <code>t</code>, it must not look at tokens <code>t+1, t+2, …</code>. We enforce this by masking the upper triangle:</p>
 <p><span class="math display">\[
 M[i,j] = \begin{cases} 0 &amp; \text{if } j \leq i \\ -\infty &amp; \text{if } j &gt; i \end{cases}
@@ -489,15 +471,15 @@ S_{\text{masked}} = S + M
 \]</span></p>
 <p>Adding <span class="math inline">\(-\infty\)</span> before softmax effectively zeroes out those attention weights.</p>
 </section>
-<section id="step-4-softmax-attention-weights" class="level3" data-number="6.4.4">
-<h3 data-number="6.4.4" class="anchored" data-anchor-id="step-4-softmax-attention-weights"><span class="header-section-number">6.4.4</span> Step 4: Softmax → Attention Weights</h3>
+<section id="step-4-softmax-attention-weights" class="level3" data-number="6.2.4">
+<h3 data-number="6.2.4" class="anchored" data-anchor-id="step-4-softmax-attention-weights"><span class="header-section-number">6.2.4</span> Step 4: Softmax → Attention Weights</h3>
 <p><span class="math display">\[
 A = \operatorname{softmax}(S_{\text{masked}}) \in \mathbb{R}^{T\times T}
 \]</span></p>
 <p><code>A[i,j]</code> is now a probability: how much token <code>i</code> attends to token <code>j</code>.</p>
 </section>
-<section id="step-5-weighted-sum-of-values" class="level3" data-number="6.4.5">
-<h3 data-number="6.4.5" class="anchored" data-anchor-id="step-5-weighted-sum-of-values"><span class="header-section-number">6.4.5</span> Step 5: Weighted Sum of Values</h3>
+<section id="step-5-weighted-sum-of-values" class="level3" data-number="6.2.5">
+<h3 data-number="6.2.5" class="anchored" data-anchor-id="step-5-weighted-sum-of-values"><span class="header-section-number">6.2.5</span> Step 5: Weighted Sum of Values</h3>
 <p><span class="math display">\[
 \text{Output} = A V   \in \mathbb{R}^{T\times d_v}
 \]</span></p>
@@ -508,8 +490,8 @@ A = \operatorname{softmax}(S_{\text{masked}}) \in \mathbb{R}^{T\times T}
 \]</span></p>
 </section>
 </section>
-<section id="the-matrix-worked-example" class="level2" data-number="6.5">
-<h2 data-number="6.5" class="anchored" data-anchor-id="the-matrix-worked-example"><span class="header-section-number">6.5</span> The Matrix: Worked Example</h2>
+<section id="the-matrix-worked-example" class="level2" data-number="6.3">
+<h2 data-number="6.3" class="anchored" data-anchor-id="the-matrix-worked-example"><span class="header-section-number">6.3</span> The Matrix: Worked Example</h2>
 <p>Let <code>T = 3</code> tokens, <code>d = 4</code>, <span class="math inline">\(d_k = d_v = 4\)</span>. Input (position-encoded):</p>
 <pre class="text"><code>X = [[ 1.0,  0.0,  1.0,  0.0],   ← token 0: "the"
      [ 0.0,  1.0,  0.0,  1.0],   ← token 1: "cat"
@@ -564,8 +546,8 @@ Figure&nbsp;6.2: Causal attention weight heatmap
 </figure>
 </div>
 </section>
-<section id="the-code-scaled-dot-product-attention-in-python" class="level2" data-number="6.6">
-<h2 data-number="6.6" class="anchored" data-anchor-id="the-code-scaled-dot-product-attention-in-python"><span class="header-section-number">6.6</span> The Code: Scaled Dot-Product Attention in Python</h2>
+<section id="the-code-scaled-dot-product-attention-in-python" class="level2" data-number="6.4">
+<h2 data-number="6.4" class="anchored" data-anchor-id="the-code-scaled-dot-product-attention-in-python"><span class="header-section-number">6.4</span> The Code: Scaled Dot-Product Attention in Python</h2>
 <p>Attention is a composition of named operations. The matrix abstraction from Chapter 2 carries forward; we add multiply, transpose, scale, and add.</p>
 <!-- snippet: src/python/common.py#matrix_ops -->
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tag::transpose[]</span></span>
@@ -593,6 +575,21 @@ Figure&nbsp;6.2: Causal attention weight heatmap
 <span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [<span class="bu">sum</span>((matrix[row] <span class="cf">for</span> matrix <span class="kw">in</span> matrices), []) <span class="cf">for</span> row <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(matrices[<span class="dv">0</span>]))]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <!-- /snippet -->
 <p><code>softmax</code> converts a vector of raw scores into a probability distribution. We subtract the maximum value before exponentiating to prevent overflow.</p>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p><em>Math Minute — Softmax</em></p>
+<p><code>softmax(z)</code> turns a vector of raw scores into a probability distribution. For vector <span class="math inline">\(z = [z_1, z_2, \ldots, z_n]\)</span>:</p>
+<p><span class="math display">\[
+\operatorname{softmax}(z)_i = \frac{\exp(z_i)}{\sum_j \exp(z_j)}
+\]</span></p>
+<p>Output values are all positive and sum to 1. Large scores get amplified; small scores get suppressed. The largest score receives most of the weight.</p>
+</div>
+</div>
+</div>
 <!-- snippet: src/python/common.py#softmax -->
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tag::softmax_vector[]</span></span>
 <span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> softmax(logits: Sequence[<span class="bu">float</span>]) <span class="op">-&gt;</span> Vector:</span>
@@ -632,8 +629,8 @@ Figure&nbsp;6.2: Causal attention weight heatmap
 <!-- /snippet -->
 <p>Run with <code>python3 src/python/chapter_demos.py</code>.</p>
 </section>
-<section id="key-takeaways" class="level2" data-number="6.7">
-<h2 data-number="6.7" class="anchored" data-anchor-id="key-takeaways"><span class="header-section-number">6.7</span> Key Takeaways</h2>
+<section id="key-takeaways" class="level2" data-number="6.5">
+<h2 data-number="6.5" class="anchored" data-anchor-id="key-takeaways"><span class="header-section-number">6.5</span> Key Takeaways</h2>
 <ul>
 <li>Attention asks: for each token, <em>which other tokens are most relevant</em>?</li>
 <li>Q, K, V are <em>learned linear projections</em> of the input.</li>
