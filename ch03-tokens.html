@@ -81,7 +81,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-95edd58b3b27b9774827898c46d4f452.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-327a23648f728c563436848380818549.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -536,54 +536,7 @@ return [vocab_id(t) for t in tokens]</code></pre>
 <p><code>[lo,w,_] [lo,w,e,r,_] [n,e,w,e,s,t,_]</code></p>
 <p>Most frequent pair now: <code>(lo,w)</code> with count 2. Merge → <code>low</code> (ID 10).</p>
 <p>After a few more merges, encoding <code>"low"</code> returns <code>[10]</code> — a single token.</p>
-<p>The following figure shows the BPE merge sequence used to turn frequent character pairs into longer tokens.</p>
-<div class="cell" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class="figure"><p></p>
-<div>
-<svg width="672" height="480" viewbox="10.80 10.80 375.26 200.40" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(14.8 196.4)">
-<title>bpe_merges</title>
-<!-- start -->
-<g id="node1" class="node">
-<title>start</title>
-<path fill="none" stroke="#1177bb" stroke-width="1.5" d="M344.68,-181.5C344.68,-181.5 11.77,-181.5 11.77,-181.5 5.77,-181.5 -0.23,-175.5 -0.23,-169.5 -0.23,-169.5 -0.23,-152.9 -0.23,-152.9 -0.23,-146.9 5.77,-140.9 11.77,-140.9 11.77,-140.9 344.68,-140.9 344.68,-140.9 350.68,-140.9 356.68,-146.9 356.68,-152.9 356.68,-152.9 356.68,-169.5 356.68,-169.5 356.68,-175.5 350.68,-181.5 344.68,-181.5"></path>
-<text text-anchor="middle" x="178.23" y="-164.8" font-family="Courier,monospace" font-size="12.00">Step 0: individual characters</text>
-<text text-anchor="middle" x="178.23" y="-150.4" font-family="Courier,monospace" font-size="12.00">[t] [o] [k] [e] [n] [i] [z] [a] [t] [i] [o] [n]</text>
-</g>
-<!-- merge -->
-<g id="node2" class="node">
-<title>merge</title>
-<path fill="none" stroke="#cc8800" stroke-width="1.5" d="M297.57,-108.8C297.57,-108.8 58.89,-108.8 58.89,-108.8 52.89,-108.8 46.89,-102.8 46.89,-96.8 46.89,-96.8 46.89,-84.8 46.89,-84.8 46.89,-78.8 52.89,-72.8 58.89,-72.8 58.89,-72.8 297.57,-72.8 297.57,-72.8 303.57,-72.8 309.57,-78.8 309.57,-84.8 309.57,-84.8 309.57,-96.8 309.57,-96.8 309.57,-102.8 303.57,-108.8 297.57,-108.8"></path>
-<text text-anchor="middle" x="178.23" y="-87.2" font-family="Courier,monospace" font-size="12.00">BPE merges frequent adjacent pairs</text>
-</g>
-<!-- start&#45;&gt;merge -->
-<g id="edge1" class="edge">
-<title>start-&gt;merge</title>
-<path fill="none" stroke="#cc8800" stroke-width="2" d="M178.23,-140.78C178.23,-133.47 178.23,-125.05 178.23,-117.27"></path>
-<polygon fill="#cc8800" stroke="#cc8800" stroke-width="2" points="181.03,-117.17 178.23,-109.17 175.43,-117.17 181.03,-117.17"></polygon>
-</g>
-<!-- output -->
-<g id="node3" class="node">
-<title>output</title>
-<path fill="none" stroke="#228811" stroke-width="1.5" d="M243.55,-40.7C243.55,-40.7 112.91,-40.7 112.91,-40.7 106.91,-40.7 100.91,-34.7 100.91,-28.7 100.91,-28.7 100.91,-12.1 100.91,-12.1 100.91,-6.1 106.91,-0.1 112.91,-0.1 112.91,-0.1 243.55,-0.1 243.55,-0.1 249.55,-0.1 255.55,-6.1 255.55,-12.1 255.55,-12.1 255.55,-28.7 255.55,-28.7 255.55,-34.7 249.55,-40.7 243.55,-40.7"></path>
-<text text-anchor="middle" x="178.23" y="-24" font-family="Courier,monospace" font-size="12.00">[token] [ization]</text>
-<text text-anchor="middle" x="178.23" y="-9.6" font-family="Courier,monospace" font-size="12.00">After BPE: 2 tokens</text>
-</g>
-<!-- merge&#45;&gt;output -->
-<g id="edge2" class="edge">
-<title>merge-&gt;output</title>
-<path fill="none" stroke="#cc8800" stroke-width="2" d="M178.23,-72.54C178.23,-65.37 178.23,-56.88 178.23,-48.89"></path>
-<polygon fill="#cc8800" stroke="#cc8800" stroke-width="2" points="181.03,-48.83 178.23,-40.83 175.43,-48.83 181.03,-48.83"></polygon>
-</g>
-</g>
-</svg>
-</div>
-<p></p><figcaption> BPE merges the most frequent adjacent pairs of characters or subwords until the vocabulary is full</figcaption> </figure><p></p>
-</div>
-</div>
-</div>
+<p>The following figure shows the BPE merge sequence used to turn frequent character pairs into longer tokens. <img src="images/fig-ch03-bpe-merges.png" class="img-fluid" alt="BPE merges the most frequent adjacent pairs of characters or subwords until the vocabulary is full"></p>
 </section>
 <section id="the-code-a-micro-bpe-in-python" class="level2" data-number="3.4">
 <h2 data-number="3.4" class="anchored" data-anchor-id="the-code-a-micro-bpe-in-python"><span class="header-section-number">3.4</span> The Code: A Micro-BPE in Python</h2>
@@ -700,117 +653,8 @@ return [vocab_id(t) for t in tokens]</code></pre>
 
 Encoding "low":   (10)
 Encoding "lower": (10 3 4 8)</code></pre>
-<p>The following figure shows how each BPE step replaces the most frequent byte pair with a new token.</p>
-<div class="cell" data-layout-align="default">
-<div class="cell-output-display">
-<div>
-<p></p><figure class="figure"><p></p>
-<div>
-<svg width="672" height="480" viewbox="10.80 10.80 375.26 200.40" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(14.8 196.4)">
-<title>bpe_merges</title>
-<!-- start -->
-<g id="node1" class="node">
-<title>start</title>
-<path fill="none" stroke="#1177bb" stroke-width="1.5" d="M344.68,-181.5C344.68,-181.5 11.77,-181.5 11.77,-181.5 5.77,-181.5 -0.23,-175.5 -0.23,-169.5 -0.23,-169.5 -0.23,-152.9 -0.23,-152.9 -0.23,-146.9 5.77,-140.9 11.77,-140.9 11.77,-140.9 344.68,-140.9 344.68,-140.9 350.68,-140.9 356.68,-146.9 356.68,-152.9 356.68,-152.9 356.68,-169.5 356.68,-169.5 356.68,-175.5 350.68,-181.5 344.68,-181.5"></path>
-<text text-anchor="middle" x="178.23" y="-164.8" font-family="Courier,monospace" font-size="12.00">Step 0: individual characters</text>
-<text text-anchor="middle" x="178.23" y="-150.4" font-family="Courier,monospace" font-size="12.00">[t] [o] [k] [e] [n] [i] [z] [a] [t] [i] [o] [n]</text>
-</g>
-<!-- merge -->
-<g id="node2" class="node">
-<title>merge</title>
-<path fill="none" stroke="#cc8800" stroke-width="1.5" d="M297.57,-108.8C297.57,-108.8 58.89,-108.8 58.89,-108.8 52.89,-108.8 46.89,-102.8 46.89,-96.8 46.89,-96.8 46.89,-84.8 46.89,-84.8 46.89,-78.8 52.89,-72.8 58.89,-72.8 58.89,-72.8 297.57,-72.8 297.57,-72.8 303.57,-72.8 309.57,-78.8 309.57,-84.8 309.57,-84.8 309.57,-96.8 309.57,-96.8 309.57,-102.8 303.57,-108.8 297.57,-108.8"></path>
-<text text-anchor="middle" x="178.23" y="-87.2" font-family="Courier,monospace" font-size="12.00">BPE merges frequent adjacent pairs</text>
-</g>
-<!-- start&#45;&gt;merge -->
-<g id="edge1" class="edge">
-<title>start-&gt;merge</title>
-<path fill="none" stroke="#cc8800" stroke-width="2" d="M178.23,-140.78C178.23,-133.47 178.23,-125.05 178.23,-117.27"></path>
-<polygon fill="#cc8800" stroke="#cc8800" stroke-width="2" points="181.03,-117.17 178.23,-109.17 175.43,-117.17 181.03,-117.17"></polygon>
-</g>
-<!-- output -->
-<g id="node3" class="node">
-<title>output</title>
-<path fill="none" stroke="#228811" stroke-width="1.5" d="M243.55,-40.7C243.55,-40.7 112.91,-40.7 112.91,-40.7 106.91,-40.7 100.91,-34.7 100.91,-28.7 100.91,-28.7 100.91,-12.1 100.91,-12.1 100.91,-6.1 106.91,-0.1 112.91,-0.1 112.91,-0.1 243.55,-0.1 243.55,-0.1 249.55,-0.1 255.55,-6.1 255.55,-12.1 255.55,-12.1 255.55,-28.7 255.55,-28.7 255.55,-34.7 249.55,-40.7 243.55,-40.7"></path>
-<text text-anchor="middle" x="178.23" y="-24" font-family="Courier,monospace" font-size="12.00">[token] [ization]</text>
-<text text-anchor="middle" x="178.23" y="-9.6" font-family="Courier,monospace" font-size="12.00">After BPE: 2 tokens</text>
-</g>
-<!-- merge&#45;&gt;output -->
-<g id="edge2" class="edge">
-<title>merge-&gt;output</title>
-<path fill="none" stroke="#cc8800" stroke-width="2" d="M178.23,-72.54C178.23,-65.37 178.23,-56.88 178.23,-48.89"></path>
-<polygon fill="#cc8800" stroke="#cc8800" stroke-width="2" points="181.03,-48.83 178.23,-40.83 175.43,-48.83 181.03,-48.83"></polygon>
-</g>
-</g>
-</svg>
-</div>
-<p></p><figcaption> BPE merges the most frequent adjacent pairs of characters or subwords until the vocabulary is full</figcaption> </figure><p></p>
-</div>
-</div>
-</div>
-<p>The following figure shows the full tokenization pipeline from raw text to integer IDs.</p>
-<div class="cell" data-layout-align="default">
-<div class="cell-output-display">
-<div id="fig-ch03-tokenization-pipeline" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ch03-tokenization-pipeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div>
-<svg width="672" height="480" viewbox="10.80 10.80 304.04 258.80" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(14.8 254.8)">
-<title>tokenization_pipeline</title>
-<!-- text -->
-<g id="node1" class="node">
-<title>text</title>
-<path fill="none" stroke="#222222" stroke-width="1.5" d="M234.35,-240C234.35,-240 50.89,-240 50.89,-240 44.89,-240 38.89,-234 38.89,-228 38.89,-228 38.89,-216 38.89,-216 38.89,-210 44.89,-204 50.89,-204 50.89,-204 234.35,-204 234.35,-204 240.35,-204 246.35,-210 246.35,-216 246.35,-216 246.35,-228 246.35,-228 246.35,-234 240.35,-240 234.35,-240"></path>
-<text text-anchor="middle" x="142.62" y="-218.1" font-family="Courier,monospace" font-size="13.00">"the cat sat on the mat"</text>
-</g>
-<!-- tokenizer -->
-<g id="node2" class="node">
-<title>tokenizer</title>
-<path fill="none" stroke="#cc8800" stroke-width="1.5" d="M175.83,-172C175.83,-172 109.41,-172 109.41,-172 103.41,-172 97.41,-166 97.41,-160 97.41,-160 97.41,-148 97.41,-148 97.41,-142 103.41,-136 109.41,-136 109.41,-136 175.83,-136 175.83,-136 181.83,-136 187.83,-142 187.83,-148 187.83,-148 187.83,-160 187.83,-160 187.83,-166 181.83,-172 175.83,-172"></path>
-<text text-anchor="middle" x="142.62" y="-150.1" font-family="Courier,monospace" font-size="13.00">tokenizer</text>
-</g>
-<!-- text&#45;&gt;tokenizer -->
-<g id="edge1" class="edge">
-<title>text-&gt;tokenizer</title>
-<path fill="none" stroke="#cc8800" stroke-width="2" d="M142.62,-203.66C142.62,-196.59 142.62,-188.28 142.62,-180.54"></path>
-<polygon fill="#cc8800" stroke="#cc8800" stroke-width="2" points="145.42,-180.45 142.62,-172.45 139.82,-180.45 145.42,-180.45"></polygon>
-</g>
-<!-- ids -->
-<g id="node3" class="node">
-<title>ids</title>
-<path fill="none" stroke="#228811" stroke-width="1.5" d="M214.85,-104C214.85,-104 70.4,-104 70.4,-104 64.4,-104 58.4,-98 58.4,-92 58.4,-92 58.4,-80 58.4,-80 58.4,-74 64.4,-68 70.4,-68 70.4,-68 214.85,-68 214.85,-68 220.85,-68 226.85,-74 226.85,-80 226.85,-80 226.85,-92 226.85,-92 226.85,-98 220.85,-104 214.85,-104"></path>
-<text text-anchor="middle" x="142.62" y="-82.1" font-family="Courier,monospace" font-size="13.00">[1, 5, 12, 8, 1, 7]</text>
-</g>
-<!-- tokenizer&#45;&gt;ids -->
-<g id="edge2" class="edge">
-<title>tokenizer-&gt;ids</title>
-<path fill="none" stroke="#cc8800" stroke-width="2" d="M142.62,-135.66C142.62,-128.59 142.62,-120.28 142.62,-112.54"></path>
-<polygon fill="#cc8800" stroke="#cc8800" stroke-width="2" points="145.42,-112.45 142.62,-104.45 139.82,-112.45 145.42,-112.45"></polygon>
-</g>
-<!-- note -->
-<g id="node4" class="node">
-<title>note</title>
-<path fill="none" stroke="#dd6600" stroke-width="1.5" d="M273.36,-36C273.36,-36 11.88,-36 11.88,-36 5.88,-36 -0.12,-30 -0.12,-24 -0.12,-24 -0.12,-12 -0.12,-12 -0.12,-6 5.88,0 11.88,0 11.88,0 273.36,0 273.36,0 279.36,0 285.36,-6 285.36,-12 285.36,-12 285.36,-24 285.36,-24 285.36,-30 279.36,-36 273.36,-36"></path>
-<text text-anchor="middle" x="142.62" y="-14.1" font-family="Courier,monospace" font-size="13.00">"the" appears twice -&gt; same ID = 1</text>
-</g>
-<!-- ids&#45;&gt;note -->
-<g id="edge3" class="edge">
-<title>ids-&gt;note</title>
-<path fill="none" stroke="#cc8800" stroke-width="2" d="M142.62,-67.66C142.62,-60.59 142.62,-52.28 142.62,-44.54"></path>
-<polygon fill="#cc8800" stroke="#cc8800" stroke-width="2" points="145.42,-44.45 142.62,-36.45 139.82,-44.45 145.42,-44.45"></polygon>
-</g>
-</g>
-</svg>
-</div>
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch03-tokenization-pipeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;3.1: Tokenization maps raw text to a sequence of integer IDs; identical words get the same ID
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
+<p>The following figure shows how each BPE step replaces the most frequent byte pair with a new token. <img src="images/fig-ch03-bpe-merges.png" class="img-fluid" alt="BPE merges the most frequent adjacent pairs of characters or subwords until the vocabulary is full"></p>
+<p>The following figure shows the full tokenization pipeline from raw text to integer IDs. <img src="images/fig-ch03-tokenization-pipeline.png" id="fig-ch03-tokenization-pipeline" class="img-fluid" alt="Tokenization maps raw text to a sequence of integer IDs; identical words get the same ID"></p>
 </section>
 <section id="key-takeaways" class="level2" data-number="3.5">
 <h2 data-number="3.5" class="anchored" data-anchor-id="key-takeaways"><span class="header-section-number">3.5</span> Key Takeaways</h2>

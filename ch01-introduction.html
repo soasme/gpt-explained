@@ -46,7 +46,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-95edd58b3b27b9774827898c46d4f452.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-327a23648f728c563436848380818549.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -409,122 +409,15 @@ P(\text{next token} \mid \text{context tokens}) = f_\theta(\text{context})
 <h2 data-number="1.2" class="anchored" data-anchor-id="how-gpt-works"><span class="header-section-number">1.2</span> How GPT Works</h2>
 <p>Imagine texting with a really smart friend who has read every book, article, and website ever written. You send a message, they think for a split second, and they reply with exactly the right words. GPT works like that friend — except instead of a brain, it uses a chain of math operations called a <em>pipeline</em>.</p>
 <p>Every word GPT produces goes through these seven steps, in order:</p>
-<div class="cell" data-layout-align="default">
-<div class="cell-output-display">
 <div id="fig-ch01-gpt-pipeline" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-ch01-gpt-pipeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<div>
-<svg width="672" height="480" viewbox="14.40 14.40 271.64 610.00" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none">
-<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(18.4 606)">
-<title>gpt_pipeline</title>
-<!-- input -->
-<g id="node1" class="node">
-<title>input</title>
-<path fill="#f0f8e8" stroke="#228811" stroke-width="1.5" d="M172.23,-587.5C172.23,-587.5 77,-587.5 77,-587.5 71,-587.5 65,-581.5 65,-575.5 65,-575.5 65,-556.9 65,-556.9 65,-550.9 71,-544.9 77,-544.9 77,-544.9 172.23,-544.9 172.23,-544.9 178.23,-544.9 184.23,-550.9 184.23,-556.9 184.23,-556.9 184.23,-575.5 184.23,-575.5 184.23,-581.5 178.23,-587.5 172.23,-587.5"></path>
-<text text-anchor="middle" x="124.62" y="-569.8" font-family="Courier,monospace" font-size="12.00">Your text</text>
-<text text-anchor="middle" x="124.62" y="-555.4" font-family="Courier,monospace" font-size="12.00">"the cat sat"</text>
-</g>
-<!-- tokenizer -->
-<g id="node2" class="node">
-<title>tokenizer</title>
-<path fill="#e8f4fd" stroke="#1177bb" stroke-width="1.5" d="M187.04,-508.7C187.04,-508.7 62.2,-508.7 62.2,-508.7 56.2,-508.7 50.2,-502.7 50.2,-496.7 50.2,-496.7 50.2,-478.1 50.2,-478.1 50.2,-472.1 56.2,-466.1 62.2,-466.1 62.2,-466.1 187.04,-466.1 187.04,-466.1 193.04,-466.1 199.04,-472.1 199.04,-478.1 199.04,-478.1 199.04,-496.7 199.04,-496.7 199.04,-502.7 193.04,-508.7 187.04,-508.7"></path>
-<text text-anchor="middle" x="124.62" y="-491" font-family="Courier,monospace" font-size="12.00">Step 1 &nbsp;Tokenizer</text>
-<text text-anchor="middle" x="124.62" y="-476.6" font-family="Courier,monospace" font-size="12.00">→ integer IDs</text>
-</g>
-<!-- input&#45;&gt;tokenizer -->
-<g id="edge1" class="edge">
-<title>input-&gt;tokenizer</title>
-<path fill="none" stroke="#cc8800" stroke-width="2" d="M124.62,-544.62C124.62,-536.11 124.62,-526.11 124.62,-516.92"></path>
-<polygon fill="#cc8800" stroke="#cc8800" stroke-width="2" points="127.42,-516.77 124.62,-508.77 121.82,-516.77 127.42,-516.77"></polygon>
-</g>
-<!-- embedding -->
-<g id="node3" class="node">
-<title>embedding</title>
-<path fill="#e8f4fd" stroke="#1177bb" stroke-width="1.5" d="M187.04,-429.9C187.04,-429.9 62.2,-429.9 62.2,-429.9 56.2,-429.9 50.2,-423.9 50.2,-417.9 50.2,-417.9 50.2,-399.3 50.2,-399.3 50.2,-393.3 56.2,-387.3 62.2,-387.3 62.2,-387.3 187.04,-387.3 187.04,-387.3 193.04,-387.3 199.04,-393.3 199.04,-399.3 199.04,-399.3 199.04,-417.9 199.04,-417.9 199.04,-423.9 193.04,-429.9 187.04,-429.9"></path>
-<text text-anchor="middle" x="124.62" y="-412.2" font-family="Courier,monospace" font-size="12.00">Step 2 &nbsp;Embedding</text>
-<text text-anchor="middle" x="124.62" y="-397.8" font-family="Courier,monospace" font-size="12.00">→ word vectors</text>
-</g>
-<!-- tokenizer&#45;&gt;embedding -->
-<g id="edge2" class="edge">
-<title>tokenizer-&gt;embedding</title>
-<path fill="none" stroke="#cc8800" stroke-width="2" d="M124.62,-465.82C124.62,-457.31 124.62,-447.31 124.62,-438.12"></path>
-<polygon fill="#cc8800" stroke="#cc8800" stroke-width="2" points="127.42,-437.97 124.62,-429.97 121.82,-437.97 127.42,-437.97"></polygon>
-</g>
-<!-- positional -->
-<g id="node4" class="node">
-<title>positional</title>
-<path fill="#e8f4fd" stroke="#1177bb" stroke-width="1.5" d="M223.05,-351.1C223.05,-351.1 26.19,-351.1 26.19,-351.1 20.19,-351.1 14.19,-345.1 14.19,-339.1 14.19,-339.1 14.19,-320.5 14.19,-320.5 14.19,-314.5 20.19,-308.5 26.19,-308.5 26.19,-308.5 223.05,-308.5 223.05,-308.5 229.05,-308.5 235.05,-314.5 235.05,-320.5 235.05,-320.5 235.05,-339.1 235.05,-339.1 235.05,-345.1 229.05,-351.1 223.05,-351.1"></path>
-<text text-anchor="middle" x="124.62" y="-333.4" font-family="Courier,monospace" font-size="12.00">Step 3 &nbsp;Positional Encoding</text>
-<text text-anchor="middle" x="124.62" y="-319" font-family="Courier,monospace" font-size="12.00">→ vectors with position</text>
-</g>
-<!-- embedding&#45;&gt;positional -->
-<g id="edge3" class="edge">
-<title>embedding-&gt;positional</title>
-<path fill="none" stroke="#cc8800" stroke-width="2" d="M124.62,-387.02C124.62,-378.51 124.62,-368.51 124.62,-359.32"></path>
-<polygon fill="#cc8800" stroke="#cc8800" stroke-width="2" points="127.42,-359.17 124.62,-351.17 121.82,-359.17 127.42,-359.17"></polygon>
-</g>
-<!-- transformer -->
-<g id="node5" class="node">
-<title>transformer</title>
-<path fill="#fff8e8" stroke="#cc8800" stroke-width="1.5" d="M237.35,-272.3C237.35,-272.3 11.88,-272.3 11.88,-272.3 5.88,-272.3 -0.12,-266.3 -0.12,-260.3 -0.12,-260.3 -0.12,-241.7 -0.12,-241.7 -0.12,-235.7 5.88,-229.7 11.88,-229.7 11.88,-229.7 237.35,-229.7 237.35,-229.7 243.35,-229.7 249.35,-235.7 249.35,-241.7 249.35,-241.7 249.35,-260.3 249.35,-260.3 249.35,-266.3 243.35,-272.3 237.35,-272.3"></path>
-<text text-anchor="middle" x="124.62" y="-254.6" font-family="Courier,monospace" font-size="12.00">Step 4 &nbsp;Transformer Blocks × N</text>
-<text text-anchor="middle" x="124.62" y="-240.2" font-family="Courier,monospace" font-size="12.00">(Attention + Feed-Forward)</text>
-</g>
-<!-- positional&#45;&gt;transformer -->
-<g id="edge4" class="edge">
-<title>positional-&gt;transformer</title>
-<path fill="none" stroke="#cc8800" stroke-width="2" d="M124.62,-308.22C124.62,-299.71 124.62,-289.71 124.62,-280.52"></path>
-<polygon fill="#cc8800" stroke="#cc8800" stroke-width="2" points="127.42,-280.37 124.62,-272.37 121.82,-280.37 127.42,-280.37"></polygon>
-</g>
-<!-- projection -->
-<g id="node6" class="node">
-<title>projection</title>
-<path fill="#e8f4fd" stroke="#1177bb" stroke-width="1.5" d="M215.65,-193.5C215.65,-193.5 33.59,-193.5 33.59,-193.5 27.59,-193.5 21.59,-187.5 21.59,-181.5 21.59,-181.5 21.59,-162.9 21.59,-162.9 21.59,-156.9 27.59,-150.9 33.59,-150.9 33.59,-150.9 215.65,-150.9 215.65,-150.9 221.65,-150.9 227.65,-156.9 227.65,-162.9 227.65,-162.9 227.65,-181.5 227.65,-181.5 227.65,-187.5 221.65,-193.5 215.65,-193.5"></path>
-<text text-anchor="middle" x="124.62" y="-175.8" font-family="Courier,monospace" font-size="12.00">Step 5 &nbsp;Vocab Projection</text>
-<text text-anchor="middle" x="124.62" y="-161.4" font-family="Courier,monospace" font-size="12.00">→ scores for every word</text>
-</g>
-<!-- transformer&#45;&gt;projection -->
-<g id="edge5" class="edge">
-<title>transformer-&gt;projection</title>
-<path fill="none" stroke="#cc8800" stroke-width="2" d="M124.62,-229.42C124.62,-220.91 124.62,-210.91 124.62,-201.72"></path>
-<polygon fill="#cc8800" stroke="#cc8800" stroke-width="2" points="127.42,-201.57 124.62,-193.57 121.82,-201.57 127.42,-201.57"></polygon>
-</g>
-<!-- softmax -->
-<g id="node7" class="node">
-<title>softmax</title>
-<path fill="#e8f4fd" stroke="#1177bb" stroke-width="1.5" d="M187.04,-114.7C187.04,-114.7 62.2,-114.7 62.2,-114.7 56.2,-114.7 50.2,-108.7 50.2,-102.7 50.2,-102.7 50.2,-84.1 50.2,-84.1 50.2,-78.1 56.2,-72.1 62.2,-72.1 62.2,-72.1 187.04,-72.1 187.04,-72.1 193.04,-72.1 199.04,-78.1 199.04,-84.1 199.04,-84.1 199.04,-102.7 199.04,-102.7 199.04,-108.7 193.04,-114.7 187.04,-114.7"></path>
-<text text-anchor="middle" x="124.62" y="-97" font-family="Courier,monospace" font-size="12.00">Step 6 &nbsp;Softmax</text>
-<text text-anchor="middle" x="124.62" y="-82.6" font-family="Courier,monospace" font-size="12.00">→ probabilities</text>
-</g>
-<!-- projection&#45;&gt;softmax -->
-<g id="edge6" class="edge">
-<title>projection-&gt;softmax</title>
-<path fill="none" stroke="#cc8800" stroke-width="2" d="M124.62,-150.62C124.62,-142.11 124.62,-132.11 124.62,-122.92"></path>
-<polygon fill="#cc8800" stroke="#cc8800" stroke-width="2" points="127.42,-122.77 124.62,-114.77 121.82,-122.77 127.42,-122.77"></polygon>
-</g>
-<!-- output -->
-<g id="node8" class="node">
-<title>output</title>
-<path fill="#f0f8e8" stroke="#228811" stroke-width="1.5" d="M161.63,-36C161.63,-36 87.61,-36 87.61,-36 81.61,-36 75.61,-30 75.61,-24 75.61,-24 75.61,-12 75.61,-12 75.61,-6 81.61,0 87.61,0 87.61,0 161.63,0 161.63,0 167.63,0 173.63,-6 173.63,-12 173.63,-12 173.63,-24 173.63,-24 173.63,-30 167.63,-36 161.63,-36"></path>
-<text text-anchor="middle" x="124.62" y="-14.4" font-family="Courier,monospace" font-size="12.00">Next word!</text>
-</g>
-<!-- softmax&#45;&gt;output -->
-<g id="edge7" class="edge">
-<title>softmax-&gt;output</title>
-<path fill="none" stroke="#cc8800" stroke-width="2" d="M124.62,-71.95C124.62,-63.47 124.62,-53.53 124.62,-44.57"></path>
-<polygon fill="#cc8800" stroke="#cc8800" stroke-width="2" points="127.42,-44.35 124.62,-36.35 121.82,-44.35 127.42,-44.35"></polygon>
-</g>
-</g>
-</svg>
-</div>
+<img src="images/fig-ch01-gpt-pipeline.png" class="img-fluid figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch01-gpt-pipeline-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 Figure&nbsp;1.1: The GPT pipeline: from input text to predicted next word, in seven steps
 </figcaption>
 </figure>
-</div>
-</div>
 </div>
 <p><em>Step 1 — Tokenization (Chapter 3).</em> Before GPT can think about your text, it has to chop it into small pieces called <em>tokens</em>. Think of tokens like LEGO bricks: you break a sentence apart, and GPT works with the individual bricks. The phrase <code>"the cat"</code> might become three bricks with serial numbers like <code>[1, 428, 3797]</code>.</p>
 <p><em>Step 2 — Embedding (Chapter 4).</em> A number like <code>428</code> is just an ID — it has no meaning by itself. So GPT looks each ID up in a giant table and swaps it for a list of hundreds of numbers called a <em>vector</em>. Picture a map where every word has its own location. Similar words end up close together: “cat” and “kitten” are neighbors, while “cat” and “spaceship” are far apart.</p>
