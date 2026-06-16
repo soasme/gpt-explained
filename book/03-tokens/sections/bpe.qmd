@@ -26,13 +26,3 @@ V_{k+1} = V_k \cup \{(a, b) \mid \text{freq}(a, b) \text{ is max over all adjace
 $$
 
 The merge order defines a priority list $M = [(a_1,b_1), (a_2,b_2), \ldots]$.
-To encode a string:
-
-```text
-tokens = characters(string)
-for (a, b) in M:
-    tokens = apply_merge(tokens, a, b)
-return [vocab_id(t) for t in tokens]
-```
-
-Where `apply_merge` replaces every adjacent occurrence of `(a, b)` with the merged token `ab`.

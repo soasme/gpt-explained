@@ -1,1 +1,0 @@
-![BPE merges the most frequent adjacent pairs of characters or subwords until the vocabulary is full](images/fig-ch03-bpe-merges.png)

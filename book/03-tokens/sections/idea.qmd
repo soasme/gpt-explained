@@ -3,18 +3,16 @@
 Consider the sentence:
 
 ```text
-the cat sat on the mat
+the cat likes tokenization
 ```
 
-A human reads six words.
+A human reads four words.
 A GPT model reads something like:
 
-```text
-[1the] [2cat] [3sat] [4on] [1the] [5mat]
-```
+![Each token has a text piece and a vocabulary ID](images/ch03_token_id_blocks.png){#fig-ch03-token-id-blocks fig-alt="A row of two-cell token blocks. The top cells contain token pieces: the, cat, likes, token, ization. The bottom cells contain vocabulary IDs: 1, 2, 3, 4, 5."}
 
-Where each bracketed item is a token and the number is its ID in a vocabulary table.
-The model never sees the string `"the"` — it only ever sees the integer `1`.
+Where each two-cell block is a token and the number is its ID in a vocabulary table.
+The model never sees the full word `"tokenization"` as one unit here — it sees the IDs for `"token"` and `"ization"`.
 
 *Why not just use characters?*
 You could map each letter to an integer: `a→1, b→2, …`.
@@ -33,11 +31,3 @@ Common whole words become single tokens.
 Rare words get split into recognizable pieces.
 The word `"tokenization"` might become `["token", "ization"]`.
 The word `"running"` might become `["run", "ning"]`.
-
-::: {.callout-note}
-*Math Minute — Sets and Mappings*
-
-A vocabulary $V$ is a finite set of strings.
-A tokenizer is a function $T: \text{String} \rightarrow \text{List}[\mathbb{Z}]$ mapping a string to a sequence of integers from $\{0, 1, \ldots, |V|-1\}$.
-Each integer is an index into $V$.
-:::

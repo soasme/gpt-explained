@@ -7,41 +7,49 @@ Suppose our entire training corpus is:
 low lower newest
 ```
 
-*Step 0 — Character vocabulary:*
+### Step 0 — Character Vocabulary
 
-| ID | Token |
-| --- | --- |
-| 0 | `l` |
-| 1 | `o` |
-| 2 | `w` |
-| 3 | `e` |
-| 4 | `r` |
-| 5 | `n` |
-| 6 | `s` |
-| 7 | `t` |
-| 8 | `_`  ← end-of-word marker |
+| Token | `l` | `o` | `w` | `e` | `r` | `n` | `s` | `t` | `_` |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| ID | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 |
+
+`_` marks the end of a word.
 
 Initial tokenized corpus: `[l,o,w,_] [l,o,w,e,r,_] [n,e,w,e,s,t,_]`
 
-*Step 1 — Count pairs:*
+### Step 1 — Choose a Frequent Pair to Merge
 
-```text
-(l,o): 2    ← most frequent!
-(o,w): 2
-(w,_): 1
-(w,e): 1
-...
-```
+Count adjacent token pairs across the corpus:
 
-Merge `(l,o)` → `lo`. Vocabulary now has 9 entries: `lo` gets ID 9.
+| Token pair | `(l,o)` | `(o,w)` | `(w,_)` | `(w,e)` |
+| --- | --- | --- | --- | --- |
+| Count | 2 | 2 | 1 | 1 |
+| Picked? | ✓ |  |  |  |
 
-*Step 2 — Corpus becomes:*
+Here `(l,o)` and `(o,w)` are tied.
+This trace chooses `(l,o)` first, merges it into `lo`, and gives `lo` the next ID: 9.
+
+| Token | `l` | `o` | `w` | `e` | `r` | `n` | `s` | `t` | `_` | `lo` |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| ID | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 |
+
+### Step 2 — Apply That Merge to the Corpus
+
+Every `l,o` pair becomes one `lo` token:
 
 `[lo,w,_] [lo,w,e,r,_] [n,e,w,e,s,t,_]`
 
-Most frequent pair now: `(lo,w)` with count 2. Merge → `low` (ID 10).
+Count adjacent token pairs again:
+
+| Token pair | `(lo,w)` | `(w,_)` | `(w,e)` | `(e,r)` |
+| --- | --- | --- | --- | --- |
+| Count | 2 | 1 | 1 | 1 |
+| Picked? | ✓ |  |  |  |
+
+The frequent pair is `(lo,w)`, so the next merge creates `low` with ID 10.
+
+| Token | `l` | `o` | `w` | `e` | `r` | `n` | `s` | `t` | `_` | `lo` | `low` |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| ID | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 |
 
 After a few more merges, encoding `"low"` returns `[10]` — a single token.
-
-The following figure shows the BPE merge sequence used to turn frequent character pairs into longer tokens.
-{{< include book/03-tokens/diagrams/bpe-merges.qmd >}}

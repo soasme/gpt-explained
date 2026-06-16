@@ -10,6 +10,7 @@ from ch02_gradient import gradient_plot
 from ch02_matrix_multiply import mat_multiply
 from ch02_softmax import softmax_plot
 from ch02_vectors import vectors
+from ch03_tokens import token_id_blocks
 from ch03_positional_encoding import pe_matrix, sin_waves
 from ch04_attention import attn_weights, qkv_diagram
 from ch05_multi_head_attention import mha
@@ -29,6 +30,7 @@ RENDER_STEPS = [
     ("ch02_matrix_multiply", [mat_multiply]),
     ("ch02_softmax", [softmax_plot]),
     ("ch02_vectors", [vectors]),
+    ("ch03_tokens", [token_id_blocks]),
     ("ch03_positional_encoding", [pe_matrix, sin_waves]),
     ("ch04_attention", [qkv_diagram, attn_weights]),
     ("ch05_multi_head_attention", [mha]),
