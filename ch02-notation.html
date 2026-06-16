@@ -385,14 +385,16 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul class="collapse">
-  <li><a href="#vectors" id="toc-vectors" class="nav-link active" data-scroll-target="#vectors"><span class="header-section-number">2.1</span> Vectors</a></li>
-  <li><a href="#dot-product" id="toc-dot-product" class="nav-link" data-scroll-target="#dot-product"><span class="header-section-number">2.2</span> Dot Product</a></li>
-  <li><a href="#matrix-multiplication" id="toc-matrix-multiplication" class="nav-link" data-scroll-target="#matrix-multiplication"><span class="header-section-number">2.3</span> Matrix Multiplication</a></li>
-  <li><a href="#softmax" id="toc-softmax" class="nav-link" data-scroll-target="#softmax"><span class="header-section-number">2.4</span> Softmax</a></li>
-  <li><a href="#logarithm-and-exponential" id="toc-logarithm-and-exponential" class="nav-link" data-scroll-target="#logarithm-and-exponential"><span class="header-section-number">2.5</span> Logarithm and Exponential</a></li>
-  <li><a href="#mean-and-variance" id="toc-mean-and-variance" class="nav-link" data-scroll-target="#mean-and-variance"><span class="header-section-number">2.6</span> Mean and Variance</a></li>
-  <li><a href="#cross-entropy-loss" id="toc-cross-entropy-loss" class="nav-link" data-scroll-target="#cross-entropy-loss"><span class="header-section-number">2.7</span> Cross-Entropy Loss</a></li>
-  <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways"><span class="header-section-number">2.8</span> Key Takeaways</a></li>
+  <li><a href="#scalars" id="toc-scalars" class="nav-link active" data-scroll-target="#scalars"><span class="header-section-number">2.1</span> Scalars</a></li>
+  <li><a href="#capital-sigma-and-capital-pi" id="toc-capital-sigma-and-capital-pi" class="nav-link" data-scroll-target="#capital-sigma-and-capital-pi"><span class="header-section-number">2.2</span> Capital Sigma and Capital Pi</a></li>
+  <li><a href="#vectors" id="toc-vectors" class="nav-link" data-scroll-target="#vectors"><span class="header-section-number">2.3</span> Vectors</a></li>
+  <li><a href="#dot-product" id="toc-dot-product" class="nav-link" data-scroll-target="#dot-product"><span class="header-section-number">2.4</span> Dot Product</a></li>
+  <li><a href="#matrix-multiplication" id="toc-matrix-multiplication" class="nav-link" data-scroll-target="#matrix-multiplication"><span class="header-section-number">2.5</span> Matrix Multiplication</a></li>
+  <li><a href="#softmax" id="toc-softmax" class="nav-link" data-scroll-target="#softmax"><span class="header-section-number">2.6</span> Softmax</a></li>
+  <li><a href="#logarithm-and-exponential" id="toc-logarithm-and-exponential" class="nav-link" data-scroll-target="#logarithm-and-exponential"><span class="header-section-number">2.7</span> Logarithm and Exponential</a></li>
+  <li><a href="#mean-and-variance" id="toc-mean-and-variance" class="nav-link" data-scroll-target="#mean-and-variance"><span class="header-section-number">2.8</span> Mean and Variance</a></li>
+  <li><a href="#derivative" id="toc-derivative" class="nav-link" data-scroll-target="#derivative"><span class="header-section-number">2.9</span> Derivative</a></li>
+  <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways"><span class="header-section-number">2.10</span> Key Takeaways</a></li>
   </ul>
 <div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch02-notation.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -418,14 +420,123 @@ window.Quarto = {
 </header>
 
 
-<blockquote class="blockquote">
-<p><em>“The book of nature is written in the language of mathematics, and its characters are triangles, circles, and other geometric figures.”</em></p>
-<p>— Galileo Galilei, <em>Il Saggiatore</em> (1623)</p>
-</blockquote>
-<p>This chapter is a compact reference for the core math used at the start of the book. It focuses on notation, definitions, and small numerical examples. Later chapters introduce the additional math they need at the point where it becomes useful.</p>
-<section id="vectors" class="level2" data-number="2.1">
-<h2 data-number="2.1" class="anchored" data-anchor-id="vectors"><span class="header-section-number">2.1</span> Vectors</h2>
-<p>A <em>vector</em> <span class="math inline">\(v \in \mathbb{R}^n\)</span> is an ordered list of <span class="math inline">\(n\)</span> real numbers: <span class="math inline">\(v = [v_1, v_2, \ldots, v_n]\)</span>. Vectors are how the model stores many related measurements as one object. Once words become vectors, the model can add, scale, compare, and transform them with ordinary arithmetic.</p>
+<p>This chapter is a compact reference for the core math used at the start of the book. It focuses on notation, definitions, and small numerical examples.</p>
+<section id="scalars" class="level2" data-number="2.1">
+<h2 data-number="2.1" class="anchored" data-anchor-id="scalars"><span class="header-section-number">2.1</span> Scalars</h2>
+<p>A <em>scalar</em> is a single number. Examples include <span class="math inline">\(-2\)</span>, <span class="math inline">\(0\)</span>, <span class="math inline">\(0.5\)</span>, and <span class="math inline">\(3.14\)</span>.</p>
+<p>Scalars can be added, subtracted, multiplied, divided, squared, and compared. They are the simplest objects in this chapter. Vectors and matrices are built by arranging scalars into larger shapes.</p>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p><em>Math Minute – Variable</em></p>
+<p>A variable is a name for a value. In <span class="math inline">\(x = 3.0\)</span>, the variable is <span class="math inline">\(x\)</span> and its value is <span class="math inline">\(3.0\)</span>. In formulas, variables let us describe a whole pattern without writing a separate equation for every possible number.</p>
+</div>
+</div>
+</div>
+<section id="scalar-operations" class="level3" data-number="2.1.1">
+<h3 data-number="2.1.1" class="anchored" data-anchor-id="scalar-operations"><span class="header-section-number">2.1.1</span> Scalar Operations</h3>
+<p>For two scalars <span class="math inline">\(a = 3.0\)</span> and <span class="math inline">\(b = 2.0\)</span>:</p>
+<p><span class="math display">\[
+a + b = 5.0
+\]</span></p>
+<p><span class="math display">\[
+ab = 6.0
+\]</span></p>
+<p><span class="math display">\[
+a^2 = 9.0
+\]</span></p>
+<div id="cell-fig-ch02-scalars" class="cell" data-fig-height="3.5" data-fig-width="5" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<div id="fig-ch02-scalars" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ch02-scalars-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="ch02-notation_files/figure-html/fig-ch02-scalars-output-1.png" width="471" height="326" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch02-scalars-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.1: Scalar operations combine individual numbers
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="capital-sigma-and-capital-pi" class="level2" data-number="2.2">
+<h2 data-number="2.2" class="anchored" data-anchor-id="capital-sigma-and-capital-pi"><span class="header-section-number">2.2</span> Capital Sigma and Capital Pi</h2>
+<p>Capital sigma <span class="math inline">\(\sum\)</span> means “add a sequence of terms.” Capital pi <span class="math inline">\(\prod\)</span> means “multiply a sequence of terms.”</p>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p><em>Math Minute – Index Variable</em></p>
+<p>An index variable counts through positions in a sequence. In <span class="math inline">\(\sum_{i=1}^{4} x_i\)</span>, the index variable is <span class="math inline">\(i\)</span>. It starts at <span class="math inline">\(1\)</span>, then takes the values <span class="math inline">\(2\)</span>, <span class="math inline">\(3\)</span>, and <span class="math inline">\(4\)</span>.</p>
+</div>
+</div>
+</div>
+<section id="capital-sigma-sum" class="level3" data-number="2.2.1">
+<h3 data-number="2.2.1" class="anchored" data-anchor-id="capital-sigma-sum"><span class="header-section-number">2.2.1</span> Capital Sigma: Sum</h3>
+<p>The expression:</p>
+<p><span class="math display">\[
+\sum_{i=1}^{4} x_i
+\]</span></p>
+<p>means:</p>
+<p><span class="math display">\[
+x_1 + x_2 + x_3 + x_4
+\]</span></p>
+<p>For <span class="math inline">\(x = [2, 3, 5, 7]\)</span>:</p>
+<p><span class="math display">\[
+\sum_{i=1}^{4} x_i = 2 + 3 + 5 + 7 = 17
+\]</span></p>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p><em>Math Minute – Subscript</em></p>
+<p>A subscript is the small label written below and to the right of a symbol. In <span class="math inline">\(x_i\)</span>, the subscript <span class="math inline">\(i\)</span> selects one entry from the sequence <span class="math inline">\(x\)</span>. So <span class="math inline">\(x_1\)</span> means “the first entry of <span class="math inline">\(x\)</span>.”</p>
+</div>
+</div>
+</div>
+</section>
+<section id="capital-pi-product" class="level3" data-number="2.2.2">
+<h3 data-number="2.2.2" class="anchored" data-anchor-id="capital-pi-product"><span class="header-section-number">2.2.2</span> Capital Pi: Product</h3>
+<p>The expression:</p>
+<p><span class="math display">\[
+\prod_{i=1}^{4} x_i
+\]</span></p>
+<p>means:</p>
+<p><span class="math display">\[
+x_1 x_2 x_3 x_4
+\]</span></p>
+<p>For <span class="math inline">\(x = [2, 3, 5, 7]\)</span>:</p>
+<p><span class="math display">\[
+\prod_{i=1}^{4} x_i = 2 \cdot 3 \cdot 5 \cdot 7 = 210
+\]</span></p>
+<div id="cell-fig-ch02-sigma-pi" class="cell" data-fig-height="3.5" data-fig-width="5" data-execution_count="2">
+<div class="cell-output cell-output-display">
+<div id="fig-ch02-sigma-pi" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ch02-sigma-pi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="ch02-notation_files/figure-html/fig-ch02-sigma-pi-output-1.png" width="470" height="326" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch02-sigma-pi-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.2: Capital sigma adds terms; capital pi multiplies terms
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="vectors" class="level2" data-number="2.3">
+<h2 data-number="2.3" class="anchored" data-anchor-id="vectors"><span class="header-section-number">2.3</span> Vectors</h2>
+<p>A <em>vector</em> <span class="math inline">\(v \in \mathbb{R}^n\)</span> is an ordered list of <span class="math inline">\(n\)</span> real numbers: <span class="math inline">\(v = [v_1, v_2, \ldots, v_n]\)</span>. Vectors store many related measurements as one object. Once values are written as vectors, we can add, scale, compare, and transform them with ordinary arithmetic.</p>
 <div class="callout callout-style-simple callout-note">
 <div class="callout-body d-flex">
 <div class="callout-icon-container">
@@ -448,13 +559,38 @@ window.Quarto = {
 </div>
 </div>
 </div>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p><em>Math Minute – Vector Shape and Indexing</em></p>
+<p>The shape of a vector is its length. If <span class="math inline">\(v \in \mathbb{R}^n\)</span>, then <span class="math inline">\(v\)</span> has shape <span class="math inline">\(n\)</span>. The notation <span class="math inline">\(v_i\)</span> means “entry <span class="math inline">\(i\)</span> of vector <span class="math inline">\(v\)</span>.” The notation <span class="math inline">\(v_n\)</span> means “the last entry when the vector has length <span class="math inline">\(n\)</span>.”</p>
+</div>
+</div>
+</div>
 <p>In Python, the book represents a vector as a list of floating-point numbers:</p>
 <!-- snippet: src/python/common.py#vector_type -->
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Vector <span class="op">=</span> <span class="bu">list</span>[<span class="bu">float</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <!-- /snippet -->
-<p>This simple representation is enough for the small implementations in the book. Packages like NumPy provide their own vector type, usually as an <code>ndarray</code>, with faster arithmetic, compact memory layout, and many built-in operations. In real model code, you would usually use NumPy, PyTorch, JAX, or another tensor library instead.</p>
-<section id="vector-addition" class="level3" data-number="2.1.1">
-<h3 data-number="2.1.1" class="anchored" data-anchor-id="vector-addition"><span class="header-section-number">2.1.1</span> Vector Addition</h3>
+<p>This simple representation is enough for the small implementations in the book. Packages like NumPy provide their own vector type, usually as an <code>ndarray</code>, with faster arithmetic, compact memory layout, and many built-in operations. For larger numerical programs, you would usually use NumPy, PyTorch, JAX, or another tensor library instead.</p>
+<div id="cell-fig-ch02-vector-indexing" class="cell" data-fig-height="2.4" data-fig-width="5" data-execution_count="3">
+<div class="cell-output cell-output-display">
+<div id="fig-ch02-vector-indexing" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ch02-vector-indexing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="ch02-notation_files/figure-html/fig-ch02-vector-indexing-output-1.png" width="470" height="221" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch02-vector-indexing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.3: Vector shape and indexing
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<section id="vector-addition" class="level3" data-number="2.3.1">
+<h3 data-number="2.3.1" class="anchored" data-anchor-id="vector-addition"><span class="header-section-number">2.3.1</span> Vector Addition</h3>
 <p>When two vectors have the same length, we can add them by adding matching positions. The first component adds to the first component, the second to the second, and so on:</p>
 <p><span class="math display">\[
 u + v = [u_1+v_1, u_2+v_2, \ldots]
@@ -469,8 +605,8 @@ u + v = [u_1+v_1, u_2+v_2, \ldots]
 u + v = [3.0+1.0, 4.0+(-2.0)] = [4.0, 2.0]
 \]</span></p>
 </section>
-<section id="scalar-multiplication" class="level3" data-number="2.1.2">
-<h3 data-number="2.1.2" class="anchored" data-anchor-id="scalar-multiplication"><span class="header-section-number">2.1.2</span> Scalar Multiplication</h3>
+<section id="scalar-multiplication" class="level3" data-number="2.3.2">
+<h3 data-number="2.3.2" class="anchored" data-anchor-id="scalar-multiplication"><span class="header-section-number">2.3.2</span> Scalar Multiplication</h3>
 <p>A scalar is a single number. Multiplying a vector by a scalar stretches or shrinks the whole vector without changing how many components it has:</p>
 <p><span class="math display">\[
 c\cdot v = [cv_1, cv_2, \ldots]
@@ -485,8 +621,8 @@ c\cdot v = [cv_1, cv_2, \ldots]
 2.0 \cdot u = [6.0, 8.0]
 \]</span></p>
 </section>
-<section id="l2-norm" class="level3" data-number="2.1.3">
-<h3 data-number="2.1.3" class="anchored" data-anchor-id="l2-norm"><span class="header-section-number">2.1.3</span> L2 Norm</h3>
+<section id="l2-norm" class="level3" data-number="2.3.3">
+<h3 data-number="2.3.3" class="anchored" data-anchor-id="l2-norm"><span class="header-section-number">2.3.3</span> L2 Norm</h3>
 <p>The L2 norm is the length of a vector. For a two-dimensional vector, this is the Pythagorean theorem; for longer vectors, the same idea extends across all components:</p>
 <p><span class="math display">\[
 \|v\| = \sqrt{v_1^2 + v_2^2 + \ldots + v_n^2}
@@ -501,8 +637,8 @@ c\cdot v = [cv_1, cv_2, \ldots]
 \|u\| = \sqrt{3.0^2 + 4.0^2} = \sqrt{9.0+16.0} = 5.0
 \]</span></p>
 </section>
-<section id="unit-vector" class="level3" data-number="2.1.4">
-<h3 data-number="2.1.4" class="anchored" data-anchor-id="unit-vector"><span class="header-section-number">2.1.4</span> Unit Vector</h3>
+<section id="unit-vector" class="level3" data-number="2.3.4">
+<h3 data-number="2.3.4" class="anchored" data-anchor-id="unit-vector"><span class="header-section-number">2.3.4</span> Unit Vector</h3>
 <p>A unit vector keeps the direction of the original vector but scales its length to 1. To get one, divide the vector by its own norm:</p>
 <p><span class="math display">\[
 \hat{v} = v / \|v\|
@@ -516,16 +652,16 @@ c\cdot v = [cv_1, cv_2, \ldots]
 <p><span class="math display">\[
 [3.0/5.0, 4.0/5.0] = [0.6, 0.8]
 \]</span></p>
-<p><a href="#fig-ch02-vectors" class="quarto-xref">Figure&nbsp;<span>2.1</span></a> shows vector addition and the L2 norm in 2D.</p>
-<div id="cell-fig-ch02-vectors" class="cell" data-execution_count="1">
+<p><a href="#fig-ch02-vectors" class="quarto-xref">Figure&nbsp;<span>2.4</span></a> shows vector addition and the L2 norm in 2D.</p>
+<div id="cell-fig-ch02-vectors" class="cell" data-fig-height="5" data-fig-width="5" data-execution_count="4">
 <div class="cell-output cell-output-display">
 <div id="fig-ch02-vectors" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-ch02-vectors-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="ch02-notation_files/figure-html/fig-ch02-vectors-output-1.png" width="662" height="662" class="figure-img">
+<img src="ch02-notation_files/figure-html/fig-ch02-vectors-output-1.png" width="456" height="470" class="figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch02-vectors-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.1: Vector addition and norms in 2D
+Figure&nbsp;2.4: Vector addition and norms in 2D
 </figcaption>
 </figure>
 </div>
@@ -533,11 +669,11 @@ Figure&nbsp;2.1: Vector addition and norms in 2D
 </div>
 </section>
 </section>
-<section id="dot-product" class="level2" data-number="2.2">
-<h2 data-number="2.2" class="anchored" data-anchor-id="dot-product"><span class="header-section-number">2.2</span> Dot Product</h2>
-<p>The <em>dot product</em> (also called inner product) combines two vectors into one scalar. It is the basic operation for asking, “how aligned are these two vectors?” In GPT, attention scores are dot products between query and key vectors (Chapter 6).</p>
-<section id="dot-product-1" class="level3" data-number="2.2.1">
-<h3 data-number="2.2.1" class="anchored" data-anchor-id="dot-product-1"><span class="header-section-number">2.2.1</span> Dot Product</h3>
+<section id="dot-product" class="level2" data-number="2.4">
+<h2 data-number="2.4" class="anchored" data-anchor-id="dot-product"><span class="header-section-number">2.4</span> Dot Product</h2>
+<p>The <em>dot product</em> (also called inner product) combines two vectors into one scalar. It is the basic operation for asking, “how aligned are these two vectors?”</p>
+<section id="dot-product-1" class="level3" data-number="2.4.1">
+<h3 data-number="2.4.1" class="anchored" data-anchor-id="dot-product-1"><span class="header-section-number">2.4.1</span> Dot Product</h3>
 <p>The dot product multiplies matching components and then adds the results:</p>
 <p><span class="math display">\[
 u \cdot v = \sum_{i=1}^{n} u_i v_i = u_1 v_1 + u_2 v_2 + \ldots + u_n v_n
@@ -553,8 +689,8 @@ u \cdot v = (3.0)(1.0) + (4.0)(-2.0) + (0.0)(5.0) = 3.0 - 8.0 + 0.0 = -5.0
 \]</span></p>
 <p>The sign matters. A positive dot product means the vectors point somewhat in the same direction. A negative dot product means they point somewhat against each other. If <span class="math inline">\(u \cdot v = 0\)</span>, the vectors are orthogonal (perpendicular).</p>
 </section>
-<section id="cosine-similarity" class="level3" data-number="2.2.2">
-<h3 data-number="2.2.2" class="anchored" data-anchor-id="cosine-similarity"><span class="header-section-number">2.2.2</span> Cosine Similarity</h3>
+<section id="cosine-similarity" class="level3" data-number="2.4.2">
+<h3 data-number="2.4.2" class="anchored" data-anchor-id="cosine-similarity"><span class="header-section-number">2.4.2</span> Cosine Similarity</h3>
 <p>The dot product mixes two things: vector length and direction. Cosine similarity removes the length part so we can compare direction alone. Starting from the geometric form:</p>
 <p><span class="math display">\[
 u \cdot v = \|u\| \|v\| \cos\theta
@@ -573,16 +709,16 @@ u \cdot v = \|u\| \|v\| \cos\theta
 \frac{u \cdot v}{\|u\|\|v\|} = \frac{-5.0}{5.0\sqrt{30.0}} \approx -0.183
 \]</span></p>
 <p>The value is below zero, so the vectors point in moderately opposite directions.</p>
-<p><a href="#fig-ch02-dot-product" class="quarto-xref">Figure&nbsp;<span>2.2</span></a> shows the dot product as a scalar projection in 2D.</p>
-<div id="cell-fig-ch02-dot-product" class="cell" data-execution_count="2">
+<p><a href="#fig-ch02-dot-product" class="quarto-xref">Figure&nbsp;<span>2.5</span></a> shows the dot product as a scalar projection in 2D.</p>
+<div id="cell-fig-ch02-dot-product" class="cell" data-fig-height="4.5" data-fig-width="5" data-execution_count="5">
 <div class="cell-output cell-output-display">
 <div id="fig-ch02-dot-product" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-ch02-dot-product-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="ch02-notation_files/figure-html/fig-ch02-dot-product-output-1.png" width="654" height="566" class="figure-img">
+<img src="ch02-notation_files/figure-html/fig-ch02-dot-product-output-1.png" width="462" height="422" class="figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch02-dot-product-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.2: Dot product as scalar projection in 2D
+Figure&nbsp;2.5: Dot product as scalar projection in 2D
 </figcaption>
 </figure>
 </div>
@@ -590,15 +726,39 @@ Figure&nbsp;2.2: Dot product as scalar projection in 2D
 </div>
 </section>
 </section>
-<section id="matrix-multiplication" class="level2" data-number="2.3">
-<h2 data-number="2.3" class="anchored" data-anchor-id="matrix-multiplication"><span class="header-section-number">2.3</span> Matrix Multiplication</h2>
-<p>A matrix is a rectangular grid of numbers. Matrices let the model transform many vectors at once, which is why they are the main shape of learned weights. Matrix multiplication is the operation that applies those learned weights. The book represents a matrix as a list of rows, where each row is a list of floats:</p>
+<section id="matrix-multiplication" class="level2" data-number="2.5">
+<h2 data-number="2.5" class="anchored" data-anchor-id="matrix-multiplication"><span class="header-section-number">2.5</span> Matrix Multiplication</h2>
+<p>A matrix is a rectangular grid of numbers. Matrices make it possible to organize many vectors or many linear equations at once. Matrix multiplication combines rows from one matrix with columns from another. The book represents a matrix as a list of rows, where each row is a list of floats:</p>
 <!-- snippet: src/python/common.py#matrix_type -->
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>Matrix <span class="op">=</span> <span class="bu">list</span>[<span class="bu">list</span>[<span class="bu">float</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <!-- /snippet -->
-<p>In GPT, almost every learned computation is a matrix multiplication: embedding lookup, query/key/value projections (Chapter 6), feed-forward layers (Chapter 8), and the final vocabulary projection (Chapter 10).</p>
-<section id="transpose" class="level3" data-number="2.3.1">
-<h3 data-number="2.3.1" class="anchored" data-anchor-id="transpose"><span class="header-section-number">2.3.1</span> Transpose</h3>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p><em>Math Minute – Matrix Shape and Indexing</em></p>
+<p>A matrix with <span class="math inline">\(m\)</span> rows and <span class="math inline">\(n\)</span> columns has shape <span class="math inline">\(m \times n\)</span>. The notation <span class="math inline">\(A \in \mathbb{R}^{m \times n}\)</span> means every entry of <span class="math inline">\(A\)</span> is a real number, and <span class="math inline">\(A\)</span> has <span class="math inline">\(m\)</span> rows and <span class="math inline">\(n\)</span> columns. The notation <span class="math inline">\(A_{ij}\)</span> means “the entry in row <span class="math inline">\(i\)</span>, column <span class="math inline">\(j\)</span> of matrix <span class="math inline">\(A\)</span>.”</p>
+</div>
+</div>
+</div>
+<div id="cell-fig-ch02-matrix-indexing" class="cell" data-fig-height="3.6" data-fig-width="5" data-execution_count="6">
+<div class="cell-output cell-output-display">
+<div id="fig-ch02-matrix-indexing" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ch02-matrix-indexing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="ch02-notation_files/figure-html/fig-ch02-matrix-indexing-output-1.png" width="470" height="336" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch02-matrix-indexing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.6: Matrix shape and indexing
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<section id="transpose" class="level3" data-number="2.5.1">
+<h3 data-number="2.5.1" class="anchored" data-anchor-id="transpose"><span class="header-section-number">2.5.1</span> Transpose</h3>
 <p>Transposing a matrix swaps rows and columns. The first row becomes the first column, the second row becomes the second column, and so on. If <span class="math inline">\(A \in \mathbb{R}^{m \times n}\)</span>, then <span class="math inline">\(A^T \in \mathbb{R}^{n \times m}\)</span>.</p>
 <p>In Python, <code>zip(*matrix)</code> groups together the first item from every row, then the second item from every row, and so on. Converting each group back to a list gives the transposed rows.</p>
 <!-- snippet: src/python/common.py#transpose -->
@@ -614,8 +774,8 @@ A = \begin{bmatrix} 1.0 &amp; 2.0 \\ 3.0 &amp; 4.0 \end{bmatrix}
 A^T = \begin{bmatrix} 1.0 &amp; 3.0 \\ 2.0 &amp; 4.0 \end{bmatrix}
 \]</span></p>
 </section>
-<section id="matrix-multiplication-1" class="level3" data-number="2.3.2">
-<h3 data-number="2.3.2" class="anchored" data-anchor-id="matrix-multiplication-1"><span class="header-section-number">2.3.2</span> Matrix Multiplication</h3>
+<section id="matrix-multiplication-1" class="level3" data-number="2.5.2">
+<h3 data-number="2.5.2" class="anchored" data-anchor-id="matrix-multiplication-1"><span class="header-section-number">2.5.2</span> Matrix Multiplication</h3>
 <p>Matrix multiplication combines rows from the left matrix with columns from the right matrix. Given <span class="math inline">\(A \in \mathbb{R}^{m \times k}\)</span> and <span class="math inline">\(B \in \mathbb{R}^{k \times n}\)</span>, their product <span class="math inline">\(C = AB\)</span> has shape <span class="math inline">\(m \times n\)</span>, and each entry is:</p>
 <p><span class="math display">\[
 C_{ij} = \sum_{r=1}^{k} A_{ir} B_{rj}
@@ -651,16 +811,16 @@ C_{11} = 3.0 \cdot 6.0 + 4.0 \cdot 8.0 = 50.0
 <p><span class="math display">\[
 AB = \begin{bmatrix} 19.0 &amp; 22.0 \\ 43.0 &amp; 50.0 \end{bmatrix}
 \]</span></p>
-<p><a href="#fig-ch02-matrix-multiply" class="quarto-xref">Figure&nbsp;<span>2.3</span></a> illustrates how each output cell is a dot product of a row with a column.</p>
-<div id="cell-fig-ch02-matrix-multiply" class="cell" data-execution_count="3">
+<p><a href="#fig-ch02-matrix-multiply" class="quarto-xref">Figure&nbsp;<span>2.7</span></a> illustrates how each output cell is a dot product of a row with a column.</p>
+<div id="cell-fig-ch02-matrix-multiply" class="cell" data-fig-height="4" data-fig-width="5.5" data-execution_count="7">
 <div class="cell-output cell-output-display">
 <div id="fig-ch02-matrix-multiply" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-ch02-matrix-multiply-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="ch02-notation_files/figure-html/fig-ch02-matrix-multiply-output-1.png" width="890" height="374" class="figure-img">
+<img src="ch02-notation_files/figure-html/fig-ch02-matrix-multiply-output-1.png" width="518" height="374" class="figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch02-matrix-multiply-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.3: Matrix multiplication: each output cell is a dot product of a row with a column
+Figure&nbsp;2.7: Matrix multiplication: each output cell is a dot product of a row with a column
 </figcaption>
 </figure>
 </div>
@@ -668,12 +828,11 @@ Figure&nbsp;2.3: Matrix multiplication: each output cell is a dot product of a r
 </div>
 </section>
 </section>
-<section id="softmax" class="level2" data-number="2.4">
-<h2 data-number="2.4" class="anchored" data-anchor-id="softmax"><span class="header-section-number">2.4</span> Softmax</h2>
-<p>The <em>softmax</em> function turns arbitrary real numbers into probabilities. The input numbers are called logits. The output values are all positive and sum to 1. This is how the model turns raw scores into choices: attention choices over previous tokens, and prediction choices over the vocabulary.</p>
-<p>In GPT, softmax appears in attention weights (Chapter 6) and final next-token probabilities (Chapter 10).</p>
-<section id="vector-softmax" class="level3" data-number="2.4.1">
-<h3 data-number="2.4.1" class="anchored" data-anchor-id="vector-softmax"><span class="header-section-number">2.4.1</span> Vector Softmax</h3>
+<section id="softmax" class="level2" data-number="2.6">
+<h2 data-number="2.6" class="anchored" data-anchor-id="softmax"><span class="header-section-number">2.6</span> Softmax</h2>
+<p>The <em>softmax</em> function turns arbitrary real numbers into probabilities. The input numbers are called logits. The output values are all positive and sum to 1.</p>
+<section id="vector-softmax" class="level3" data-number="2.6.1">
+<h3 data-number="2.6.1" class="anchored" data-anchor-id="vector-softmax"><span class="header-section-number">2.6.1</span> Vector Softmax</h3>
 <p>Softmax exponentiates each logit and divides by the total exponentiated mass:</p>
 <p><span class="math display">\[
 \text{softmax}(z)_i = \frac{e^{z_i}}{\sum_{j} e^{z_j}}
@@ -695,24 +854,24 @@ Figure&nbsp;2.3: Matrix multiplication: each output cell is a dot product of a r
 \]</span></p>
 <p>The largest logit gets the largest probability, but the smaller logits still receive nonzero probability.</p>
 </section>
-<section id="row-wise-softmax" class="level3" data-number="2.4.2">
-<h3 data-number="2.4.2" class="anchored" data-anchor-id="row-wise-softmax"><span class="header-section-number">2.4.2</span> Row-wise Softmax</h3>
-<p>Attention uses a matrix of scores. Each row describes what one token is allowed to attend to, so each row needs to become its own probability distribution. Row-wise softmax applies the vector softmax independently to every row.</p>
+<section id="row-wise-softmax" class="level3" data-number="2.6.2">
+<h3 data-number="2.6.2" class="anchored" data-anchor-id="row-wise-softmax"><span class="header-section-number">2.6.2</span> Row-wise Softmax</h3>
+<p>Sometimes the input is a matrix of scores. Each row can be normalized into its own probability distribution. Row-wise softmax applies the vector softmax independently to every row.</p>
 <!-- snippet: src/python/common.py#softmax_rows -->
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> softmax_rows(matrix: Matrix) <span class="op">-&gt;</span> Matrix:</span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [softmax(row) <span class="cf">for</span> row <span class="kw">in</span> matrix]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <!-- /snippet -->
-<p>After this step, each row sums to 1. That is what lets a later matrix multiplication compute a weighted average of value vectors.</p>
-<p><a href="#fig-ch02-softmax" class="quarto-xref">Figure&nbsp;<span>2.4</span></a> shows how softmax maps raw logits to a probability distribution.</p>
-<div id="cell-fig-ch02-softmax" class="cell" data-execution_count="4">
+<p>After this step, each row sums to 1.</p>
+<p><a href="#fig-ch02-softmax" class="quarto-xref">Figure&nbsp;<span>2.8</span></a> shows how softmax maps raw logits to a probability distribution.</p>
+<div id="cell-fig-ch02-softmax" class="cell" data-fig-height="5" data-fig-width="5" data-execution_count="8">
 <div class="cell-output cell-output-display">
 <div id="fig-ch02-softmax" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-ch02-softmax-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="ch02-notation_files/figure-html/fig-ch02-softmax-output-1.png" width="952" height="375" class="figure-img">
+<img src="ch02-notation_files/figure-html/fig-ch02-softmax-output-1.png" width="471" height="471" class="figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch02-softmax-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.4: Softmax turns logits into probabilities — higher values dominate, none reach zero
+Figure&nbsp;2.8: Softmax turns logits into probabilities — higher values dominate, none reach zero
 </figcaption>
 </figure>
 </div>
@@ -720,15 +879,15 @@ Figure&nbsp;2.4: Softmax turns logits into probabilities — higher values domin
 </div>
 </section>
 </section>
-<section id="logarithm-and-exponential" class="level2" data-number="2.5">
-<h2 data-number="2.5" class="anchored" data-anchor-id="logarithm-and-exponential"><span class="header-section-number">2.5</span> Logarithm and Exponential</h2>
+<section id="logarithm-and-exponential" class="level2" data-number="2.7">
+<h2 data-number="2.7" class="anchored" data-anchor-id="logarithm-and-exponential"><span class="header-section-number">2.7</span> Logarithm and Exponential</h2>
 <p>The natural exponential <span class="math inline">\(e^x\)</span> and natural logarithm <span class="math inline">\(\ln x\)</span> are inverse operations:</p>
 <p><span class="math display">\[
 e^{\ln x} = x \quad \text{and} \quad \ln(e^x) = x
 \]</span></p>
-<p>These functions convert between additive and multiplicative scales. That makes them useful when probabilities become losses and when losses become perplexity. The loss function later in the book uses <span class="math inline">\(\ln p\)</span>, where <span class="math inline">\(p\)</span> is the probability assigned to the correct next token (Chapter 11). Since probabilities are between <span class="math inline">\(0\)</span> and <span class="math inline">\(1\)</span>, their logarithms are zero or negative. That is why cross-entropy uses a negative sign.</p>
-<section id="natural-exponential" class="level3" data-number="2.5.1">
-<h3 data-number="2.5.1" class="anchored" data-anchor-id="natural-exponential"><span class="header-section-number">2.5.1</span> Natural Exponential</h3>
+<p>These functions convert between additive and multiplicative scales. They are useful whenever growth, decay, ratios, or repeated multiplication need to be written on an additive scale.</p>
+<section id="natural-exponential" class="level3" data-number="2.7.1">
+<h3 data-number="2.7.1" class="anchored" data-anchor-id="natural-exponential"><span class="header-section-number">2.7.1</span> Natural Exponential</h3>
 <p>The natural exponential raises <span class="math inline">\(e\)</span> to a power:</p>
 <p><span class="math display">\[
 \exp(x) = e^x
@@ -746,8 +905,8 @@ e^{0.0} = 1.0
 e^{1.0} \approx 2.718
 \]</span></p>
 </section>
-<section id="natural-logarithm" class="level3" data-number="2.5.2">
-<h3 data-number="2.5.2" class="anchored" data-anchor-id="natural-logarithm"><span class="header-section-number">2.5.2</span> Natural Logarithm</h3>
+<section id="natural-logarithm" class="level3" data-number="2.7.2">
+<h3 data-number="2.7.2" class="anchored" data-anchor-id="natural-logarithm"><span class="header-section-number">2.7.2</span> Natural Logarithm</h3>
 <p>The natural logarithm asks the reverse question: what power of <span class="math inline">\(e\)</span> gives this value?</p>
 <p><span class="math display">\[
 \ln x = y \quad \text{means} \quad e^y = x
@@ -770,19 +929,19 @@ e^{1.0} \approx 2.718
 <p><span class="math display">\[
 \ln(0.1) \approx -2.303
 \]</span></p>
-<p>As the probability gets smaller, the negative log gets larger, as shown in <a href="#fig-ch02-log-loss" class="quarto-xref">Figure&nbsp;<span>2.5</span></a>. For example:</p>
+<p>For inputs between <span class="math inline">\(0\)</span> and <span class="math inline">\(1\)</span>, the natural logarithm is negative. Negating it gives a positive value that grows as the input moves closer to zero, as shown in <a href="#fig-ch02-negative-log" class="quarto-xref">Figure&nbsp;<span>2.9</span></a>. For example:</p>
 <p><span class="math display">\[
 -\ln(0.01) = 4.605
 \]</span></p>
-<div id="cell-fig-ch02-log-loss" class="cell" data-execution_count="5">
+<div id="cell-fig-ch02-negative-log" class="cell" data-fig-height="5" data-fig-width="5" data-execution_count="9">
 <div class="cell-output cell-output-display">
-<div id="fig-ch02-log-loss" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="fig-ch02-negative-log" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ch02-log-loss-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="ch02-notation_files/figure-html/fig-ch02-log-loss-output-1.png" width="951" height="374" class="figure-img">
+<div aria-describedby="fig-ch02-negative-log-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="ch02-notation_files/figure-html/fig-ch02-negative-log-output-1.png" width="471" height="470" class="figure-img">
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch02-log-loss-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.5: The natural log and its negative — as probability shrinks toward zero, the loss grows steeply
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch02-negative-log-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.9: The natural log and its negative over inputs between 0 and 1
 </figcaption>
 </figure>
 </div>
@@ -797,11 +956,11 @@ Figure&nbsp;2.5: The natural log and its negative — as probability shrinks tow
 \]</span></p>
 </section>
 </section>
-<section id="mean-and-variance" class="level2" data-number="2.6">
-<h2 data-number="2.6" class="anchored" data-anchor-id="mean-and-variance"><span class="header-section-number">2.6</span> Mean and Variance</h2>
-<p>Mean and variance summarize a vector of numbers. They tell us where the values are centered and how spread out they are. Layer normalization uses these ideas in every transformer block: it centers an activation vector around zero and rescales it to a predictable size.</p>
-<section id="mean" class="level3" data-number="2.6.1">
-<h3 data-number="2.6.1" class="anchored" data-anchor-id="mean"><span class="header-section-number">2.6.1</span> Mean</h3>
+<section id="mean-and-variance" class="level2" data-number="2.8">
+<h2 data-number="2.8" class="anchored" data-anchor-id="mean-and-variance"><span class="header-section-number">2.8</span> Mean and Variance</h2>
+<p>Mean and variance summarize a vector of numbers. They tell us where the values are centered and how spread out they are.</p>
+<section id="mean" class="level3" data-number="2.8.1">
+<h3 data-number="2.8.1" class="anchored" data-anchor-id="mean"><span class="header-section-number">2.8.1</span> Mean</h3>
 <p>The mean is the average value. Add all values, then divide by how many values there are:</p>
 <p><span class="math display">\[
 \mu = \frac{1}{n}\sum_{i=1}^n x_i
@@ -816,8 +975,8 @@ Figure&nbsp;2.5: The natural log and its negative — as probability shrinks tow
 \mu = \frac{40.0}{8.0} = 5.0
 \]</span></p>
 </section>
-<section id="variance" class="level3" data-number="2.6.2">
-<h3 data-number="2.6.2" class="anchored" data-anchor-id="variance"><span class="header-section-number">2.6.2</span> Variance</h3>
+<section id="variance" class="level3" data-number="2.8.2">
+<h3 data-number="2.8.2" class="anchored" data-anchor-id="variance"><span class="header-section-number">2.8.2</span> Variance</h3>
 <p>Variance measures how spread out the values are. First subtract the mean from each value. Then square those deviations so negative and positive deviations do not cancel out. Finally, average the squared deviations:</p>
 <p><span class="math display">\[
 \sigma^2 = \frac{1}{n}\sum_{i=1}^n (x_i - \mu)^2
@@ -837,8 +996,8 @@ Figure&nbsp;2.5: The natural log and its negative — as probability shrinks tow
 \sigma^2 = \frac{9.0+1.0+1.0+1.0+0.0+0.0+4.0+16.0}{8.0} = 4.0
 \]</span></p>
 </section>
-<section id="standard-deviation" class="level3" data-number="2.6.3">
-<h3 data-number="2.6.3" class="anchored" data-anchor-id="standard-deviation"><span class="header-section-number">2.6.3</span> Standard Deviation</h3>
+<section id="standard-deviation" class="level3" data-number="2.8.3">
+<h3 data-number="2.8.3" class="anchored" data-anchor-id="standard-deviation"><span class="header-section-number">2.8.3</span> Standard Deviation</h3>
 <p>Standard deviation puts variance back on the original scale by taking the square root:</p>
 <p><span class="math display">\[
 \sigma = \sqrt{\sigma^2}
@@ -851,16 +1010,16 @@ Figure&nbsp;2.5: The natural log and its negative — as probability shrinks tow
 <p><span class="math display">\[
 \sigma = \sqrt{4.0} = 2.0
 \]</span></p>
-<p>Layer normalization uses this value to divide each centered activation by its standard deviation. <a href="#fig-ch02-mean-variance" class="quarto-xref">Figure&nbsp;<span>2.6</span></a> illustrates the example data with mean and standard deviation marked.</p>
-<div id="cell-fig-ch02-mean-variance" class="cell" data-execution_count="6">
+<p><a href="#fig-ch02-mean-variance" class="quarto-xref">Figure&nbsp;<span>2.10</span></a> illustrates the example data with mean and standard deviation marked.</p>
+<div id="cell-fig-ch02-mean-variance" class="cell" data-fig-height="3.2" data-fig-width="5" data-execution_count="10">
 <div class="cell-output cell-output-display">
 <div id="fig-ch02-mean-variance" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-ch02-mean-variance-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="ch02-notation_files/figure-html/fig-ch02-mean-variance-output-1.png" width="854" height="374" class="figure-img">
+<img src="ch02-notation_files/figure-html/fig-ch02-mean-variance-output-1.png" width="470" height="298" class="figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch02-mean-variance-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.6: Data points with mean and standard deviation — layer normalization centers and rescales like this
+Figure&nbsp;2.10: Data points with mean and standard deviation
 </figcaption>
 </figure>
 </div>
@@ -868,62 +1027,70 @@ Figure&nbsp;2.6: Data points with mean and standard deviation — layer normaliz
 </div>
 </section>
 </section>
-<section id="cross-entropy-loss" class="level2" data-number="2.7">
-<h2 data-number="2.7" class="anchored" data-anchor-id="cross-entropy-loss"><span class="header-section-number">2.7</span> Cross-Entropy Loss</h2>
-<p>Cross-entropy measures how wrong a predicted probability distribution is. It gives training a single number to minimize, so better predictions become lower loss. For next-token prediction, it becomes the model’s training loss: the model is punished when it assigns low probability to the actual next token.</p>
-<section id="cross-entropy" class="level3" data-number="2.7.1">
-<h3 data-number="2.7.1" class="anchored" data-anchor-id="cross-entropy"><span class="header-section-number">2.7.1</span> Cross-Entropy</h3>
-<p>Given a true probability distribution <span class="math inline">\(p\)</span> and the model’s predicted distribution <span class="math inline">\(q\)</span>, cross-entropy is:</p>
+<section id="derivative" class="level2" data-number="2.9">
+<h2 data-number="2.9" class="anchored" data-anchor-id="derivative"><span class="header-section-number">2.9</span> Derivative</h2>
+<p>A <em>derivative</em> measures how fast one value changes as another value changes. For a function <span class="math inline">\(f(x)\)</span>, the derivative is written:</p>
 <p><span class="math display">\[
-H(p, q) = -\sum_i p_i \ln q_i
+\frac{df}{dx}
 \]</span></p>
-<p>In next-token prediction, <span class="math inline">\(p\)</span> is one-hot: the correct token has probability <span class="math inline">\(1.0\)</span>, and every other token has probability <span class="math inline">\(0.0\)</span>. That makes the sum collapse to one term. If the correct token is <span class="math inline">\(c\)</span>, the loss is:</p>
+<p>This reads as “the derivative of <span class="math inline">\(f\)</span> with respect to <span class="math inline">\(x\)</span>.” It tells us the slope of the function at a particular input.</p>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p><em>Math Minute – Function</em></p>
+<p>A function maps an input to an output. If <span class="math inline">\(f(x) = x^2\)</span>, then <span class="math inline">\(f(3) = 9\)</span>. The input is <span class="math inline">\(x\)</span> and the output is <span class="math inline">\(f(x)\)</span>.</p>
+</div>
+</div>
+</div>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p><em>Math Minute – Slope</em></p>
+<p>Slope means “change in vertical value divided by change in horizontal value.” Between two points, slope is: <span class="math display">\[
+\frac{\Delta y}{\Delta x}
+\]</span> A derivative is the slope when the two points get infinitely close together.</p>
+</div>
+</div>
+</div>
+<section id="example" class="level3" data-number="2.9.1">
+<h3 data-number="2.9.1" class="anchored" data-anchor-id="example"><span class="header-section-number">2.9.1</span> Example</h3>
+<p>For:</p>
 <p><span class="math display">\[
-H = -\ln q_c
+f(x) = x^2
 \]</span></p>
-<p>The implementation receives raw logits, turns them into probabilities with softmax, and returns the negative log probability of the correct token.</p>
-<!-- snippet: src/python/train.py#cross_entropy_loss -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> cross_entropy_loss(logits: Sequence[<span class="bu">float</span>], true_id: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    probabilities <span class="op">=</span> softmax(logits)</span>
-<span id="cb18-3"><a href="#cb18-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">-</span>math.log(<span class="bu">max</span>(probabilities[true_id], <span class="fl">1.0e-12</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
-<p>Suppose the vocabulary has four tokens and the model assigns probabilities <span class="math inline">\([0.1, 0.6, 0.2, 0.1]\)</span>. If the correct token index is <span class="math inline">\(1\)</span>, then the probability of the correct answer is <span class="math inline">\(0.6\)</span>. The loss is:</p>
+<p>the derivative is:</p>
 <p><span class="math display">\[
-H = -\ln(0.6) \approx 0.511
+\frac{df}{dx} = 2x
 \]</span></p>
-<p>If the model assigned probability <span class="math inline">\(1.0\)</span> to the correct token, the loss would be <span class="math inline">\(0.0\)</span>. If it assigned <span class="math inline">\(0.01\)</span>, the loss would jump to <span class="math inline">\(4.605\)</span>. Low confidence in the correct answer is expensive, as <a href="#fig-ch02-cross-entropy" class="quarto-xref">Figure&nbsp;<span>2.7</span></a> shows.</p>
-<div id="cell-fig-ch02-cross-entropy" class="cell" data-execution_count="7">
+<p>At <span class="math inline">\(x = 3\)</span>, the slope is:</p>
+<p><span class="math display">\[
+2x = 2 \cdot 3 = 6
+\]</span></p>
+<div id="cell-fig-ch02-derivative" class="cell" data-fig-height="3.5" data-fig-width="5" data-execution_count="11">
 <div class="cell-output cell-output-display">
-<div id="fig-ch02-cross-entropy" class="quarto-float quarto-figure quarto-figure-center anchored">
+<div id="fig-ch02-derivative" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ch02-cross-entropy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="ch02-notation_files/figure-html/fig-ch02-cross-entropy-output-1.png" width="951" height="374" class="figure-img">
+<div aria-describedby="fig-ch02-derivative-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="ch02-notation_files/figure-html/fig-ch02-derivative-output-1.png" width="472" height="326" class="figure-img">
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch02-cross-entropy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.7: Cross-entropy loss grows steeply as the model assigns less probability to the correct token
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch02-derivative-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.11: A derivative is the local slope of a function
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
 </section>
-<section id="perplexity" class="level3" data-number="2.7.2">
-<h3 data-number="2.7.2" class="anchored" data-anchor-id="perplexity"><span class="header-section-number">2.7.2</span> Perplexity</h3>
-<p>Perplexity converts cross-entropy back into an easier-to-read scale:</p>
-<p><span class="math display">\[
-\text{perplexity} = e^H
-\]</span></p>
-<p>The implementation is one line because this is exactly the natural exponential from Section 2.5.</p>
-<!-- snippet: src/python/train.py#perplexity -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb19"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> perplexity(loss: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> math.exp(loss)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
-<p>If <span class="math inline">\(H = \ln(10.0)\)</span>, then <span class="math inline">\(e^H = 10.0\)</span>. A language model with perplexity 10 is as uncertain as choosing uniformly among 10 tokens.</p>
 </section>
-</section>
-<section id="key-takeaways" class="level2" data-number="2.8">
-<h2 data-number="2.8" class="anchored" data-anchor-id="key-takeaways"><span class="header-section-number">2.8</span> Key Takeaways</h2>
-<p>This chapter defined the core mathematical toolkit needed to begin reading the model chapters.</p>
+<section id="key-takeaways" class="level2" data-number="2.10">
+<h2 data-number="2.10" class="anchored" data-anchor-id="key-takeaways"><span class="header-section-number">2.10</span> Key Takeaways</h2>
+<p>This chapter defined a compact mathematical toolkit.</p>
 <table class="caption-top table">
 <colgroup>
 <col style="width: 50%">
@@ -932,41 +1099,49 @@ Figure&nbsp;2.7: Cross-entropy loss grows steeply as the model assigns less prob
 <thead>
 <tr class="header">
 <th>Concept</th>
-<th>Where it appears in GPT</th>
+<th>Main idea</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
+<td>Scalar</td>
+<td>A single number</td>
+</tr>
+<tr class="even">
+<td>Capital Sigma/Pi</td>
+<td>Compact notation for repeated addition or multiplication</td>
+</tr>
+<tr class="odd">
 <td>Vector</td>
-<td>Token embeddings, query/key/value projections</td>
+<td>An ordered list of numbers</td>
 </tr>
 <tr class="even">
 <td>Dot product</td>
-<td>Attention score between a query and a key</td>
+<td>A scalar measure of alignment between two vectors</td>
 </tr>
 <tr class="odd">
 <td>Matrix multiply</td>
-<td>Every linear layer: embedding, Q/K/V projections, FFN, output</td>
+<td>Row-by-column dot products arranged into a new matrix</td>
 </tr>
 <tr class="even">
 <td>Softmax</td>
-<td>Attention weights; final token probability distribution</td>
+<td>A way to convert real-valued scores into probabilities</td>
 </tr>
 <tr class="odd">
 <td>Logarithm</td>
-<td>Cross-entropy loss computation</td>
+<td>The inverse of exponentiation</td>
 </tr>
 <tr class="even">
 <td>Mean/Variance</td>
-<td>Layer normalization in every transformer block</td>
+<td>Measurements of center and spread</td>
 </tr>
 <tr class="odd">
-<td>Cross-entropy</td>
-<td>Training loss: how wrong are the next-token predictions?</td>
+<td>Derivative</td>
+<td>The local rate of change of a function</td>
 </tr>
 </tbody>
 </table>
-<p>Return to this chapter when a later equation uses these basic building blocks.</p>
+<p>Together, these tools cover the notation and arithmetic used throughout the examples in this chapter.</p>
 
 
 </section>

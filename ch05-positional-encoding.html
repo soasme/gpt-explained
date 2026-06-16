@@ -417,10 +417,6 @@ window.Quarto = {
 </header>
 
 
-<blockquote class="blockquote">
-<p><em>“A body without positument is everywhere and therefore nowhere.”</em></p>
-<p>— Isaac Newton</p>
-</blockquote>
 <p>After the embedding step we have a matrix <span class="math inline">\(X \in \mathbb{R}^{T\times d}\)</span>. Each row <code>X[t]</code> is a vector representing token <code>t</code>. But here is the problem: attention processes all tokens <em>simultaneously</em> — there is no inherent notion of “token 3 comes after token 2.” If you shuffled the rows, the model would not know.</p>
 <p>We fix this by <em>adding a position vector</em> to each token’s embedding. The combined vector carries both <em>what</em> (the token identity) and <em>where</em> (the position).</p>
 <section id="the-idea" class="level2" data-number="5.1">

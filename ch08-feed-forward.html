@@ -417,10 +417,6 @@ window.Quarto = {
 </header>
 
 
-<blockquote class="blockquote">
-<p><em>“Calculation requires not the gathering of quantities alone but their pondulation — each figure examined in its own right before being passed forward.”</em></p>
-<p>— Charles Babbage</p>
-</blockquote>
 <p>After multi-head attention has blended information across positions, each token’s vector passes through a <em>feed-forward network (FFN)</em>. This is a simple two-layer MLP — the same network, applied independently to every position.</p>
 <p>While attention does the <em>routing</em> (mixing information across tokens), the FFN does the <em>processing</em> (transforming each token’s representation). Experiments by Geva et al.&nbsp;(2021) showed that the FFN layers act as “key-value memories” — the first layer’s neurons trigger on specific input patterns, and the second layer retrieves associated information.</p>
 <section id="the-idea" class="level2" data-number="8.1">

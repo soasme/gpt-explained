@@ -388,10 +388,9 @@ window.Quarto = {
   <li><a href="#the-idea" id="toc-the-idea" class="nav-link active" data-scroll-target="#the-idea"><span class="header-section-number">11.1</span> The Idea</a></li>
   <li><a href="#the-problem-evaluating-a-probability-distribution" id="toc-the-problem-evaluating-a-probability-distribution" class="nav-link" data-scroll-target="#the-problem-evaluating-a-probability-distribution"><span class="header-section-number">11.2</span> The Problem: Evaluating a Probability Distribution</a></li>
   <li><a href="#cross-entropy-loss" id="toc-cross-entropy-loss" class="nav-link" data-scroll-target="#cross-entropy-loss"><span class="header-section-number">11.3</span> Cross-Entropy Loss</a></li>
-  <li><a href="#perplexity" id="toc-perplexity" class="nav-link" data-scroll-target="#perplexity"><span class="header-section-number">11.4</span> Perplexity</a></li>
-  <li><a href="#the-matrix-worked-example" id="toc-the-matrix-worked-example" class="nav-link" data-scroll-target="#the-matrix-worked-example"><span class="header-section-number">11.5</span> The Matrix: Worked Example</a></li>
-  <li><a href="#python-implementation" id="toc-python-implementation" class="nav-link" data-scroll-target="#python-implementation"><span class="header-section-number">11.6</span> Python Implementation</a></li>
-  <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways"><span class="header-section-number">11.7</span> Key Takeaways</a></li>
+  <li><a href="#the-matrix-worked-example" id="toc-the-matrix-worked-example" class="nav-link" data-scroll-target="#the-matrix-worked-example"><span class="header-section-number">11.4</span> The Matrix: Worked Example</a></li>
+  <li><a href="#python-implementation" id="toc-python-implementation" class="nav-link" data-scroll-target="#python-implementation"><span class="header-section-number">11.5</span> Python Implementation</a></li>
+  <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways"><span class="header-section-number">11.6</span> Key Takeaways</a></li>
   </ul>
 <div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch11-loss.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
@@ -417,10 +416,6 @@ window.Quarto = {
 </header>
 
 
-<blockquote class="blockquote">
-<p><em>“Surprise is the measure of ignorance. To entropize a prediction is to count exactly how many bits you were wrong by.”</em></p>
-<p>— Claude Shannon</p>
-</blockquote>
 <p>So far we have traced the forward pass from end to end. But none of that knowledge was conjured from thin air. The model <em>learned</em> by making predictions, measuring how wrong they were, and nudging every weight in the right direction — billions of times.</p>
 <p>This chapter is about that measurement: the <em>loss function</em>.</p>
 <section id="the-idea" class="level2" data-number="11.1">
@@ -494,6 +489,25 @@ P(\cdot \mid t_1, \ldots, t_t) \in \mathbb{R}^{|V|}
 </tr>
 </tbody>
 </table>
+<p>Suppose the vocabulary has four tokens and the model assigns probabilities <span class="math inline">\([0.1, 0.6, 0.2, 0.1]\)</span>. If the correct token index is <span class="math inline">\(1\)</span>, then the probability of the correct answer is <span class="math inline">\(0.6\)</span>. The loss is:</p>
+<p><span class="math display">\[
+\mathcal{L} = -\log(0.6) \approx 0.511
+\]</span></p>
+<p>If the model assigned probability <span class="math inline">\(1.0\)</span> to the correct token, the loss would be <span class="math inline">\(0.0\)</span>. If it assigned <span class="math inline">\(0.01\)</span>, the loss would jump to <span class="math inline">\(4.605\)</span>. Low confidence in the correct answer is expensive, as <a href="#fig-ch11-cross-entropy" class="quarto-xref">Figure&nbsp;<span>11.1</span></a> shows.</p>
+<div id="cell-fig-ch11-cross-entropy" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<div id="fig-ch11-cross-entropy" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ch11-cross-entropy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="ch11-loss_files/figure-html/fig-ch11-cross-entropy-output-1.png" width="951" height="374" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch11-cross-entropy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.1: Cross-entropy loss grows steeply as the model assigns less probability to the correct token
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
 <div class="callout callout-style-simple callout-note">
 <div class="callout-body d-flex">
 <div class="callout-icon-container">
@@ -513,23 +527,8 @@ P(\cdot \mid t_1, \ldots, t_t) \in \mathbb{R}^{|V|}
 \mathcal{L}_{\text{doc}} = \frac{1}{T} \sum_{t=1}^{T} -\log P(t_{t+1} \mid t_1, \ldots, t_t)
 \]</span></p>
 </section>
-<section id="teacher-forcing" class="level3" data-number="11.3.4">
-<h3 data-number="11.3.4" class="anchored" data-anchor-id="teacher-forcing"><span class="header-section-number">11.3.4</span> Teacher Forcing</h3>
-<p>Notice the formula conditions on <em>true</em> past tokens, not the model’s <em>own predictions</em>. This is called <em>teacher forcing</em>: during training, we always feed the ground-truth context.</p>
-<p>This makes training stable, parallelizable, and simple. The causal mask from Chapter 4 is what enables this — position <span class="math inline">\(t\)</span> can only attend to positions <span class="math inline">\(1 \ldots t\)</span>, so the model’s prediction at position <span class="math inline">\(t\)</span> is causally correct even when processing all positions in parallel.</p>
-</section>
-<section id="cross-entropy-as-information-theory" class="level3" data-number="11.3.5">
-<h3 data-number="11.3.5" class="anchored" data-anchor-id="cross-entropy-as-information-theory"><span class="header-section-number">11.3.5</span> Cross-Entropy as Information Theory</h3>
-<p>Cross-entropy has deep roots. The <em>cross-entropy</em> between true <span class="math inline">\(q\)</span> and predicted <span class="math inline">\(p\)</span> is:</p>
-<p><span class="math display">\[
-H(q, p) = -\sum_j q_j \log p_j
-\]</span></p>
-<p>When <span class="math inline">\(q\)</span> is one-hot, only the true token’s term survives: <span class="math inline">\(H(q, p) = -\log p_{t_{t+1}}\)</span>. Exactly our loss.</p>
-<p><em>Minimizing cross-entropy is equivalent to minimizing the KL divergence between the model’s predictions and the true data distribution.</em> This is why cross-entropy is the natural loss for language models.</p>
-</section>
-</section>
-<section id="perplexity" class="level2" data-number="11.4">
-<h2 data-number="11.4" class="anchored" data-anchor-id="perplexity"><span class="header-section-number">11.4</span> Perplexity</h2>
+<section id="perplexity" class="level3" data-number="11.3.4">
+<h3 data-number="11.3.4" class="anchored" data-anchor-id="perplexity"><span class="header-section-number">11.3.4</span> Perplexity</h3>
 <p>Loss as nats is hard to interpret intuitively. <em>Perplexity</em> converts it to something more concrete:</p>
 <p><span class="math display">\[
 \text{PPL} = e^{\mathcal{L}}
@@ -584,11 +583,26 @@ H(q, p) = -\sum_j q_j \log p_j
 </div>
 </div>
 </section>
-<section id="the-matrix-worked-example" class="level2" data-number="11.5">
-<h2 data-number="11.5" class="anchored" data-anchor-id="the-matrix-worked-example"><span class="header-section-number">11.5</span> The Matrix: Worked Example</h2>
+<section id="teacher-forcing" class="level3" data-number="11.3.5">
+<h3 data-number="11.3.5" class="anchored" data-anchor-id="teacher-forcing"><span class="header-section-number">11.3.5</span> Teacher Forcing</h3>
+<p>Notice the formula conditions on <em>true</em> past tokens, not the model’s <em>own predictions</em>. This is called <em>teacher forcing</em>: during training, we always feed the ground-truth context.</p>
+<p>This makes training stable, parallelizable, and simple. The causal mask from Chapter 4 is what enables this — position <span class="math inline">\(t\)</span> can only attend to positions <span class="math inline">\(1 \ldots t\)</span>, so the model’s prediction at position <span class="math inline">\(t\)</span> is causally correct even when processing all positions in parallel.</p>
+</section>
+<section id="cross-entropy-as-information-theory" class="level3" data-number="11.3.6">
+<h3 data-number="11.3.6" class="anchored" data-anchor-id="cross-entropy-as-information-theory"><span class="header-section-number">11.3.6</span> Cross-Entropy as Information Theory</h3>
+<p>Cross-entropy has deep roots. The <em>cross-entropy</em> between true <span class="math inline">\(q\)</span> and predicted <span class="math inline">\(p\)</span> is:</p>
+<p><span class="math display">\[
+H(q, p) = -\sum_j q_j \log p_j
+\]</span></p>
+<p>When <span class="math inline">\(q\)</span> is one-hot, only the true token’s term survives: <span class="math inline">\(H(q, p) = -\log p_{t_{t+1}}\)</span>. Exactly our loss.</p>
+<p><em>Minimizing cross-entropy is equivalent to minimizing the KL divergence between the model’s predictions and the true data distribution.</em> This is why cross-entropy is the natural loss for language models.</p>
+</section>
+</section>
+<section id="the-matrix-worked-example" class="level2" data-number="11.4">
+<h2 data-number="11.4" class="anchored" data-anchor-id="the-matrix-worked-example"><span class="header-section-number">11.4</span> The Matrix: Worked Example</h2>
 <p>Let’s trace the loss for a 4-token sequence <code>["The", "cat", "sat", "on"]</code> with <span class="math inline">\(|V| = 5\)</span> (toy vocabulary).</p>
-<section id="forward-pass-outputs" class="level3" data-number="11.5.1">
-<h3 data-number="11.5.1" class="anchored" data-anchor-id="forward-pass-outputs"><span class="header-section-number">11.5.1</span> Forward Pass Outputs</h3>
+<section id="forward-pass-outputs" class="level3" data-number="11.4.1">
+<h3 data-number="11.4.1" class="anchored" data-anchor-id="forward-pass-outputs"><span class="header-section-number">11.4.1</span> Forward Pass Outputs</h3>
 <p>The model produces logits at each position. After softmax:</p>
 <pre class="text"><code>Position 0 (predicting token after "The"):
   P = [0.05, 0.10, 0.60, 0.20, 0.05]   ← true next = token 3
@@ -606,8 +620,8 @@ Position 3 (predicting after "The cat sat on"):
   P = [0.05, 0.05, 0.80, 0.05, 0.05]   ← true next = token 2
   P(true) = 0.80,  loss = -log(0.80) = 0.223</code></pre>
 </section>
-<section id="total-loss" class="level3" data-number="11.5.2">
-<h3 data-number="11.5.2" class="anchored" data-anchor-id="total-loss"><span class="header-section-number">11.5.2</span> Total Loss</h3>
+<section id="total-loss" class="level3" data-number="11.4.2">
+<h3 data-number="11.4.2" class="anchored" data-anchor-id="total-loss"><span class="header-section-number">11.4.2</span> Total Loss</h3>
 <p><span class="math display">\[
 \mathcal{L} = \frac{1}{4}(1.609 + 0.511 + 0.916 + 0.223) = 0.815
 \]</span></p>
@@ -615,21 +629,21 @@ Position 3 (predicting after "The cat sat on"):
 \text{PPL} = e^{0.815} \approx 2.26
 \]</span></p>
 <p>The model is effectively choosing between about 2.3 equally likely tokens on average.</p>
-<p>Figure <a href="#fig-ch11-matrix-loss" class="quarto-xref">Figure&nbsp;<span>11.1</span></a> shows cross-entropy loss as softmax probability followed by the negative log of the true-token probability.</p>
+<p>Figure <a href="#fig-ch11-matrix-loss" class="quarto-xref">Figure&nbsp;<span>11.2</span></a> shows cross-entropy loss as softmax probability followed by the negative log of the true-token probability.</p>
 <div id="fig-ch11-matrix-loss" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Cross-entropy loss: logits → softmax → negative log of true-token probability">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-ch11-matrix-loss-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
 <img src="images/ch09_loss.png" class="img-fluid figure-img" alt="Cross-entropy loss: logits → softmax → negative log of true-token probability">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch11-matrix-loss-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;11.1: Cross-entropy loss
+Figure&nbsp;11.2: Cross-entropy loss
 </figcaption>
 </figure>
 </div>
 </section>
 </section>
-<section id="python-implementation" class="level2" data-number="11.6">
-<h2 data-number="11.6" class="anchored" data-anchor-id="python-implementation"><span class="header-section-number">11.6</span> Python Implementation</h2>
+<section id="python-implementation" class="level2" data-number="11.5">
+<h2 data-number="11.5" class="anchored" data-anchor-id="python-implementation"><span class="header-section-number">11.5</span> Python Implementation</h2>
 <p><code>cross_entropy_loss</code> computes <span class="math inline">\(-\log P(\text{true token})\)</span> for a single position.</p>
 <!-- snippet: src/python/train.py#cross_entropy_loss -->
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> cross_entropy_loss(logits: Sequence[<span class="bu">float</span>], true_id: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
@@ -665,8 +679,8 @@ Figure&nbsp;11.1: Cross-entropy loss
 Mean loss: 0.815
 Perplexity: 2.26</code></pre>
 </section>
-<section id="key-takeaways" class="level2" data-number="11.7">
-<h2 data-number="11.7" class="anchored" data-anchor-id="key-takeaways"><span class="header-section-number">11.7</span> Key Takeaways</h2>
+<section id="key-takeaways" class="level2" data-number="11.6">
+<h2 data-number="11.6" class="anchored" data-anchor-id="key-takeaways"><span class="header-section-number">11.6</span> Key Takeaways</h2>
 <ul>
 <li><em>Cross-entropy loss</em> is <span class="math inline">\(-\log P(\text{true next token})\)</span>. Zero when perfect, unbounded when wrong.</li>
 <li><em>Teacher forcing</em> feeds ground-truth context at training time, enabling full parallelism via causal masking.</li>
