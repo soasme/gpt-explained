@@ -28,5 +28,5 @@ Later blocks can read from and write to everything earlier blocks computed.
 *What's next?*
 After `N` blocks, we have a final matrix $X_{\text{final}} \in \mathbb{R}^{T\times d}$.
 Each row is a rich representation of the corresponding token in context.
-The last step: turn the final vector for position `T` into a probability distribution over the vocabulary — that's *vocabulary projection* in Chapter 8.
+The last step: turn the final vector for position `T` into a probability distribution over the vocabulary — that is *vocabulary projection* in @sec-ch10-vocab-projection.
 :::

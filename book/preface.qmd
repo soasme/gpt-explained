@@ -29,23 +29,23 @@ The exercises are not optional decoration — they are the fastest way to verify
 
 The book covers thirteen chapters and one appendix:
 
-**Foundations.** Chapter 1 gives an overview of GPT and its history.
-Chapter 2 introduces the math notation used throughout: vectors, matrices, dot products, softmax, logarithms, mean, and variance.
+**Foundations.** @sec-ch01-introduction gives an overview of GPT and its history.
+@sec-ch02-notation introduces the math notation used throughout: vectors, matrices, dot products, softmax, logarithms, mean, and variance.
 
-**Representations.** Chapter 3 explains tokenization and byte-pair encoding.
-Chapter 4 covers word embeddings and the embedding lookup.
-Chapter 5 introduces sinusoidal positional encoding.
+**Representations.** @sec-ch03-tokens explains tokenization and byte-pair encoding.
+@sec-ch04-embeddings covers word embeddings and the embedding lookup.
+@sec-ch05-positional-encoding introduces sinusoidal positional encoding.
 
-**Transformer Core.** Chapter 6 derives scaled dot-product attention step by step.
-Chapter 7 extends it to multi-head attention.
-Chapter 8 covers the feed-forward sub-layer.
-Chapter 9 assembles these pieces into a full transformer block with residual connections and layer normalization.
+**Transformer Core.** @sec-ch06-attention derives scaled dot-product attention step by step.
+@sec-ch07-multi-head-attention extends it to multi-head attention.
+@sec-ch08-feed-forward covers the feed-forward sub-layer.
+@sec-ch09-transformer-block assembles these pieces into a full transformer block with residual connections and layer normalization.
 
-**Prediction and Learning.** Chapter 10 covers vocabulary projection.
-Chapter 11 derives cross-entropy loss and perplexity.
-Chapter 12 traces backpropagation and the Adam optimizer through the full model.
+**Prediction and Learning.** @sec-ch10-vocab-projection covers vocabulary projection.
+@sec-ch11-loss derives cross-entropy loss and perplexity.
+@sec-ch12-training traces backpropagation and the Adam optimizer through the full model.
 
-**Modern GPT.** Chapter 13 describes the changes in current models: RoPE positional encoding, grouped-query attention, SwiGLU activations, and RMSNorm.
+**Modern GPT.** @sec-ch13-modern-gpt describes the changes in current models: RoPE positional encoding, grouped-query attention, SwiGLU activations, and RMSNorm.
 
 **Appendix A** presents the complete micro-GPT implementation — the same code from across the chapters assembled into one readable file.
 

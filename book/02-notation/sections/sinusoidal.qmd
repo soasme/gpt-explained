@@ -8,7 +8,7 @@ $$
 \sin(x + y) = \sin x \cos y + \cos x \sin y
 $$
 
-In GPT, sinusoidal positional encoding (Chapter 5) uses sine and cosine at different frequencies to encode token position $pos$ and embedding dimension $i$:
+In GPT, sinusoidal positional encoding (@sec-ch05-positional-encoding) uses sine and cosine at different frequencies to encode token position $pos$ and embedding dimension $i$:
 
 $$
 \text{PE}(pos, 2i) = \sin\!\left(\frac{pos}{10000^{2i/d}}\right)

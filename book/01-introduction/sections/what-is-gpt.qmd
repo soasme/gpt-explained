@@ -24,5 +24,5 @@ Repeat, and you get fluent text.
 *What is a token?*
 A token is the smallest unit of text the model processes.
 It is not always a whole word — "unbelievable" might be two tokens: "unbel" and "ievable".
-Chapter 3 explains exactly how text is split into tokens.
+@sec-ch03-tokens explains exactly how text is split into tokens.
 :::

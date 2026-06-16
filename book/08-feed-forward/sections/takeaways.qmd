@@ -35,5 +35,5 @@ This means the model can learn: "if the input contains patterns related to Franc
 *What's next?*
 We now have all the pieces: attention that mixes information, and an FFN that processes each token's vector.
 How are they wired together?
-With *residual connections* and *layer normalization* to form the *transformer block* — Chapter 7.
+With *residual connections* and *layer normalization* to form the *transformer block* — @sec-ch09-transformer-block.
 :::

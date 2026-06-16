@@ -24,5 +24,5 @@ Modern architectures (LLaMA, Mistral) use a more sophisticated variant called *R
 ::: {.callout-note}
 *What's next?*
 We now have $\tilde{X} \in \mathbb{R}^{T\times d}$ — a matrix that knows both what each token is and where it sits.
-Now the interesting part begins: *attention*, the mechanism that lets tokens share information with each other. Chapter 4.
+Now the interesting part begins: *attention*, the mechanism that lets tokens share information with each other. See @sec-ch06-attention.
 :::

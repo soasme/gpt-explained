@@ -11,5 +11,5 @@
 We have a matrix `X` of shape $[T \times d]$.
 Each row knows _what_ the token is, but nothing about _where_ it sits in the sequence.
 Swapping two tokens would produce the same rows in a different order, which the model would treat identically.
-We need to inject *position information* — that's Chapter 3.
+We need to inject *position information* — that is @sec-ch05-positional-encoding.
 :::

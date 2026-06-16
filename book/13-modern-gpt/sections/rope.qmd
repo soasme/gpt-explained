@@ -1,6 +1,6 @@
 ## Rotary Positional Encoding (RoPE)
 
-The sinusoidal positional encoding in Chapter 5 adds a fixed signal to each embedding *before* the attention layers.
+The sinusoidal positional encoding in @sec-ch05-positional-encoding adds a fixed signal to each embedding *before* the attention layers.
 *RoPE* (Su et al., 2021) takes a different approach: it encodes position directly into the query and key vectors inside each attention layer by rotating them.
 
 For a query vector $q$ at position $m$ and key vector $k$ at position $n$:

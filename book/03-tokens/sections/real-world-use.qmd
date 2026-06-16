@@ -1,0 +1,62 @@
+## Real World Use
+
+In real GPT applications, you usually do not train a tokenizer yourself.
+You use the tokenizer that matches the model.
+For OpenAI models, the common Python library for inspecting tokenization is `tiktoken`.
+
+Install it with:
+
+```bash
+python3 -m pip install tiktoken
+```
+
+A simple use looks like this:
+
+```python
+import tiktoken
+
+encoding = tiktoken.get_encoding("cl100k_base")
+
+text = "the cat likes tokenization"
+token_ids = encoding.encode(text)
+pieces = [encoding.decode([token_id]) for token_id in token_ids]
+
+print(token_ids)
+print(pieces)
+```
+
+Output:
+
+```text
+[1820, 8415, 13452, 4037, 2065]
+['the', ' cat', ' likes', ' token', 'ization']
+```
+
+`encode` turns text into token IDs.
+`decode` turns token IDs back into text.
+Decoding one ID at a time is a useful way to inspect what each token represents.
+Notice how the spaces are not separate end-of-word markers.
+They are folded into nearby tokens: `" cat"`, `" likes"`, and `" token"` each include the leading space.
+
+For model-specific work, use the encoding for the model rather than choosing an encoding by hand:
+
+```python
+import tiktoken
+
+encoding = tiktoken.encoding_for_model("MODEL_NAME")
+token_ids = encoding.encode("the cat likes tokenization")
+```
+
+Our micro-BPE implementation and `tiktoken` share the same broad idea: text becomes a sequence of token IDs through a fixed vocabulary and merge rules.
+The differences are important:
+
+| Our micro-BPE | `tiktoken` |
+| --- | --- |
+| Trains a tiny vocabulary from a few example words. | Ships with pretrained vocabularies and merge rules. |
+| Starts from Python characters. | Works at the byte level, so it can handle arbitrary text robustly. |
+| Uses `"_"` as an end-of-word marker in the teaching example. | Does not add an end-of-word token to every word; whitespace is encoded as part of the token stream. |
+| Splits a list of words, not a full document. | Encodes normal text directly, including spaces and punctuation. |
+| Raises an error if an unseen token remains after merging. | Is designed for production use and can encode real input text. |
+
+The main lesson carries over: the model receives integers, not raw strings.
+The production tokenizer just has a much larger vocabulary, carefully trained merge rules, and more robust handling of real text.

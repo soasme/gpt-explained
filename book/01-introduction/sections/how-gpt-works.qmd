@@ -8,23 +8,23 @@ Every word GPT produces goes through these seven steps, in order:
 
 ![The GPT pipeline: from input text to predicted next word, in seven steps](images/fig-ch01-gpt-pipeline.png){#fig-ch01-gpt-pipeline}
 
-*Step 1 — Tokenization (Chapter 3).*
+*Step 1 — Tokenization (@sec-ch03-tokens).*
 Before GPT can think about your text, it has to chop it into small pieces called *tokens*.
 Think of tokens like LEGO bricks: you break a sentence apart, and GPT works with the individual bricks.
 The phrase `"the cat"` might become three bricks with serial numbers like `[1, 428, 3797]`.
 
-*Step 2 — Embedding (Chapter 4).*
+*Step 2 — Embedding (@sec-ch04-embeddings).*
 A number like `428` is just an ID — it has no meaning by itself.
 So GPT looks each ID up in a giant table and swaps it for a list of hundreds of numbers called a *vector*.
 Picture a map where every word has its own location.
 Similar words end up close together: "cat" and "kitten" are neighbors, while "cat" and "spaceship" are far apart.
 
-*Step 3 — Positional Encoding (Chapter 5).*
+*Step 3 — Positional Encoding (@sec-ch05-positional-encoding).*
 Here is a puzzle: does "dog bites man" mean the same thing as "man bites dog"?
 Obviously not — but if GPT only sees individual words and ignores their order, it cannot tell the difference.
 Positional encoding adds a tiny "position tag" to each word's vector so GPT knows which word came first, second, and so on.
 
-*Step 4 — Transformer Blocks (Chapters 6–9).*
+*Step 4 — Transformer Blocks (@sec-ch06-attention through @sec-ch09-transformer-block).*
 This is where the real thinking happens.
 GPT passes the vectors through a stack of identical layers called *transformer blocks*.
 Inside each block, two things happen back-to-back:
@@ -36,18 +36,18 @@ Inside each block, two things happen back-to-back:
 There can be dozens of these blocks stacked on top of each other.
 Each layer builds a slightly deeper understanding of the text.
 
-*Step 5 — Vocab Projection (Chapter 10).*
+*Step 5 — Vocab Projection (@sec-ch10-vocab-projection).*
 After passing through all the blocks, GPT has a rich, updated vector for the last word in your prompt.
 Now it needs to turn that into a real prediction: "what word should come next?"
 It does this by scoring every word in its vocabulary — all 50,000-plus of them.
 These raw scores are called *logits*.
 
-*Step 6 — Softmax (Chapter 10).*
+*Step 6 — Softmax (@sec-ch10-vocab-projection).*
 Raw scores are hard to work with, so GPT converts them into proper probabilities that add up to 100%.
 The highest-probability word is the model's best guess.
 It samples from the top options to avoid always giving the same robotic answer.
 
-*Step 7 — Loss and Training (Chapters 11–12).*
+*Step 7 — Loss and Training (@sec-ch11-loss and @sec-ch12-training).*
 GPT did not start out smart.
 During training, it read billions of sentences and kept trying to predict the next word — getting it wrong most of the time at first.
 Each mistake triggered a feedback signal called *backpropagation* that nudged millions of internal numbers a tiny bit in the right direction.

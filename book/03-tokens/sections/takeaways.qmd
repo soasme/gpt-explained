@@ -11,5 +11,5 @@
 We have a sequence of integers: `[10, 3, 4, 8, …]`.
 These integers are just row indices.
 To give them geometric meaning — so the model can do math on them — we need an *embedding matrix*.
-That's Chapter 2.
+That is @sec-ch04-embeddings.
 :::

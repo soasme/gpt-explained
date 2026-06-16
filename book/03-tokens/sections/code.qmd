@@ -51,6 +51,15 @@ def words_to_corpus(words: Sequence[str]) -> list[list[str]]:
 <!-- /snippet -->
 
 ### Counting Pairs
+This section uses `Counter` to tally pair frequencies and `Sequence` for read-only sequence type hints.
+
+<!-- snippet: src/python/micro_bpe.py#imports -->
+```python
+from collections import Counter
+from typing import Sequence
+```
+<!-- /snippet -->
+
 `adjacent_pairs` lists every neighboring token pair in one token sequence.
 
 <!-- snippet: src/python/micro_bpe.py#adjacent_pairs -->
@@ -173,22 +182,33 @@ def demo() -> dict[str, object]:
 ```
 <!-- /snippet -->
 
-Run this with `python3 src/python/chapter_demos.py`.
+Run this file directly with `python3 src/python/micro_bpe.py`.
 
-Expected output:
+Output:
 
 ```text
 Vocabulary:
-  0 -> l
-  1 -> o
-  ...
-  9 -> lo
-  10 -> low
-  ...
+  0 -> _
+  1 -> d
+  2 -> e
+  3 -> i
+  4 -> l
+  5 -> n
+  6 -> o
+  7 -> r
+  8 -> s
+  9 -> t
+  10 -> w
+  11 -> lo
+  12 -> low
+  13 -> es
+  14 -> est
+  15 -> est_
+  16 -> low_
+  17 -> lowe
+  18 -> lower
+  19 -> lower_
 
-Encoding "low":   (10)
-Encoding "lower": (10 3 4 8)
+Encoding "low":   [16]
+Encoding "lower": [19]
 ```
-
-The following figure shows the full tokenization pipeline from raw text to integer IDs.
-{{< include book/03-tokens/diagrams/tokenization-pipeline.qmd >}}

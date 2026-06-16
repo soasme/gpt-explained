@@ -134,7 +134,7 @@ Notice the formula conditions on _true_ past tokens, not the model's _own predic
 This is called *teacher forcing*: during training, we always feed the ground-truth context.
 
 This makes training stable, parallelizable, and simple.
-The causal mask from Chapter 4 is what enables this — position $t$ can only attend to positions $1 \ldots t$, so the model's prediction at position $t$ is causally correct even when processing all positions in parallel.
+The causal mask from @sec-ch06-attention is what enables this — position $t$ can only attend to positions $1 \ldots t$, so the model's prediction at position $t$ is causally correct even when processing all positions in parallel.
 
 ### Cross-Entropy as Information Theory
 

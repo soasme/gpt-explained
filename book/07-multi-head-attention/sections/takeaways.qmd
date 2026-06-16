@@ -29,5 +29,5 @@ The output projection `Wo` then combines the views.
 ::: {.callout-note}
 *What's next?*
 After attention mixes information across tokens, each token's vector goes through a small *feed-forward network* — a two-layer MLP applied identically to every position.
-This is where most of the model's stored "knowledge" lives. Chapter 6.
+This is where most of the model's stored "knowledge" lives. See @sec-ch08-feed-forward.
 :::

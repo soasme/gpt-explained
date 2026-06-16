@@ -11,5 +11,5 @@
 *What's next?*
 One attention head can only track one type of relationship at a time.
 What if we want to simultaneously track syntactic dependencies, coreference, and semantic similarity?
-We run *multiple attention heads in parallel* — Chapter 5.
+We run *multiple attention heads in parallel* — @sec-ch07-multi-head-attention.
 :::

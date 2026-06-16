@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+# tag::imports[]
 from collections import Counter
 from typing import Sequence
+# end::imports[]
 
 
 # tag::make_vocab[]

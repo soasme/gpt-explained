@@ -38,7 +38,7 @@ Everything that follows is this rule, applied to millions of weights simultaneou
 
 ## Backprop Through Softmax and Cross-Entropy
 
-Chapter 9 stated the softmax-CE gradient without proof:
+@sec-ch11-loss stated the softmax-CE gradient without proof:
 
 $$
 \frac{\partial \mathcal{L}}{\partial z_j} = P(j) - \mathbb{1}[j = t]

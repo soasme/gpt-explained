@@ -1,6 +1,6 @@
 ## Multi-Query and Grouped-Query Attention
 
-Standard multi-head attention (Chapter 7) creates separate $Q, K, V$ projections for every head.
+Standard multi-head attention (@sec-ch07-multi-head-attention) creates separate $Q, K, V$ projections for every head.
 The key and value matrices dominate GPU memory during inference.
 
 *Multi-Query Attention (MQA)* (Shazeer, 2019) uses a single $K$ and $V$ shared across all heads, reducing the KV cache by a factor of $H$ (number of heads).

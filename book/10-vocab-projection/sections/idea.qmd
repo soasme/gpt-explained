@@ -12,5 +12,5 @@ High score means "this word fits the context well."
 Low score means it does not.
 Then those scores are squeezed into the range 0–1 and made to sum to 1, giving a proper probability.
 
-This step is the mirror image of Chapter 2: embedding turned an integer (a word ID) into a vector; unembedding turns a vector back into a distribution over integers.
+This step is the mirror image of @sec-ch04-embeddings: embedding turned an integer (a word ID) into a vector; unembedding turns a vector back into a distribution over integers.
 Many implementations even reuse the same table for both directions — the same weights that encode "cat → vector" are transposed to decode "vector → how much does this look like cat?"

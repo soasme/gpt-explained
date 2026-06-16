@@ -11,4 +11,4 @@
 
 The field moves fast.
 Each of these innovations addresses a concrete bottleneck — memory, speed, context length, or capability — that became critical as models scaled.
-Understanding the baseline GPT from Chapters 3–12 makes every one of these extensions legible.
+Understanding the baseline GPT from @sec-ch03-tokens through @sec-ch12-training makes every one of these extensions legible.

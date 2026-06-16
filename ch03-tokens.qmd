@@ -16,4 +16,6 @@ We implement a tiny byte-pair encoding tokenizer in Python.
 
 {{< include book/03-tokens/sections/code.qmd >}}
 
+{{< include book/03-tokens/sections/real-world-use.qmd >}}
+
 {{< include book/03-tokens/sections/takeaways.qmd >}}

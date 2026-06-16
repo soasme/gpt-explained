@@ -1,1 +1,0 @@
-![Tokenization maps raw text to a sequence of integer IDs; identical words get the same ID](images/fig-ch03-tokenization-pipeline.png){#fig-ch03-tokenization-pipeline}
