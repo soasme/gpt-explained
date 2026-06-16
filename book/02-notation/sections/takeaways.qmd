@@ -1,15 +1,14 @@
 ## Key Takeaways
 
-This chapter defined the core mathematical toolkit needed to begin reading the model chapters.
+This chapter defined a compact mathematical toolkit.
 
-| Concept | Where it appears in GPT |
+| Concept | Main idea |
 | --- | --- |
-| Vector | Token embeddings, query/key/value projections |
-| Dot product | Attention score between a query and a key |
-| Matrix multiply | Every linear layer: embedding, Q/K/V projections, FFN, output |
-| Softmax | Attention weights; final token probability distribution |
-| Logarithm | Cross-entropy loss computation |
-| Mean/Variance | Layer normalization in every transformer block |
-| Cross-entropy | Training loss: how wrong are the next-token predictions? |
+| Vector | An ordered list of numbers |
+| Dot product | A scalar measure of alignment between two vectors |
+| Matrix multiply | Row-by-column dot products arranged into a new matrix |
+| Softmax | A way to convert real-valued scores into probabilities |
+| Logarithm | The inverse of exponentiation |
+| Mean/Variance | Measurements of center and spread |
 
-Return to this chapter when a later equation uses these basic building blocks.
+Together, these tools cover the notation and arithmetic used throughout the examples in this chapter.

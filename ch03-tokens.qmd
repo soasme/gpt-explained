@@ -1,9 +1,5 @@
 # Tokens — Text to Numbers {#sec-ch03-tokens}
 
-> _"Not everything that can be counted counts, and not everything that counts can be counted."_
->
-> — William Bruce Cameron
-
 A language model does not read text.
 It reads *integers*.
 The first job of any GPT pipeline is to convert a string of characters into a sequence of integers.

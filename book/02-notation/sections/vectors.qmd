@@ -2,8 +2,8 @@
 
 A *vector* $v \in \mathbb{R}^n$ is an ordered list of $n$ real numbers:
 $v = [v_1, v_2, \ldots, v_n]$.
-Vectors are how the model stores many related measurements as one object.
-Once words become vectors, the model can add, scale, compare, and transform them with ordinary arithmetic.
+Vectors store many related measurements as one object.
+Once values are written as vectors, we can add, scale, compare, and transform them with ordinary arithmetic.
 
 ::: {.callout-note}
 *Math Minute — Element Of*
@@ -31,7 +31,7 @@ Vector = list[float]
 
 This simple representation is enough for the small implementations in the book.
 Packages like NumPy provide their own vector type, usually as an `ndarray`, with faster arithmetic, compact memory layout, and many built-in operations.
-In real model code, you would usually use NumPy, PyTorch, JAX, or another tensor library instead.
+For larger numerical programs, you would usually use NumPy, PyTorch, JAX, or another tensor library instead.
 
 ### Vector Addition
 

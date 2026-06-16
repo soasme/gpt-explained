@@ -1,8 +1,8 @@
 ## Matrix Multiplication
 
 A matrix is a rectangular grid of numbers.
-Matrices let the model transform many vectors at once, which is why they are the main shape of learned weights.
-Matrix multiplication is the operation that applies those learned weights.
+Matrices make it possible to organize many vectors or many linear equations at once.
+Matrix multiplication combines rows from one matrix with columns from another.
 The book represents a matrix as a list of rows, where each row is a list of floats:
 
 <!-- snippet: src/python/common.py#matrix_type -->
@@ -10,9 +10,6 @@ The book represents a matrix as a list of rows, where each row is a list of floa
 Matrix = list[list[float]]
 ```
 <!-- /snippet -->
-
-In GPT, almost every learned computation is a matrix multiplication:
-embedding lookup, query/key/value projections (Chapter 6), feed-forward layers (Chapter 8), and the final vocabulary projection (Chapter 10).
 
 ### Transpose
 

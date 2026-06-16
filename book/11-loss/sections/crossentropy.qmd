@@ -27,6 +27,56 @@ $-\log(p)$ delivers all three:
 | 0.01 | 4.61 | Very wrong |
 | 0.001 | 6.91 | Catastrophically wrong |
 
+Suppose the vocabulary has four tokens and the model assigns probabilities $[0.1, 0.6, 0.2, 0.1]$.
+If the correct token index is $1$, then the probability of the correct answer is $0.6$.
+The loss is:
+
+$$
+\mathcal{L} = -\log(0.6) \approx 0.511
+$$
+
+If the model assigned probability $1.0$ to the correct token, the loss would be $0.0$.
+If it assigned $0.01$, the loss would jump to $4.605$.
+Low confidence in the correct answer is expensive, as @fig-ch11-cross-entropy shows.
+
+```{python}
+#| label: fig-ch11-cross-entropy
+#| fig-cap: "Cross-entropy loss grows steeply as the model assigns less probability to the correct token"
+#| echo: false
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+DARK='#222222'; BLUE='#1177BB'; RED='#CC2222'; MONO='monospace'
+
+q = np.linspace(0.01, 1.0, 300)
+H = -np.log(q)
+perp = np.exp(H)
+
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4), facecolor='white')
+
+ax1.set_facecolor('white')
+ax1.plot(q, H, color=BLUE, lw=2.5)
+ax1.axvline(0.6, color=RED, lw=1.2, linestyle='--', alpha=0.7)
+ax1.axhline(-np.log(0.6), color=RED, lw=1.2, linestyle='--', alpha=0.7)
+ax1.plot(0.6, -np.log(0.6), 'o', color=RED, markersize=7)
+ax1.text(0.62, -np.log(0.6)+0.1, f'p=0.6 -> H≈{-np.log(0.6):.3f}',
+         fontfamily=MONO, fontsize=9, color=RED)
+ax1.set_xlabel('probability of correct token', fontfamily=MONO, fontsize=11)
+ax1.set_ylabel('cross-entropy loss H = -ln(q)', fontfamily=MONO, fontsize=11)
+for sp in ['top','right']: ax1.spines[sp].set_visible(False)
+
+ax2.set_facecolor('white')
+ax2.plot(q, perp, color=BLUE, lw=2.5)
+ax2.set_ylim(0, 30)
+ax2.set_xlabel('probability of correct token', fontfamily=MONO, fontsize=11)
+ax2.set_ylabel('perplexity = exp(H)', fontfamily=MONO, fontsize=11)
+for sp in ['top','right']: ax2.spines[sp].set_visible(False)
+
+plt.tight_layout()
+plt.show()
+```
+
 ::: {.callout-note}
 *Math Minute — Logarithms*
 
@@ -44,6 +94,39 @@ A single document of length $T$ contributes:
 $$
 \mathcal{L}_{\text{doc}} = \frac{1}{T} \sum_{t=1}^{T} -\log P(t_{t+1} \mid t_1, \ldots, t_t)
 $$
+
+### Perplexity
+
+Loss as nats is hard to interpret intuitively.
+*Perplexity* converts it to something more concrete:
+
+$$
+\text{PPL} = e^{\mathcal{L}}
+$$
+
+Perplexity is the _effective branching factor_: on average, how many equally likely choices does the model think there are at each step?
+
+| Loss $\mathcal{L}$ | Perplexity | Interpretation |
+| --- | --- | --- |
+| 0.00 | 1.0 | Perfect — only one plausible token |
+| 0.69 | 2.0 | Two equally likely tokens |
+| 2.30 | 10.0 | Ten equally likely tokens |
+| 4.61 | 100 | Random guess over 100 tokens |
+| 6.91 | 1000 | Very confused |
+
+GPT-2 (1.5B) reached ~18 perplexity on WikiText-103.
+GPT-4 is estimated well below 5 on standard benchmarks.
+Early training starts around 100–1000; loss curves falling to perplexity ~10–20 signals the model has learned real language structure.
+
+::: {.callout-note}
+*Math Minute — Why Exponential?*
+
+If a model assigns uniform probability $1/k$ to each of $k$ options, the cross-entropy is $-\log(1/k) = \log k$.
+Exponentiating: $e^{\log k} = k$.
+So perplexity of $k$ means the model behaves like a uniform distribution over $k$ choices.
+Perplexity 1 = model is certain.
+Perplexity $|V|$ ≈ 50,000 = model knows nothing.
+:::
 
 ### Teacher Forcing
 

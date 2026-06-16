@@ -2,7 +2,6 @@
 
 Mean and variance summarize a vector of numbers.
 They tell us where the values are centered and how spread out they are.
-Layer normalization uses these ideas in every transformer block: it centers an activation vector around zero and rescales it to a predictable size.
 
 ### Mean
 
@@ -84,12 +83,11 @@ $$
 \sigma = \sqrt{4.0} = 2.0
 $$
 
-Layer normalization uses this value to divide each centered activation by its standard deviation.
 @fig-ch02-mean-variance illustrates the example data with mean and standard deviation marked.
 
 ```{python}
 #| label: fig-ch02-mean-variance
-#| fig-cap: "Data points with mean and standard deviation — layer normalization centers and rescales like this"
+#| fig-cap: "Data points with mean and standard deviation"
 #| echo: false
 
 import matplotlib.pyplot as plt

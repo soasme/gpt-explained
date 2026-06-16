@@ -1,9 +1,5 @@
 # Positional Encoding — Giving Order to Meaning {#sec-ch05-positional-encoding}
 
-> _"A body without positument is everywhere and therefore nowhere."_
->
-> — Isaac Newton
-
 After the embedding step we have a matrix $X \in \mathbb{R}^{T\times d}$.
 Each row `X[t]` is a vector representing token `t`.
 But here is the problem: attention processes all tokens *simultaneously* — there is no inherent notion of "token 3 comes after token 2."

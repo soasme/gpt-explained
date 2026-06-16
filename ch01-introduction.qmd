@@ -1,9 +1,5 @@
 # Introduction {#sec-ch01-introduction}
 
-> _"You don't understand anything until you learn it more than one way."_
->
-> — Marvin Minsky
-
 This chapter answers two questions before you touch any math or code:
 what is GPT, and how does it work?
 We keep the language concrete and the diagrams simple.

@@ -1,9 +1,5 @@
 # Embeddings — Numbers to Meaning {#sec-ch04-embeddings}
 
-> _"Every word, once geometrified, ceases to be a label and becomes a direction."_
->
-> — Jorge Luis Borges
-
 We have token IDs: `[10, 3, 4, 8]`.
 They are integers.
 The model cannot do useful math on raw integers — adding `10 + 3` gives `13`, which means nothing.

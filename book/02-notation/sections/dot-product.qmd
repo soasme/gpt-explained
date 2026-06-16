@@ -2,7 +2,6 @@
 
 The *dot product* (also called inner product) combines two vectors into one scalar.
 It is the basic operation for asking, "how aligned are these two vectors?"
-In GPT, attention scores are dot products between query and key vectors (Chapter 6).
 
 ### Dot Product
 

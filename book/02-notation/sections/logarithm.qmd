@@ -7,10 +7,7 @@ e^{\ln x} = x \quad \text{and} \quad \ln(e^x) = x
 $$
 
 These functions convert between additive and multiplicative scales.
-That makes them useful when probabilities become losses and when losses become perplexity.
-The loss function later in the book uses $\ln p$, where $p$ is the probability assigned to the correct next token (Chapter 11).
-Since probabilities are between $0$ and $1$, their logarithms are zero or negative.
-That is why cross-entropy uses a negative sign.
+They are useful whenever growth, decay, ratios, or repeated multiplication need to be written on an additive scale.
 
 ### Natural Exponential
 
@@ -76,7 +73,8 @@ $$
 \ln(0.1) \approx -2.303
 $$
 
-As the probability gets smaller, the negative log gets larger, as shown in @fig-ch02-log-loss.
+For inputs between $0$ and $1$, the natural logarithm is negative.
+Negating it gives a positive value that grows as the input moves closer to zero, as shown in @fig-ch02-negative-log.
 For example:
 
 $$
@@ -84,8 +82,8 @@ $$
 $$
 
 ```{python}
-#| label: fig-ch02-log-loss
-#| fig-cap: "The natural log and its negative — as probability shrinks toward zero, the loss grows steeply"
+#| label: fig-ch02-negative-log
+#| fig-cap: "The natural log and its negative over inputs between 0 and 1"
 #| echo: false
 
 import matplotlib.pyplot as plt
@@ -93,23 +91,23 @@ import numpy as np
 
 DARK='#222222'; BLUE='#1177BB'; RED='#CC2222'; MONO='monospace'
 
-p = np.linspace(0.01, 1.0, 300)
-ln_p = np.log(p)
-neg_ln_p = -np.log(p)
+x = np.linspace(0.01, 1.0, 300)
+ln_x = np.log(x)
+neg_ln_x = -np.log(x)
 
 fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4), facecolor='white')
 
 ax1.set_facecolor('white')
-ax1.plot(p, ln_p, color=BLUE, lw=2.5)
+ax1.plot(x, ln_x, color=BLUE, lw=2.5)
 ax1.axhline(0, color=DARK, lw=0.5, alpha=0.4)
 ax1.set_xlabel('x', fontfamily=MONO, fontsize=12)
 ax1.set_ylabel('ln(x)', fontfamily=MONO, fontsize=12)
 for sp in ['top','right']: ax1.spines[sp].set_visible(False)
 
 ax2.set_facecolor('white')
-ax2.plot(p, neg_ln_p, color=RED, lw=2.5)
-ax2.set_xlabel('probability p', fontfamily=MONO, fontsize=12)
-ax2.set_ylabel('-ln(p)  [loss]', fontfamily=MONO, fontsize=12)
+ax2.plot(x, neg_ln_x, color=RED, lw=2.5)
+ax2.set_xlabel('x', fontfamily=MONO, fontsize=12)
+ax2.set_ylabel('-ln(x)', fontfamily=MONO, fontsize=12)
 for sp in ['top','right']: ax2.spines[sp].set_visible(False)
 
 plt.tight_layout()

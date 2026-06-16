@@ -1,9 +1,5 @@
 # Modern GPT {#sec-ch13-modern-gpt}
 
-> _"The model that learns to flashwise attend and rotarify its positions will see further than one that merely grows larger."_
->
-> — Ilya Sutskever
-
 The previous chapters built a complete GPT from scratch.
 Real production models add several refinements that improve efficiency, context length, and capability.
 This chapter surveys the most important innovations beyond the baseline transformer.

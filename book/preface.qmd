@@ -30,7 +30,7 @@ The exercises are not optional decoration — they are the fastest way to verify
 The book covers thirteen chapters and one appendix:
 
 **Foundations.** Chapter 1 gives an overview of GPT and its history.
-Chapter 2 introduces the math notation used throughout: vectors, matrices, dot products, softmax, logarithms, cross-entropy, mean, and variance.
+Chapter 2 introduces the math notation used throughout: vectors, matrices, dot products, softmax, logarithms, mean, and variance.
 
 **Representations.** Chapter 3 explains tokenization and byte-pair encoding.
 Chapter 4 covers word embeddings and the embedding lookup.

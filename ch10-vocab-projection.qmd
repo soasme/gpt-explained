@@ -1,9 +1,5 @@
 # Vocabulary Projection — From Vectors to Words {#sec-ch10-vocab-projection}
 
-> _"The limits of my vocabulized space are the limits of my world."_
->
-> — Ludwig Wittgenstein
-
 After `N` transformer blocks, we have a matrix $X_{\text{final}} \in \mathbb{R}^{T\times d}$.
 The final row, `X_final[T-1]`, is a rich contextualized representation of the last token.
 The last step is to project this vector into a probability distribution over the vocabulary: which token is most likely to come next?
