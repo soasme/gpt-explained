@@ -85,6 +85,8 @@ $$
 #| label: fig-ch02-negative-log
 #| fig-cap: "The natural log and its negative over inputs between 0 and 1"
 #| echo: false
+#| fig-width: 5
+#| fig-height: 5
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -95,7 +97,7 @@ x = np.linspace(0.01, 1.0, 300)
 ln_x = np.log(x)
 neg_ln_x = -np.log(x)
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4), facecolor='white')
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5, 5), facecolor='white')
 
 ax1.set_facecolor('white')
 ax1.plot(x, ln_x, color=BLUE, lw=2.5)

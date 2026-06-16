@@ -21,6 +21,15 @@ The notation $\mathbb{R}$ means "the set of all real numbers."
 So $\mathbb{R}^n$ means "all vectors with $n$ real-number components."
 :::
 
+::: {.callout-note}
+*Math Minute -- Vector Shape and Indexing*
+
+The shape of a vector is its length.
+If $v \in \mathbb{R}^n$, then $v$ has shape $n$.
+The notation $v_i$ means "entry $i$ of vector $v$."
+The notation $v_n$ means "the last entry when the vector has length $n$."
+:::
+
 In Python, the book represents a vector as a list of floating-point numbers:
 
 <!-- snippet: src/python/common.py#vector_type -->
@@ -32,6 +41,36 @@ Vector = list[float]
 This simple representation is enough for the small implementations in the book.
 Packages like NumPy provide their own vector type, usually as an `ndarray`, with faster arithmetic, compact memory layout, and many built-in operations.
 For larger numerical programs, you would usually use NumPy, PyTorch, JAX, or another tensor library instead.
+
+```{python}
+#| label: fig-ch02-vector-indexing
+#| fig-cap: "Vector shape and indexing"
+#| echo: false
+#| fig-width: 5
+#| fig-height: 2.4
+
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+
+DARK='#222222'; BLUE='#1177BB'; MONO='monospace'
+
+values = [3.0, 4.0, -1.0, 2.0]
+fig, ax = plt.subplots(figsize=(5, 2.4), facecolor='white')
+ax.set_facecolor('white'); ax.axis('off')
+ax.set_xlim(0, 5); ax.set_ylim(0, 2)
+
+for i, value in enumerate(values):
+    rect = mpatches.Rectangle((0.6 + i, 0.8), 0.85, 0.45,
+                              linewidth=1.2, edgecolor=BLUE, facecolor='white')
+    ax.add_patch(rect)
+    ax.text(1.025+i, 1.025, f'{value:g}', ha='center', va='center',
+            fontfamily=MONO, fontsize=10, color=DARK)
+    ax.text(1.025+i, 0.55, f'v{i+1}', ha='center', va='center',
+            fontfamily=MONO, fontsize=9, color=BLUE)
+ax.text(0.6, 1.55, 'v has shape 4', fontfamily=MONO, fontsize=10, color=DARK)
+plt.tight_layout()
+plt.show()
+```
 
 ### Vector Addition
 
@@ -137,13 +176,15 @@ $$
 #| label: fig-ch02-vectors
 #| fig-cap: "Vector addition and norms in 2D"
 #| echo: false
+#| fig-width: 5
+#| fig-height: 5
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 DARK='#222222'; BLUE='#1177BB'; GREEN='#228811'; RED='#CC2222'; MONO='monospace'
 
-fig, ax = plt.subplots(figsize=(7, 7), facecolor='white')
+fig, ax = plt.subplots(figsize=(5, 5), facecolor='white')
 ax.set_facecolor('white')
 ax.axhline(0, color=DARK, lw=0.5, alpha=0.3)
 ax.axvline(0, color=DARK, lw=0.5, alpha=0.3)

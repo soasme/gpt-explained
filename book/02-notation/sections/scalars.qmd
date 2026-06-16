@@ -1,0 +1,60 @@
+## Scalars
+
+A *scalar* is a single number.
+Examples include $-2$, $0$, $0.5$, and $3.14$.
+
+Scalars can be added, subtracted, multiplied, divided, squared, and compared.
+They are the simplest objects in this chapter.
+Vectors and matrices are built by arranging scalars into larger shapes.
+
+::: {.callout-note}
+*Math Minute -- Variable*
+
+A variable is a name for a value.
+In $x = 3.0$, the variable is $x$ and its value is $3.0$.
+In formulas, variables let us describe a whole pattern without writing a separate equation for every possible number.
+:::
+
+### Scalar Operations
+
+For two scalars $a = 3.0$ and $b = 2.0$:
+
+$$
+a + b = 5.0
+$$
+
+$$
+ab = 6.0
+$$
+
+$$
+a^2 = 9.0
+$$
+
+```{python}
+#| label: fig-ch02-scalars
+#| fig-cap: "Scalar operations combine individual numbers"
+#| echo: false
+#| fig-width: 5
+#| fig-height: 3.5
+
+import matplotlib.pyplot as plt
+
+DARK='#222222'; BLUE='#1177BB'; GREEN='#228811'; RED='#CC2222'; MONO='monospace'
+
+labels = ['a', 'b', 'a+b', 'ab', 'a^2']
+values = [3.0, 2.0, 5.0, 6.0, 9.0]
+colors = [BLUE, GREEN, RED, RED, RED]
+
+fig, ax = plt.subplots(figsize=(5, 3.5), facecolor='white')
+ax.set_facecolor('white')
+bars = ax.bar(labels, values, color=colors, width=0.55)
+ax.set_ylabel('value', fontfamily=MONO, fontsize=10)
+ax.set_ylim(0, 10)
+for bar, value in zip(bars, values):
+    ax.text(bar.get_x()+bar.get_width()/2, value+0.2, f'{value:.1f}',
+            ha='center', fontfamily=MONO, fontsize=9, color=DARK)
+for sp in ['top','right']: ax.spines[sp].set_visible(False)
+plt.tight_layout()
+plt.show()
+```

@@ -11,6 +11,50 @@ Matrix = list[list[float]]
 ```
 <!-- /snippet -->
 
+::: {.callout-note}
+*Math Minute -- Matrix Shape and Indexing*
+
+A matrix with $m$ rows and $n$ columns has shape $m \times n$.
+The notation $A \in \mathbb{R}^{m \times n}$ means every entry of $A$ is a real number, and $A$ has $m$ rows and $n$ columns.
+The notation $A_{ij}$ means "the entry in row $i$, column $j$ of matrix $A$."
+:::
+
+```{python}
+#| label: fig-ch02-matrix-indexing
+#| fig-cap: "Matrix shape and indexing"
+#| echo: false
+#| fig-width: 5
+#| fig-height: 3.6
+
+import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
+
+DARK='#222222'; BLUE='#1177BB'; RED='#CC2222'; MONO='monospace'
+
+data = [[1, 2, 3], [4, 5, 6]]
+fig, ax = plt.subplots(figsize=(5, 3.6), facecolor='white')
+ax.set_facecolor('white'); ax.axis('off')
+ax.set_xlim(0, 5); ax.set_ylim(0, 3.5)
+
+cell = 0.65
+ox, oy = 1.35, 2.35
+for i, row in enumerate(data):
+    for j, value in enumerate(row):
+        highlight = (i, j) == (1, 2)
+        rect = mpatches.Rectangle((ox+j*cell, oy-i*cell-cell), cell, cell,
+                                  linewidth=1.2, edgecolor=RED if highlight else BLUE,
+                                  facecolor='#FFE0D0' if highlight else 'white')
+        ax.add_patch(rect)
+        ax.text(ox+j*cell+cell/2, oy-i*cell-cell/2, str(value),
+                ha='center', va='center', fontfamily=MONO, fontsize=11, color=DARK)
+ax.text(0.35, 1.7, 'rows', rotation=90, fontfamily=MONO, fontsize=10, color=DARK)
+ax.text(1.65, 0.65, 'columns', fontfamily=MONO, fontsize=10, color=DARK)
+ax.text(0.9, 3.0, 'A has shape 2 x 3', fontfamily=MONO, fontsize=10, color=DARK)
+ax.text(0.9, 0.25, 'A[2,3] = 6', fontfamily=MONO, fontsize=10, color=RED)
+plt.tight_layout()
+plt.show()
+```
+
 ### Transpose
 
 Transposing a matrix swaps rows and columns.
@@ -101,6 +145,8 @@ $$
 #| label: fig-ch02-matrix-multiply
 #| fig-cap: "Matrix multiplication: each output cell is a dot product of a row with a column"
 #| echo: false
+#| fig-width: 5.5
+#| fig-height: 4
 
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
@@ -122,26 +168,26 @@ def draw_matrix(ax, data, ox, oy, cell=0.7, color=DARK, highlight=None, hlcolor=
             ax.text(ox+j*cell+cell/2, oy-i*cell-cell/2, str(data[i][j]),
                     ha='center', va='center', fontfamily=MONO, fontsize=13, color=DARK)
 
-fig, ax = plt.subplots(figsize=(10, 4), facecolor='white')
+fig, ax = plt.subplots(figsize=(5.5, 4), facecolor='white')
 ax.set_facecolor('white'); ax.axis('off')
-ax.set_xlim(0, 10); ax.set_ylim(-1, 4)
+ax.set_xlim(0, 6.4); ax.set_ylim(-1, 4)
 
-draw_matrix(ax, A_vals, 0.5, 3.5, highlight={(0,0),(0,1)}, hlcolor='#DDEEFF', color=BLUE)
-ax.text(2.3, 1.5, 'A', ha='center', fontfamily=MONO, fontsize=14, color=BLUE)
+draw_matrix(ax, A_vals, 0.2, 3.5, highlight={(0,0),(0,1)}, hlcolor='#DDEEFF', color=BLUE)
+ax.text(0.9, 1.5, 'A', ha='center', fontfamily=MONO, fontsize=12, color=BLUE)
 
-ax.text(2.0, 1.7, 'x', ha='center', fontfamily=MONO, fontsize=16, color=DARK)
+ax.text(1.75, 1.7, 'x', ha='center', fontfamily=MONO, fontsize=14, color=DARK)
 
-draw_matrix(ax, B_vals, 2.5, 3.5, highlight={(0,0),(1,0)}, hlcolor='#DDFFD4', color=GREEN)
-ax.text(3.7, 1.5, 'B', ha='center', fontfamily=MONO, fontsize=14, color=GREEN)
+draw_matrix(ax, B_vals, 2.0, 3.5, highlight={(0,0),(1,0)}, hlcolor='#DDFFD4', color=GREEN)
+ax.text(2.7, 1.5, 'B', ha='center', fontfamily=MONO, fontsize=12, color=GREEN)
 
-ax.text(4.4, 1.7, '=', ha='center', fontfamily=MONO, fontsize=18, color=DARK)
+ax.text(3.35, 1.7, '=', ha='center', fontfamily=MONO, fontsize=16, color=DARK)
 
-draw_matrix(ax, C_vals, 5.0, 3.5, highlight={(0,0)}, hlcolor='#FFE0D0', color=RED)
-ax.text(6.2, 1.5, 'C', ha='center', fontfamily=MONO, fontsize=14, color=RED)
+draw_matrix(ax, C_vals, 3.65, 3.5, highlight={(0,0)}, hlcolor='#FFE0D0', color=RED)
+ax.text(4.35, 1.5, 'C', ha='center', fontfamily=MONO, fontsize=12, color=RED)
 
-ax.text(5.0, -0.5,
-        'C[0][0] = row 0 of A  dot  col 0 of B = 1x5 + 2x7 = 19',
-        fontfamily=MONO, fontsize=10, color=DARK)
+ax.text(0.2, -0.45,
+        'C[1,1] = 1x5 + 2x7 = 19',
+        fontfamily=MONO, fontsize=9, color=DARK)
 
 plt.tight_layout()
 plt.show()

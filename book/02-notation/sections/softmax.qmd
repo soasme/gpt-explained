@@ -61,6 +61,8 @@ After this step, each row sums to 1.
 #| label: fig-ch02-softmax
 #| fig-cap: "Softmax turns logits into probabilities — higher values dominate, none reach zero"
 #| echo: false
+#| fig-width: 5
+#| fig-height: 5
 
 import matplotlib.pyplot as plt
 import numpy as np
@@ -71,7 +73,7 @@ z = np.array([2.0, 1.0, 0.1])
 e = np.exp(z - z.max())
 probs = e / e.sum()
 
-fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 4), facecolor='white')
+fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(5, 5), facecolor='white')
 labels = ['z=2.0', 'z=1.0', 'z=0.1']
 x = np.arange(3)
 

@@ -1,0 +1,84 @@
+## Derivative
+
+A *derivative* measures how fast one value changes as another value changes.
+For a function $f(x)$, the derivative is written:
+
+$$
+\frac{df}{dx}
+$$
+
+This reads as "the derivative of $f$ with respect to $x$."
+It tells us the slope of the function at a particular input.
+
+::: {.callout-note}
+*Math Minute -- Function*
+
+A function maps an input to an output.
+If $f(x) = x^2$, then $f(3) = 9$.
+The input is $x$ and the output is $f(x)$.
+:::
+
+::: {.callout-note}
+*Math Minute -- Slope*
+
+Slope means "change in vertical value divided by change in horizontal value."
+Between two points, slope is:
+$$
+\frac{\Delta y}{\Delta x}
+$$
+A derivative is the slope when the two points get infinitely close together.
+:::
+
+### Example
+
+For:
+
+$$
+f(x) = x^2
+$$
+
+the derivative is:
+
+$$
+\frac{df}{dx} = 2x
+$$
+
+At $x = 3$, the slope is:
+
+$$
+2x = 2 \cdot 3 = 6
+$$
+
+```{python}
+#| label: fig-ch02-derivative
+#| fig-cap: "A derivative is the local slope of a function"
+#| echo: false
+#| fig-width: 5
+#| fig-height: 3.5
+
+import matplotlib.pyplot as plt
+import numpy as np
+
+DARK='#222222'; BLUE='#1177BB'; RED='#CC2222'; MONO='monospace'
+
+x = np.linspace(-1, 4, 300)
+y = x ** 2
+x0 = 2.0
+y0 = x0 ** 2
+slope = 2 * x0
+tangent_x = np.linspace(0.8, 3.2, 40)
+tangent_y = y0 + slope * (tangent_x - x0)
+
+fig, ax = plt.subplots(figsize=(5, 3.5), facecolor='white')
+ax.set_facecolor('white')
+ax.plot(x, y, color=BLUE, lw=2.5, label='f(x)=x^2')
+ax.plot(tangent_x, tangent_y, color=RED, lw=2.0, label='slope at x=2')
+ax.scatter([x0], [y0], color=RED, s=60, zorder=3)
+ax.text(x0+0.1, y0+0.5, 'df/dx = 4', fontfamily=MONO, fontsize=9, color=RED)
+ax.set_xlabel('x', fontfamily=MONO, fontsize=10)
+ax.set_ylabel('f(x)', fontfamily=MONO, fontsize=10)
+ax.legend(fontsize=9, prop={'family': MONO})
+for sp in ['top','right']: ax.spines[sp].set_visible(False)
+plt.tight_layout()
+plt.show()
+```

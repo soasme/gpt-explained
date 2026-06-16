@@ -4,11 +4,14 @@ This chapter defined a compact mathematical toolkit.
 
 | Concept | Main idea |
 | --- | --- |
+| Scalar | A single number |
+| Capital Sigma/Pi | Compact notation for repeated addition or multiplication |
 | Vector | An ordered list of numbers |
 | Dot product | A scalar measure of alignment between two vectors |
 | Matrix multiply | Row-by-column dot products arranged into a new matrix |
 | Softmax | A way to convert real-valued scores into probabilities |
 | Logarithm | The inverse of exponentiation |
 | Mean/Variance | Measurements of center and spread |
+| Derivative | The local rate of change of a function |
 
 Together, these tools cover the notation and arithmetic used throughout the examples in this chapter.

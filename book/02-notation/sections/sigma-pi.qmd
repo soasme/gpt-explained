@@ -1,0 +1,92 @@
+## Capital Sigma and Capital Pi
+
+Capital sigma $\sum$ means "add a sequence of terms."
+Capital pi $\prod$ means "multiply a sequence of terms."
+
+::: {.callout-note}
+*Math Minute -- Index Variable*
+
+An index variable counts through positions in a sequence.
+In $\sum_{i=1}^{4} x_i$, the index variable is $i$.
+It starts at $1$, then takes the values $2$, $3$, and $4$.
+:::
+
+### Capital Sigma: Sum
+
+The expression:
+
+$$
+\sum_{i=1}^{4} x_i
+$$
+
+means:
+
+$$
+x_1 + x_2 + x_3 + x_4
+$$
+
+For $x = [2, 3, 5, 7]$:
+
+$$
+\sum_{i=1}^{4} x_i = 2 + 3 + 5 + 7 = 17
+$$
+
+::: {.callout-note}
+*Math Minute -- Subscript*
+
+A subscript is the small label written below and to the right of a symbol.
+In $x_i$, the subscript $i$ selects one entry from the sequence $x$.
+So $x_1$ means "the first entry of $x$."
+:::
+
+### Capital Pi: Product
+
+The expression:
+
+$$
+\prod_{i=1}^{4} x_i
+$$
+
+means:
+
+$$
+x_1 x_2 x_3 x_4
+$$
+
+For $x = [2, 3, 5, 7]$:
+
+$$
+\prod_{i=1}^{4} x_i = 2 \cdot 3 \cdot 5 \cdot 7 = 210
+$$
+
+```{python}
+#| label: fig-ch02-sigma-pi
+#| fig-cap: "Capital sigma adds terms; capital pi multiplies terms"
+#| echo: false
+#| fig-width: 5
+#| fig-height: 3.5
+
+import matplotlib.pyplot as plt
+
+DARK='#222222'; BLUE='#1177BB'; GREEN='#228811'; MONO='monospace'
+
+terms = [2, 3, 5, 7]
+x = range(len(terms))
+
+fig, ax = plt.subplots(figsize=(5, 3.5), facecolor='white')
+ax.set_facecolor('white')
+ax.scatter(x, terms, color=BLUE, s=90, zorder=3, label='terms')
+for i, value in enumerate(terms):
+    ax.text(i, value+0.35, f'x{i+1}={value}', ha='center', fontfamily=MONO, fontsize=9)
+ax.plot(x, terms, color=BLUE, lw=1.2, alpha=0.35)
+ax.text(0.02, 0.95, 'sum = 17', transform=ax.transAxes,
+        fontfamily=MONO, fontsize=10, color=DARK, va='top')
+ax.text(0.02, 0.85, 'product = 210', transform=ax.transAxes,
+        fontfamily=MONO, fontsize=10, color=DARK, va='top')
+ax.set_xticks(list(x)); ax.set_xticklabels(['1', '2', '3', '4'], fontfamily=MONO)
+ax.set_xlabel('index i', fontfamily=MONO, fontsize=10)
+ax.set_ylabel('term value', fontfamily=MONO, fontsize=10)
+for sp in ['top','right']: ax.spines[sp].set_visible(False)
+plt.tight_layout()
+plt.show()
+```

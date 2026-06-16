@@ -3,6 +3,10 @@
 This chapter is a compact reference for the core math used at the start of the book.
 It focuses on notation, definitions, and small numerical examples.
 
+{{< include book/02-notation/sections/scalars.qmd >}}
+
+{{< include book/02-notation/sections/sigma-pi.qmd >}}
+
 {{< include book/02-notation/sections/vectors.qmd >}}
 
 {{< include book/02-notation/sections/dot-product.qmd >}}
@@ -14,5 +18,7 @@ It focuses on notation, definitions, and small numerical examples.
 {{< include book/02-notation/sections/logarithm.qmd >}}
 
 {{< include book/02-notation/sections/mean-variance.qmd >}}
+
+{{< include book/02-notation/sections/derivative.qmd >}}
 
 {{< include book/02-notation/sections/takeaways.qmd >}}
