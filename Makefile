@@ -22,6 +22,7 @@ snippets:
 
 images:
 	bash src/matplotlib/render_all.sh
+	bash src/dot/render_all.sh
 
 publish: book
 	git -C _book init

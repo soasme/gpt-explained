@@ -1,0 +1,42 @@
+digraph tokenization_pipeline {
+  graph [
+    rankdir=TB,
+    bgcolor="white",
+    margin=0.15,
+    nodesep=0.35,
+    ranksep=0.45
+  ];
+  node [
+    shape=box,
+    style="rounded",
+    fontname="Courier",
+    fontsize=13,
+    color="#1177BB",
+    penwidth=1.5,
+    margin="0.14,0.09"
+  ];
+  edge [
+    color="#CC8800",
+    penwidth=2,
+    arrowsize=0.8
+  ];
+
+  text [
+    label="\"the cat sat on the mat\"",
+    color="#222222"
+  ];
+  tokenizer [
+    label="tokenizer",
+    color="#CC8800"
+  ];
+  ids [
+    label="[1, 5, 12, 8, 1, 7]",
+    color="#228811"
+  ];
+  note [
+    label="\"the\" appears twice -> same ID = 1",
+    color="#DD6600"
+  ];
+
+  text -> tokenizer -> ids -> note;
+}

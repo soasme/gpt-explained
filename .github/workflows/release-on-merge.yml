@@ -41,6 +41,7 @@ jobs:
       run: |
         mkdir -p images
         .venv/bin/python src/matplotlib/render_all.py
+        bash src/dot/render_all.sh
 
     - name: Run code examples
       run: .venv/bin/python src/python/run_book_code.py
@@ -50,6 +51,8 @@ jobs:
 
     - name: Build release assets
       run: quarto render
+      env:
+        MPLBACKEND: Agg
 
     - name: Compute tag name
       id: compute-tag

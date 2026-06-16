@@ -1,0 +1,39 @@
+digraph gpt_pipeline {
+  graph [
+    rankdir=TB,
+    bgcolor="white",
+    margin=0.2,
+    nodesep=0.4,
+    ranksep=0.5
+  ];
+  node [
+    shape=box,
+    style="rounded,filled",
+    fontname="Courier",
+    fontsize=12,
+    color="#1177BB",
+    fillcolor="#E8F4FD",
+    penwidth=1.5,
+    margin="0.18,0.10"
+  ];
+  edge [
+    color="#CC8800",
+    penwidth=2,
+    arrowsize=0.8
+  ];
+
+  input     [label="Your text\n\"the cat sat\"",
+             fillcolor="#F0F8E8", color="#228811"];
+  tokenizer [label="Step 1  Tokenizer\n-> integer IDs"];
+  embedding [label="Step 2  Embedding\n-> word vectors"];
+  positional[label="Step 3  Positional Encoding\n-> vectors with position"];
+  transformer[label="Step 4  Transformer Blocks x N\n(Attention + Feed-Forward)",
+              fillcolor="#FFF8E8", color="#CC8800"];
+  projection[label="Step 5  Vocab Projection\n-> scores for every word"];
+  softmax   [label="Step 6  Softmax\n-> probabilities"];
+  output    [label="Next word!",
+             fillcolor="#F0F8E8", color="#228811"];
+
+  input -> tokenizer -> embedding -> positional -> transformer
+        -> projection -> softmax -> output;
+}
