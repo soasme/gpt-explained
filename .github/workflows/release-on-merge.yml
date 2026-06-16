@@ -18,7 +18,7 @@ jobs:
     - name: Install system dependencies
       run: |
         sudo apt-get update -q
-        sudo apt-get install -y --no-install-recommends graphviz
+        sudo apt-get install -y --no-install-recommends graphviz librsvg2-bin
 
     - name: Set up Quarto
       uses: quarto-dev/quarto-actions/setup@v2
