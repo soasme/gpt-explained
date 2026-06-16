@@ -13,19 +13,3 @@ In the attention mechanism:
 - *Value (V):* "What information can I give?" — produced from every token in the sequence.
 
 The output for each token is a *weighted sum* of all value vectors, where the weights come from comparing that token's query against every token's key.
-
-::: {.callout-note}
-*Math Minute — Softmax*
-
-`softmax(z)` turns a vector of raw scores into a probability distribution.
-For vector $z = [z_1, z_2, \ldots, z_n]$:
-
-[source]
-----
-softmax(z)ᵢ = exp(zᵢ) / Σⱼ exp(zⱼ)
-----
-
-Output values are all positive and sum to 1.
-Large scores get amplified; small scores get suppressed.
-The largest score "wins" most of the weight.
-:::

@@ -34,6 +34,21 @@ def hstack(matrices: Sequence[Matrix]) -> Matrix:
 `softmax` converts a vector of raw scores into a probability distribution.
 We subtract the maximum value before exponentiating to prevent overflow.
 
+::: {.callout-note}
+*Math Minute — Softmax*
+
+`softmax(z)` turns a vector of raw scores into a probability distribution.
+For vector $z = [z_1, z_2, \ldots, z_n]$:
+
+$$
+\operatorname{softmax}(z)_i = \frac{\exp(z_i)}{\sum_j \exp(z_j)}
+$$
+
+Output values are all positive and sum to 1.
+Large scores get amplified; small scores get suppressed.
+The largest score receives most of the weight.
+:::
+
 <!-- snippet: src/python/common.py#softmax -->
 ```python
 # tag::softmax_vector[]
