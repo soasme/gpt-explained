@@ -1,16 +1,18 @@
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 import numpy as np
 
 DARK='#222222'; BLUE='#1177BB'; GREEN='#228811'; RED='#CC2222'; MONO='monospace'
 
 def dot_product():
-    fig, ax = plt.subplots(figsize=(7, 6), facecolor='white')
+    fig, ax = plt.subplots(figsize=(5, 4.5), facecolor='white')
     ax.set_facecolor('white')
     ax.axhline(0, color=DARK, lw=0.5, alpha=0.3)
     ax.axvline(0, color=DARK, lw=0.5, alpha=0.3)
     ax.set_xlim(-1, 5); ax.set_ylim(-1, 5)
     ax.tick_params(labelsize=9)
-    for sp in ['top','right']: ax.spines[sp].set_visible(False)
+    for sp in ['top','right']:
+        ax.spines[sp].set_visible(False)
 
     u = np.array([3.0, 2.0])
     v = np.array([4.0, 1.0])
@@ -32,6 +34,15 @@ def dot_product():
     ax.text(proj[0]+0.1, proj[1]-0.25,
             f'u dot v = {np.dot(u,v):.0f}', fontfamily=MONO, fontsize=11, color=RED)
 
+    angle_u = np.degrees(np.arctan2(u[1], u[0]))
+    angle_v = np.degrees(np.arctan2(v[1], v[0]))
+    theta = mpatches.Arc((0, 0), 1.2, 1.2, theta1=angle_v, theta2=angle_u,
+                         color=DARK, lw=1.2)
+    ax.add_patch(theta)
+    theta_mid = np.radians((angle_u + angle_v) / 2)
+    ax.text(0.62*np.cos(theta_mid), 0.62*np.sin(theta_mid),
+            r'$\theta$', ha='center', va='center', fontfamily=MONO, fontsize=12, color=DARK)
+
     sq = 0.2
     perp = np.array([-v_unit[1], v_unit[0]]) * sq
     corner = proj + perp
@@ -39,7 +50,6 @@ def dot_product():
             [proj[1], corner[1], corner[1]+v_unit[1]*sq],
             color=DARK, lw=1.0, alpha=0.5)
 
-    ax.set_title('Dot product as scalar projection', fontfamily=MONO, fontsize=12, color=DARK)
     plt.tight_layout()
     plt.savefig('images/ch02_dot_product.png', dpi=150, bbox_inches='tight', facecolor='white')
     plt.close()

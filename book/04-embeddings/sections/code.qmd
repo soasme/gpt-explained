@@ -1,8 +1,7 @@
 ## The Code: Embedding in Python
 
-Before writing a single line of embedding logic, we name what a matrix _is_.
-A matrix is a rows-by-cols grid of numbers.
-We store it as a flat vector in row-major order, but nothing above this interface will ever need to know that.
+Chapter 3 already showed how text becomes token IDs.
+Here we start from those IDs and look up vectors.
 
 <!-- snippet: src/python/common.py#make_matrix -->
 ```python
@@ -15,7 +14,8 @@ def shape(matrix: Matrix) -> tuple[int, int]:
 ```
 <!-- /snippet -->
 
-`random_matrix` uses Xavier initialization: it scales the random values by $\sqrt{2/(fan_{in}+fan_{out})}$, which keeps activations from exploding or vanishing.
+This helper creates a rows-by-cols grid of numbers.
+The embedding matrix uses the same matrix abstraction introduced earlier, so chapter 4 does not need a new data structure.
 
 <!-- snippet: src/python/common.py#random_matrix -->
 ```python
@@ -30,7 +30,8 @@ def random_matrix(
 ```
 <!-- /snippet -->
 
-The embedding of token $i$ is literally row $i$ of the matrix — a table lookup.
+`random_matrix` fills that grid with small random values.
+With the default Xavier scale, the random values are sized by $\sqrt{2/(fan_{in}+fan_{out})}$ so activations are less likely to explode or vanish.
 
 <!-- snippet: src/python/common.py#embed_token -->
 ```python
@@ -39,7 +40,8 @@ def embed_token(embedding: Matrix, token_id: int) -> Vector:
 ```
 <!-- /snippet -->
 
-A sequence of $T$ token IDs calls for $T$ row lookups stacked into a $[T \times d]$ matrix.
+The embedding of token $i$ is row $i$ of the matrix.
+This is a table lookup, not a calculation over the token ID itself.
 
 <!-- snippet: src/python/common.py#embed_sequence -->
 ```python
@@ -48,48 +50,8 @@ def embed_sequence(embedding: Matrix, token_ids: Sequence[int]) -> Matrix:
 ```
 <!-- /snippet -->
 
-The dot product $u \cdot v = \sum_i u_i v_i$ measures geometric alignment.
-
-<!-- snippet: src/python/common.py#vectors -->
-```python
-# tag::vector_ops[]
-# tag::add_vectors[]
-def add_vectors(left: Vector, right: Vector) -> Vector:
-    return [a + b for a, b in zip(left, right)]
-# end::add_vectors[]
-
-
-# tag::scale_vector[]
-def scale_vector(vector: Vector, scalar: float) -> Vector:
-    return [scalar * value for value in vector]
-# end::scale_vector[]
-
-
-# tag::vector_norm[]
-def vector_norm(vector: Sequence[float]) -> float:
-    return math.sqrt(sum(value * value for value in vector))
-# end::vector_norm[]
-
-
-# tag::unit_vector[]
-def unit_vector(vector: Vector) -> Vector:
-    return scale_vector(vector, 1.0 / vector_norm(vector))
-# end::unit_vector[]
-# end::vector_ops[]
-
-
-# tag::dot[]
-def dot(left: Sequence[float], right: Sequence[float]) -> float:
-    return sum(a * b for a, b in zip(left, right))
-# end::dot[]
-
-
-# tag::cosine_similarity[]
-def cosine_similarity(left: Sequence[float], right: Sequence[float]) -> float:
-    return dot(left, right) / (vector_norm(left) * vector_norm(right))
-# end::cosine_similarity[]
-```
-<!-- /snippet -->
+A sequence of $T$ token IDs becomes $T$ row lookups stacked into a $[T \times d]$ matrix.
+The vector helpers used to compare rows are the same ones from @sec-ch02-notation.
 
 *Demo.*
 Run with `python3 src/python/chapter_demos.py`:
@@ -107,6 +69,9 @@ def chapter_04(seed: int = 4) -> dict[str, object]:
     }
 ```
 <!-- /snippet -->
+
+The demo starts with token IDs, creates an embedding table, and returns the embedded sequence shape.
+It also compares two embedding rows with dot product and cosine similarity, reusing the chapter 2 helpers instead of repeating them here.
 
 Figure @fig-ch04-code-embedding-lookup shows how each token ID indexes into one row of the embedding weight matrix.
 

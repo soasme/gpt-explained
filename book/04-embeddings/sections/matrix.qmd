@@ -44,3 +44,12 @@ dot(E[0], E[2]) = (0.10)(−0.90) + (−0.20)(0.10) + (0.30)(0.20) + (−0.40)(�
 ```
 
 After training, semantically related tokens will have much higher dot products.
+
+::: {.callout-note}
+*Math Minute — One-Hot Encoder*
+
+A one-hot encoder turns a token ID into a vector with one `1` and every other entry `0`.
+For a vocabulary of size 5, token ID `2` becomes `[0, 0, 1, 0, 0]`.
+Multiplying that one-hot vector by the embedding matrix selects row 2, which gives the same result as the direct lookup `E[2]`.
+Real implementations skip the one-hot vector and index the row directly because it is much faster.
+:::

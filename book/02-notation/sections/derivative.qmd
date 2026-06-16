@@ -49,6 +49,21 @@ $$
 2x = 2 \cdot 3 = 6
 $$
 
+Some useful derivative facts:
+
+|===
+| Operation | Mathematical form | Derivative
+
+| `a + b` | $a + b$ | $\frac{\partial}{\partial a} = 1,\quad \frac{\partial}{\partial b} = 1$
+| `a * b` | $a \cdot b$ | $\frac{\partial}{\partial a} = b,\quad \frac{\partial}{\partial b} = a$
+| `a ** n` | $a^n$ | $\frac{\partial}{\partial a} = n \cdot a^{n-1}$
+| `log(a)` | $\ln(a)$ | $\frac{\partial}{\partial a} = \frac{1}{a}$
+| `exp(a)` | $e^a$ | $\frac{\partial}{\partial a} = e^a$
+| `relu(a)` | $\max(0, a)$ | $\frac{\partial}{\partial a} = \mathbf{1}_{a > 0}$
+|===
+
+For ReLU, the derivative at exactly $a = 0$ is undefined; implementations usually choose a fixed convention.
+
 ```{python}
 #| label: fig-ch02-derivative
 #| fig-cap: "A derivative is the local slope of a function"
@@ -74,7 +89,13 @@ ax.set_facecolor('white')
 ax.plot(x, y, color=BLUE, lw=2.5, label='f(x)=x^2')
 ax.plot(tangent_x, tangent_y, color=RED, lw=2.0, label='slope at x=2')
 ax.scatter([x0], [y0], color=RED, s=60, zorder=3)
-ax.text(x0+0.1, y0+0.5, 'df/dx = 4', fontfamily=MONO, fontsize=9, color=RED)
+angle = ax.transData.transform_angles(
+    np.array([np.degrees(np.arctan(slope))]),
+    np.array([[x0, y0]])
+)[0]
+ax.text(x0+0.1, y0+0.5, 'df/dx = 4',
+        rotation=angle, rotation_mode='anchor',
+        fontfamily=MONO, fontsize=9, color=RED)
 ax.set_xlabel('x', fontfamily=MONO, fontsize=10)
 ax.set_ylabel('f(x)', fontfamily=MONO, fontsize=10)
 ax.legend(fontsize=9, prop={'family': MONO})

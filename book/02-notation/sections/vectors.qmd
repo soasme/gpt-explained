@@ -21,15 +21,6 @@ The notation $\mathbb{R}$ means "the set of all real numbers."
 So $\mathbb{R}^n$ means "all vectors with $n$ real-number components."
 :::
 
-::: {.callout-note}
-*Math Minute -- Vector Shape and Indexing*
-
-The shape of a vector is its length.
-If $v \in \mathbb{R}^n$, then $v$ has shape $n$.
-The notation $v_i$ means "entry $i$ of vector $v$."
-The notation $v_n$ means "the last entry when the vector has length $n$."
-:::
-
 In Python, the book represents a vector as a list of floating-point numbers:
 
 <!-- snippet: src/python/common.py#vector_type -->
@@ -41,36 +32,6 @@ Vector = list[float]
 This simple representation is enough for the small implementations in the book.
 Packages like NumPy provide their own vector type, usually as an `ndarray`, with faster arithmetic, compact memory layout, and many built-in operations.
 For larger numerical programs, you would usually use NumPy, PyTorch, JAX, or another tensor library instead.
-
-```{python}
-#| label: fig-ch02-vector-indexing
-#| fig-cap: "Vector shape and indexing"
-#| echo: false
-#| fig-width: 5
-#| fig-height: 2.4
-
-import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
-
-DARK='#222222'; BLUE='#1177BB'; MONO='monospace'
-
-values = [3.0, 4.0, -1.0, 2.0]
-fig, ax = plt.subplots(figsize=(5, 2.4), facecolor='white')
-ax.set_facecolor('white'); ax.axis('off')
-ax.set_xlim(0, 5); ax.set_ylim(0, 2)
-
-for i, value in enumerate(values):
-    rect = mpatches.Rectangle((0.6 + i, 0.8), 0.85, 0.45,
-                              linewidth=1.2, edgecolor=BLUE, facecolor='white')
-    ax.add_patch(rect)
-    ax.text(1.025+i, 1.025, f'{value:g}', ha='center', va='center',
-            fontfamily=MONO, fontsize=10, color=DARK)
-    ax.text(1.025+i, 0.55, f'v{i+1}', ha='center', va='center',
-            fontfamily=MONO, fontsize=9, color=BLUE)
-ax.text(0.6, 1.55, 'v has shape 4', fontfamily=MONO, fontsize=10, color=DARK)
-plt.tight_layout()
-plt.show()
-```
 
 ### Vector Addition
 
@@ -97,6 +58,49 @@ So:
 $$
 u + v = [3.0+1.0, 4.0+(-2.0)] = [4.0, 2.0]
 $$
+
+@fig-ch02-vector-addition shows the same addition geometrically.
+Dashed connectors show how $u$ and $v$ meet at $u+v$.
+
+```{python}
+#| label: fig-ch02-vector-addition
+#| fig-cap: "Vector addition in 2D"
+#| echo: false
+#| fig-width: 5
+#| fig-height: 4
+
+import matplotlib.pyplot as plt
+
+DARK='#222222'; BLUE='#1177BB'; GREEN='#228811'; RED='#CC2222'; MONO='monospace'
+
+fig, ax = plt.subplots(figsize=(5, 4), facecolor='white')
+ax.set_facecolor('white')
+ax.axhline(0, color=DARK, lw=0.5, alpha=0.3)
+ax.axvline(0, color=DARK, lw=0.5, alpha=0.3)
+ax.set_xlim(-0.5, 5); ax.set_ylim(-3, 5)
+ax.set_xticks(range(0, 6)); ax.set_yticks(range(-3, 6))
+ax.tick_params(labelsize=9)
+for sp in ['top','right']:
+    ax.spines[sp].set_visible(False)
+
+ax.annotate('', xy=(3, 4), xytext=(0, 0),
+    arrowprops=dict(arrowstyle='->', color=BLUE, lw=2.5))
+ax.text(2.15, 4.15, 'u = [3, 4]', fontsize=10, fontfamily=MONO, color=BLUE)
+
+ax.annotate('', xy=(1, -2), xytext=(0, 0),
+    arrowprops=dict(arrowstyle='->', color=GREEN, lw=2.5))
+ax.text(1.1, -2.15, 'v = [1, -2]', fontsize=10, fontfamily=MONO, color=GREEN)
+
+ax.annotate('', xy=(4, 2), xytext=(0, 0),
+    arrowprops=dict(arrowstyle='->', color=RED, lw=2.5))
+ax.text(4.1, 2.1, 'u+v = [4, 2]', fontsize=10, fontfamily=MONO, color=RED)
+
+ax.plot([3, 4], [4, 2], color=GREEN, lw=1.2, linestyle='dashed', alpha=0.8)
+ax.plot([1, 4], [-2, 2], color=BLUE, lw=1.2, linestyle='dashed', alpha=0.8)
+
+plt.tight_layout()
+plt.show()
+```
 
 ### Scalar Multiplication
 
@@ -146,6 +150,44 @@ $$
 \|u\| = \sqrt{3.0^2 + 4.0^2} = \sqrt{9.0+16.0} = 5.0
 $$
 
+@fig-ch02-l2-norm shows the vector $[3,4]$ as a right triangle with length $5$.
+
+```{python}
+#| label: fig-ch02-l2-norm
+#| fig-cap: "The vector [3, 4] has L2 norm 5"
+#| echo: false
+#| fig-width: 5
+#| fig-height: 4
+
+import matplotlib.pyplot as plt
+
+DARK='#222222'; BLUE='#1177BB'; GRAY='#777777'; MONO='monospace'
+
+fig, ax = plt.subplots(figsize=(5, 4), facecolor='white')
+ax.set_facecolor('white')
+ax.axhline(0, color=DARK, lw=0.5, alpha=0.3)
+ax.axvline(0, color=DARK, lw=0.5, alpha=0.3)
+ax.set_xlim(-0.5, 4.5); ax.set_ylim(-0.5, 5)
+ax.set_xticks(range(0, 5)); ax.set_yticks(range(0, 6))
+ax.tick_params(labelsize=9)
+for sp in ['top','right']:
+    ax.spines[sp].set_visible(False)
+
+ax.annotate('', xy=(3, 4), xytext=(0, 0),
+    arrowprops=dict(arrowstyle='->', color=BLUE, lw=2.5))
+ax.plot([3, 3], [0, 4], color=GRAY, lw=1.2, linestyle='dashed')
+ax.plot([0, 3], [4, 4], color=GRAY, lw=1.2, linestyle='dashed')
+
+ax.text(3.12, 4.08, '[3, 4]', fontsize=10, fontfamily=MONO, color=BLUE)
+ax.text(1.25, -0.35, 'x = 3', fontsize=10, fontfamily=MONO, color=DARK)
+ax.text(3.12, 1.9, 'y = 4', fontsize=10, fontfamily=MONO, color=DARK)
+ax.text(1.15, 2.0, '||[3, 4]|| = 5', fontsize=10, fontfamily=MONO,
+        color=BLUE, rotation=53.13, rotation_mode='anchor')
+
+plt.tight_layout()
+plt.show()
+```
+
 ### Unit Vector
 
 A unit vector keeps the direction of the original vector but scales its length to 1.
@@ -169,46 +211,3 @@ For $u = [3.0, 4.0]$, the norm is $5.0$, so each component is divided by $5.0$:
 $$
 [3.0/5.0, 4.0/5.0] = [0.6, 0.8]
 $$
-
-@fig-ch02-vectors shows vector addition and the L2 norm in 2D.
-
-```{python}
-#| label: fig-ch02-vectors
-#| fig-cap: "Vector addition and norms in 2D"
-#| echo: false
-#| fig-width: 5
-#| fig-height: 5
-
-import matplotlib.pyplot as plt
-import numpy as np
-
-DARK='#222222'; BLUE='#1177BB'; GREEN='#228811'; RED='#CC2222'; MONO='monospace'
-
-fig, ax = plt.subplots(figsize=(5, 5), facecolor='white')
-ax.set_facecolor('white')
-ax.axhline(0, color=DARK, lw=0.5, alpha=0.3)
-ax.axvline(0, color=DARK, lw=0.5, alpha=0.3)
-ax.set_xlim(-1, 6); ax.set_ylim(-3, 6)
-ax.set_xticks(range(-1, 7)); ax.set_yticks(range(-3, 7))
-ax.tick_params(labelsize=9)
-for sp in ['top','right']: ax.spines[sp].set_visible(False)
-
-ax.annotate('', xy=(3,4), xytext=(0,0),
-    arrowprops=dict(arrowstyle='->', color=BLUE, lw=2.5))
-ax.text(3.15, 4.1, 'u = [3, 4]', fontsize=12, fontfamily=MONO, color=BLUE)
-
-ax.annotate('', xy=(1,-2), xytext=(0,0),
-    arrowprops=dict(arrowstyle='->', color=GREEN, lw=2.5))
-ax.text(1.15, -2.2, 'v = [1, -2]', fontsize=12, fontfamily=MONO, color=GREEN)
-
-ax.annotate('', xy=(4,2), xytext=(0,0),
-    arrowprops=dict(arrowstyle='->', color=RED, lw=2.5))
-ax.text(4.15, 2.1, 'u+v = [4, 2]', fontsize=12, fontfamily=MONO, color=RED)
-
-ax.annotate('', xy=(0,0), xytext=(3,4),
-    arrowprops=dict(arrowstyle='<->', color=BLUE, lw=1.5, linestyle='dashed'))
-ax.text(-0.9, 2.2, '||u|| = 5', fontsize=11, fontfamily=MONO, color=BLUE)
-
-plt.tight_layout()
-plt.show()
-```

@@ -3,14 +3,6 @@
 Capital sigma $\sum$ means "add a sequence of terms."
 Capital pi $\prod$ means "multiply a sequence of terms."
 
-::: {.callout-note}
-*Math Minute -- Index Variable*
-
-An index variable counts through positions in a sequence.
-In $\sum_{i=1}^{4} x_i$, the index variable is $i$.
-It starts at $1$, then takes the values $2$, $3$, and $4$.
-:::
-
 ### Capital Sigma: Sum
 
 The expression:
