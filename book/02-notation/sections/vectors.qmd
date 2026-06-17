@@ -23,11 +23,8 @@ So $\mathbb{R}^n$ means "all vectors with $n$ real-number components."
 
 In Python, the book represents a vector as a list of floating-point numbers:
 
-<!-- snippet: src/python/common.py#vector_type -->
-```python
-Vector = list[float]
+```{.python include="src/python/common.py" snippet="vector_type"}
 ```
-<!-- /snippet -->
 
 This simple representation is enough for the small implementations in the book.
 Packages like NumPy provide their own vector type, usually as an `ndarray`, with faster arithmetic, compact memory layout, and many built-in operations.
@@ -44,12 +41,8 @@ $$
 
 The Python version follows that sentence directly: walk through both vectors together and add each pair.
 
-<!-- snippet: src/python/common.py#add_vectors -->
-```python
-def add_vectors(left: Vector, right: Vector) -> Vector:
-    return [a + b for a, b in zip(left, right)]
+```{.python include="src/python/common.py" snippet="add_vectors"}
 ```
-<!-- /snippet -->
 
 For example, take $u = [3.0, 4.0]$ and $v = [1.0, -2.0]$.
 The first components give $3.0 + 1.0 = 4.0$, and the second components give $4.0 + (-2.0) = 2.0$.
@@ -113,12 +106,8 @@ $$
 
 In code, this means multiplying every value in the list by the same scalar.
 
-<!-- snippet: src/python/common.py#scale_vector -->
-```python
-def scale_vector(vector: Vector, scalar: float) -> Vector:
-    return [scalar * value for value in vector]
+```{.python include="src/python/common.py" snippet="scale_vector"}
 ```
-<!-- /snippet -->
 
 For $u = [3.0, 4.0]$, multiplying by $2.0$ doubles both components:
 
@@ -137,12 +126,8 @@ $$
 
 The implementation squares every component, adds the squares, then takes the square root.
 
-<!-- snippet: src/python/common.py#vector_norm -->
-```python
-def vector_norm(vector: Sequence[float]) -> float:
-    return math.sqrt(sum(value * value for value in vector))
+```{.python include="src/python/common.py" snippet="vector_norm"}
 ```
-<!-- /snippet -->
 
 For $u = [3.0, 4.0]$, the length is:
 
@@ -199,12 +184,8 @@ $$
 
 The helper below combines the two earlier operations: compute the norm, then scale by its reciprocal.
 
-<!-- snippet: src/python/common.py#unit_vector -->
-```python
-def unit_vector(vector: Vector) -> Vector:
-    return scale_vector(vector, 1.0 / vector_norm(vector))
+```{.python include="src/python/common.py" snippet="unit_vector"}
 ```
-<!-- /snippet -->
 
 For $u = [3.0, 4.0]$, the norm is $5.0$, so each component is divided by $5.0$:
 

@@ -20,15 +20,8 @@ $$
 \text{softmax}(z)_i = \frac{e^{z_i - \max(z)}}{\sum_{j} e^{z_j - \max(z)}}
 $$
 
-<!-- snippet: src/python/common.py#softmax_vector -->
-```python
-def softmax(logits: Sequence[float]) -> Vector:
-    max_logit = max(logits)
-    exp_values = [math.exp(value - max_logit) for value in logits]
-    total = sum(exp_values)
-    return [value / total for value in exp_values]
+```{.python include="src/python/common.py" snippet="softmax_vector"}
 ```
-<!-- /snippet -->
 
 For $z = [2.0, 1.0, 0.1]$, the maximum is $2.0$, so the shifted values are $[0.0, -1.0, -1.9]$.
 After exponentiating, we get approximately $[1.000, 0.368, 0.150]$, whose sum is $1.518$.
@@ -46,12 +39,8 @@ Sometimes the input is a matrix of scores.
 Each row can be normalized into its own probability distribution.
 Row-wise softmax applies the vector softmax independently to every row.
 
-<!-- snippet: src/python/common.py#softmax_rows -->
-```python
-def softmax_rows(matrix: Matrix) -> Matrix:
-    return [softmax(row) for row in matrix]
+```{.python include="src/python/common.py" snippet="softmax_rows"}
 ```
-<!-- /snippet -->
 
 After this step, each row sums to 1.
 

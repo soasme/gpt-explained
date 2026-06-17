@@ -4,6 +4,9 @@ project:
   pre-render:
     - python3 tools/refresh_code_snippets.py
 
+filters:
+  - include-code-files
+
 lang: en
 license: "CC BY-NC-SA 3.0"
 

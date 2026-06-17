@@ -23,12 +23,8 @@ The gradient is computed via backpropagation and applied by an optimiser (Adam).
 
 A scalar SGD update (for illustration):
 
-<!-- snippet: src/python/train.py#sgd_update_scalar -->
-```python
-def sgd_update_scalar(weight: float, gradient: float, learning_rate: float) -> float:
-    return weight - learning_rate * gradient
+```{.python include="src/python/train.py" snippet="sgd_update_scalar"}
 ```
-<!-- /snippet -->
 
 ### Example
 

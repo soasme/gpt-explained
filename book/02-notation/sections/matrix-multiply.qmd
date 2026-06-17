@@ -5,11 +5,8 @@ Matrices make it possible to organize many vectors or many linear equations at o
 Matrix multiplication combines rows from one matrix with columns from another.
 The book represents a matrix as a list of rows, where each row is a list of floats:
 
-<!-- snippet: src/python/common.py#matrix_type -->
-```python
-Matrix = list[list[float]]
+```{.python include="src/python/common.py" snippet="matrix_type"}
 ```
-<!-- /snippet -->
 
 ::: {.callout-note}
 *Math Minute -- Matrix Shape and Indexing*
@@ -44,12 +41,8 @@ If $A \in \mathbb{R}^{m \times n}$, then $A^T \in \mathbb{R}^{n \times m}$.
 In Python, `zip(*matrix)` groups together the first item from every row, then the second item from every row, and so on.
 Converting each group back to a list gives the transposed rows.
 
-<!-- snippet: src/python/common.py#transpose -->
-```python
-def transpose(matrix: Matrix) -> Matrix:
-    return [list(col) for col in zip(*matrix)]
+```{.python include="src/python/common.py" snippet="transpose"}
 ```
-<!-- /snippet -->
 
 For:
 
@@ -75,13 +68,8 @@ $$
 That equation says: take row $i$ from $A$, take column $j$ from $B$, and compute their dot product.
 The implementation transposes the right matrix first so its columns become easy to iterate over as rows.
 
-<!-- snippet: src/python/common.py#matrix_multiply -->
-```python
-def matrix_multiply(left: Matrix, right: Matrix) -> Matrix:
-    right_t = transpose(right)
-    return [[dot(row, col) for col in right_t] for row in left]
+```{.python include="src/python/common.py" snippet="matrix_multiply"}
 ```
-<!-- /snippet -->
 
 For:
 

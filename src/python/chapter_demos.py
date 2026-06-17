@@ -51,7 +51,7 @@ from train import (
 from inference import demo as gpt_demo
 
 
-# tag::chapter_02[]
+# start snippet chapter_02
 def chapter_02() -> dict[str, object]:
     values = [1.0, 2.0, 3.0]
     logits = [1.0, 2.0, 3.0]
@@ -67,16 +67,16 @@ def chapter_02() -> dict[str, object]:
         "cross_entropy": cross_entropy_loss([0.0, 0.0, 2.0], 2),
         "sinusoidal": sinusoidal_encoding(2, 4),
     }
-# end::chapter_02[]
+# end snippet chapter_02
 
 
-# tag::chapter_03[]
+# start snippet chapter_03
 def chapter_03() -> dict[str, object]:
     return bpe_demo()
-# end::chapter_03[]
+# end snippet chapter_03
 
 
-# tag::chapter_04[]
+# start snippet chapter_04
 def chapter_04(seed: int = 4) -> dict[str, object]:
     rng = random.Random(seed)
     embedding = random_matrix(100, 8, rng)
@@ -86,10 +86,10 @@ def chapter_04(seed: int = 4) -> dict[str, object]:
         "dot": dot(embedding[1], embedding[2]),
         "cosine": cosine_similarity(embedding[1], embedding[2]),
     }
-# end::chapter_04[]
+# end snippet chapter_04
 
 
-# tag::chapter_05[]
+# start snippet chapter_05
 def chapter_05() -> dict[str, object]:
     encoding = sinusoidal_encoding(4, 6)
     return {
@@ -97,10 +97,10 @@ def chapter_05() -> dict[str, object]:
         "first": encoding[0],
         "second": encoding[1],
     }
-# end::chapter_05[]
+# end snippet chapter_05
 
 
-# tag::chapter_06[]
+# start snippet chapter_06
 def chapter_06(seed: int = 6) -> dict[str, object]:
     rng = random.Random(seed)
     x = random_matrix(4, 8, rng)
@@ -113,10 +113,10 @@ def chapter_06(seed: int = 6) -> dict[str, object]:
         "output_shape": (len(output), len(output[0])),
         "weight_rows": [sum(row) for row in weights],
     }
-# end::chapter_06[]
+# end snippet chapter_06
 
 
-# tag::chapter_07[]
+# start snippet chapter_07
 def chapter_07(seed: int = 607) -> dict[str, object]:
     rng = random.Random(seed)
     query = random_matrix(4, 8, rng)
@@ -129,10 +129,10 @@ def chapter_07(seed: int = 607) -> dict[str, object]:
         "output_shape": (len(output), len(output[0])),
         "weight_rows": [sum(row) for row in weights],
     }
-# end::chapter_07[]
+# end snippet chapter_07
 
 
-# tag::chapter_08[]
+# start snippet chapter_08
 def chapter_08(seed: int = 7) -> dict[str, object]:
     rng = random.Random(seed)
     x = random_matrix(4, 8, rng)
@@ -142,20 +142,20 @@ def chapter_08(seed: int = 7) -> dict[str, object]:
         "output_shape": (len(output), len(output[0])),
         "num_heads": len(weights),
     }
-# end::chapter_08[]
+# end snippet chapter_08
 
 
-# tag::chapter_09[]
+# start snippet chapter_09
 def chapter_09(seed: int = 8) -> dict[str, object]:
     rng = random.Random(seed)
     x = random_matrix(3, 8, rng)
     params = make_feed_forward(8, rng)
     output = feed_forward(x, params)
     return {"output_shape": (len(output), len(output[0]))}
-# end::chapter_09[]
+# end snippet chapter_09
 
 
-# tag::chapter_10[]
+# start snippet chapter_10
 def chapter_10(seed: int = 9) -> dict[str, object]:
     rng = random.Random(seed)
     x = random_matrix(3, 8, rng)
@@ -166,10 +166,10 @@ def chapter_10(seed: int = 9) -> dict[str, object]:
         "normed_shape": (len(normed), len(normed[0])),
         "output_shape": (len(output), len(output[0])),
     }
-# end::chapter_10[]
+# end snippet chapter_10
 
 
-# tag::chapter_11[]
+# start snippet chapter_11
 def chapter_11(seed: int = 10) -> dict[str, object]:
     config = GPTConfig(vocab_size=50, d_model=16, num_heads=4, num_layers=1, max_seq_len=16)
     params = make_gpt_params(config, random.Random(seed))
@@ -179,10 +179,10 @@ def chapter_11(seed: int = 10) -> dict[str, object]:
         "prob_sum": sum(softmax(logits)),
         "top": max(range(len(logits)), key=logits.__getitem__),
     }
-# end::chapter_11[]
+# end snippet chapter_11
 
 
-# tag::chapter_12[]
+# start snippet chapter_12
 def chapter_12() -> dict[str, object]:
     logits_list = [
         [0.0, 0.0, 0.0, 0.0, 0.0],
@@ -198,10 +198,10 @@ def chapter_12() -> dict[str, object]:
         "perplexity": perplexity(loss),
         "gradient": softmax_cross_entropy_grad(logits_list[0], 3),
     }
-# end::chapter_12[]
+# end snippet chapter_12
 
 
-# tag::chapter_13[]
+# start snippet chapter_13
 def chapter_13() -> dict[str, object]:
     delta = [0.1, -0.2]
     weights = [[0.5, -0.25, 0.75], [0.1, 0.2, -0.3]]
@@ -216,13 +216,13 @@ def chapter_13() -> dict[str, object]:
         "grad_x": grad_x,
         "updated": updated,
     }
-# end::chapter_13[]
+# end snippet chapter_13
 
 
-# tag::chapter_14[]
+# start snippet chapter_14
 def chapter_14() -> dict[str, object]:
     return gpt_demo(seed=13)
-# end::chapter_14[]
+# end snippet chapter_14
 
 
 def run_all() -> dict[str, dict[str, object]]:

@@ -19,12 +19,8 @@ $$
 
 In Python, this is `math.exp`.
 
-<!-- snippet: src/python/common.py#natural_exp -->
-```python
-def natural_exp(value: float) -> float:
-    return math.exp(value)
+```{.python include="src/python/common.py" snippet="natural_exp"}
 ```
-<!-- /snippet -->
 
 Two anchor values appear often enough to keep in mind.
 If the exponent is $0.0$, the result is $1.0$.
@@ -48,12 +44,8 @@ $$
 
 In Python, this is `math.log`.
 
-<!-- snippet: src/python/common.py#natural_log -->
-```python
-def natural_log(value: float) -> float:
-    return math.log(value)
+```{.python include="src/python/common.py" snippet="natural_log"}
 ```
-<!-- /snippet -->
 
 Some useful values:
 

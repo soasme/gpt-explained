@@ -22,17 +22,8 @@ Because $\sin$ and $\cos$ are bounded in $[-1, 1]$, they add a predictable, scal
 
 ### Python Implementation
 
-<!-- snippet: src/python/common.py#sinusoidal_position -->
-```python
-def sinusoidal_position(position: int, d_model: int) -> Vector:
-    row = []
-    for i in range(d_model):
-        k = i // 2
-        omega = 1.0 / (10000.0 ** (2.0 * k / d_model))
-        row.append(math.sin(position * omega) if i % 2 == 0 else math.cos(position * omega))
-    return row
+```{.python include="src/python/common.py" snippet="sinusoidal_position"}
 ```
-<!-- /snippet -->
 
 ### Example
 

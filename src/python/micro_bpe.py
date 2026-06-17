@@ -2,61 +2,61 @@
 
 from __future__ import annotations
 
-# tag::imports[]
+# start snippet imports
 from collections import Counter
 from typing import Sequence
-# end::imports[]
+# end snippet imports
 
 
-# tag::make_vocab[]
+# start snippet make_vocab
 def make_vocab() -> dict[str, int]:
     return {}
-# end::make_vocab[]
+# end snippet make_vocab
 
 
-# tag::vocab_extend[]
+# start snippet vocab_extend
 def vocab_extend(vocab: dict[str, int], token: str, token_id: int) -> dict[str, int]:
     return vocab | {token: token_id}
-# end::vocab_extend[]
+# end snippet vocab_extend
 
 
-# tag::vocab_lookup[]
+# start snippet vocab_lookup
 def vocab_lookup(vocab: dict[str, int], token: str) -> int | None:
     return vocab.get(token)
-# end::vocab_lookup[]
+# end snippet vocab_lookup
 
 
-# tag::word_to_tokens[]
+# start snippet word_to_tokens
 def word_to_tokens(word: str) -> list[str]:
     return list(word) + ["_"]
-# end::word_to_tokens[]
+# end snippet word_to_tokens
 
 
-# tag::words_to_corpus[]
+# start snippet words_to_corpus
 def words_to_corpus(words: Sequence[str]) -> list[list[str]]:
     return [word_to_tokens(word) for word in words]
-# end::words_to_corpus[]
+# end snippet words_to_corpus
 
 
-# tag::adjacent_pairs[]
+# start snippet adjacent_pairs
 def adjacent_pairs(tokens: Sequence[str]) -> list[tuple[str, str]]:
     return list(zip(tokens, tokens[1:]))
-# end::adjacent_pairs[]
+# end snippet adjacent_pairs
 
 
-# tag::count_pairs[]
+# start snippet count_pairs
 def count_pairs(corpus: Sequence[Sequence[str]]) -> Counter[tuple[str, str]]:
     return Counter(pair for tokens in corpus for pair in adjacent_pairs(tokens))
-# end::count_pairs[]
+# end snippet count_pairs
 
 
-# tag::most_frequent[]
+# start snippet most_frequent
 def most_frequent(counts: Counter[tuple[str, str]]) -> tuple[str, str]:
     return max(counts, key=counts.get)
-# end::most_frequent[]
+# end snippet most_frequent
 
 
-# tag::merge_pair[]
+# start snippet merge_pair
 def merge_pair(tokens: Sequence[str], left: str, right: str) -> list[str]:
     merged = []
     i = 0
@@ -68,22 +68,22 @@ def merge_pair(tokens: Sequence[str], left: str, right: str) -> list[str]:
             merged.append(tokens[i])
             i += 1
     return merged
-# end::merge_pair[]
+# end snippet merge_pair
 
 
-# tag::merge_corpus[]
+# start snippet merge_corpus
 def merge_corpus(corpus: Sequence[Sequence[str]], left: str, right: str) -> list[list[str]]:
     return [merge_pair(tokens, left, right) for tokens in corpus]
-# end::merge_corpus[]
+# end snippet merge_corpus
 
 
-# tag::unique_tokens[]
+# start snippet unique_tokens
 def unique_tokens(corpus: Sequence[Sequence[str]]) -> list[str]:
     return sorted({token for tokens in corpus for token in tokens})
-# end::unique_tokens[]
+# end snippet unique_tokens
 
 
-# tag::train_bpe[]
+# start snippet train_bpe
 def train_bpe(words: Sequence[str], target_size: int) -> tuple[dict[str, int], list[tuple[str, str]]]:
     corpus = words_to_corpus(words)
     vocab = {token: token_id for token_id, token in enumerate(unique_tokens(corpus))}
@@ -101,10 +101,10 @@ def train_bpe(words: Sequence[str], target_size: int) -> tuple[dict[str, int], l
         corpus = merge_corpus(corpus, left, right)
 
     return vocab, merges
-# end::train_bpe[]
+# end snippet train_bpe
 
 
-# tag::encode[]
+# start snippet encode
 def encode(word: str, merges: Sequence[tuple[str, str]], vocab: dict[str, int]) -> list[int]:
     tokens = word_to_tokens(word)
     for left, right in merges:
@@ -113,10 +113,10 @@ def encode(word: str, merges: Sequence[tuple[str, str]], vocab: dict[str, int]) 
     if missing:
         raise ValueError(f"unknown token(s): {missing}")
     return [vocab[token] for token in tokens]
-# end::encode[]
+# end snippet encode
 
 
-# tag::demo[]
+# start snippet demo
 def demo() -> dict[str, object]:
     words = ["low", "lower", "newest", "widest"]
     vocab, merges = train_bpe(words, 20)
@@ -126,7 +126,7 @@ def demo() -> dict[str, object]:
         "low": encode("low", merges, vocab),
         "lower": encode("lower", merges, vocab),
     }
-# end::demo[]
+# end snippet demo
 
 
 def main() -> None:

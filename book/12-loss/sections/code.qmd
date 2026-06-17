@@ -1,43 +1,25 @@
 ## Python Implementation
 
+```{.python include="src/python/train.py" snippet="cross_entropy_loss"}
+```
+
 `cross_entropy_loss` computes $-\log P(\text{true token})$ for a single position.
 
-<!-- snippet: src/python/train.py#cross_entropy_loss -->
-```python
-def cross_entropy_loss(logits: Sequence[float], true_id: int) -> float:
-    probabilities = softmax(logits)
-    return -math.log(max(probabilities[true_id], 1.0e-12))
+```{.python include="src/python/train.py" snippet="sequence_loss"}
 ```
-<!-- /snippet -->
 
-`sequence_loss` averages the per-position losses into one scalar — the training signal for a complete sequence.
+`sequence_loss` averages the per-position losses into one scalar: the training signal for a complete sequence.
+
+```{.python include="src/python/train.py" snippet="perplexity"}
+```
+
 `perplexity` converts the mean loss back to an interpretable scale.
 
-<!-- snippet: src/python/train.py#sequence_loss -->
-```python
-def sequence_loss(logits_list: Sequence[Sequence[float]], true_ids: Sequence[int]) -> float:
-    losses = [cross_entropy_loss(logits, true_id) for logits, true_id in zip(logits_list, true_ids)]
-    return sum(losses) / len(losses)
-
-
-# tag::perplexity[]
-def perplexity(loss: float) -> float:
-    return math.exp(loss)
-# end::perplexity[]
+```{.python include="src/python/train.py" snippet="loss_grad"}
 ```
-<!-- /snippet -->
 
-The softmax-cross-entropy gradient has a clean closed form:
+`softmax_cross_entropy_grad` implements the closed-form gradient:
 $\partial \mathcal{L} / \partial z_j = P(j) - \mathbf{1}[j = \text{true}]$.
-
-<!-- snippet: src/python/train.py#loss_grad -->
-```python
-def softmax_cross_entropy_grad(logits: Sequence[float], true_id: int) -> Vector:
-    grad = softmax(logits)
-    grad[true_id] -= 1.0
-    return grad
-```
-<!-- /snippet -->
 
 Run with `python3 src/python/chapter_demos.py`.
 Expected output:

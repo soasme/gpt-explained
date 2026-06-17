@@ -14,12 +14,8 @@ $$
 That is also the most direct way to write it in Python.
 The `zip` pairs matching components, and `sum` adds the pairwise products.
 
-<!-- snippet: src/python/common.py#dot -->
-```python
-def dot(left: Sequence[float], right: Sequence[float]) -> float:
-    return sum(a * b for a, b in zip(left, right))
+```{.python include="src/python/common.py" snippet="dot"}
 ```
-<!-- /snippet -->
 
 With $u = [3.0, 4.0, 0.0]$ and $v = [1.0, -2.0, 5.0]$, the matching products are $3.0 \cdot 1.0$, $4.0 \cdot (-2.0)$, and $0.0 \cdot 5.0$.
 Adding them gives:
@@ -51,12 +47,8 @@ $$
 
 The implementation is just that formula: dot product divided by the two vector lengths.
 
-<!-- snippet: src/python/common.py#cosine_similarity -->
-```python
-def cosine_similarity(left: Sequence[float], right: Sequence[float]) -> float:
-    return dot(left, right) / (vector_norm(left) * vector_norm(right))
+```{.python include="src/python/common.py" snippet="cosine_similarity"}
 ```
-<!-- /snippet -->
 
 Using the same $u$ and $v$ as above, $\|u\| = 5.0$ and $\|v\| = \sqrt{30.0}$.
 Since the dot product is $-5.0$, the cosine similarity is:

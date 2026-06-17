@@ -14,12 +14,8 @@ $$
 
 The implementation is just that calculation.
 
-<!-- snippet: src/python/common.py#mean -->
-```python
-def mean(values: Sequence[float]) -> float:
-    return sum(values) / len(values)
+```{.python include="src/python/common.py" snippet="mean"}
 ```
-<!-- /snippet -->
 
 For $x = [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]$, the sum is $40.0$ and there are $8$ values.
 So:
@@ -41,13 +37,8 @@ $$
 
 The Python helper computes the mean first, then follows the formula.
 
-<!-- snippet: src/python/common.py#variance -->
-```python
-def variance(values: Sequence[float]) -> float:
-    avg = mean(values)
-    return sum((value - avg) ** 2 for value in values) / len(values)
+```{.python include="src/python/common.py" snippet="variance"}
 ```
-<!-- /snippet -->
 
 Continuing with $x = [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]$, the mean is $5.0$.
 The squared deviations are:
@@ -70,12 +61,8 @@ $$
 \sigma = \sqrt{\sigma^2}
 $$
 
-<!-- snippet: src/python/common.py#standard_deviation -->
-```python
-def standard_deviation(values: Sequence[float]) -> float:
-    return math.sqrt(variance(values))
+```{.python include="src/python/common.py" snippet="standard_deviation"}
 ```
-<!-- /snippet -->
 
 In this example, the variance is $4.0$, so the standard deviation is:
 

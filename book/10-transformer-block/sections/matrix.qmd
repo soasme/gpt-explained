@@ -34,10 +34,48 @@ x₁ = x + mha_out = [1.0+0.3, -0.5+0.7, 0.8-0.1, -0.2+0.5]
 $x_1$ contains *both* the original information (from `x`) and the new information (from `mha_out`).
 Nothing is overwritten — the residual stream accumulates.
 
-Figure @fig-ch10-matrix-block shows the full Pre-LN transformer block with LayerNorm before each sub-layer and residual connections around both.
+@fig-ch10-matrix-block shows the full Pre-LN transformer block with LayerNorm before each sub-layer and residual connections around both.
 
-![Pre-LN transformer block](images/ch10_block.png){#fig-ch10-matrix-block fig-alt="Full transformer block (Pre-LN) — LayerNorm before each sub-layer, residual connections around both."}
+```{dot}
+//| label: fig-ch10-matrix-block
+//| fig-cap: "Full transformer block (Pre-LN) — LayerNorm before each sub-layer, residual connections around both."
+digraph transformer_block {
+    rankdir=TB
+    node [fontname="monospace", shape=box, style="rounded,filled", fillcolor=white, penwidth=2]
+    edge [color="#555555"]
 
-Figure @fig-ch10-matrix-residual shows the residual stream carrying information forward while gradients flow backward through additions.
+    x_in  [label="x  (input)",              shape=plaintext, style="", penwidth=1]
+    ln1   [label="Layer Norm 1",             color="#1177BB", fontcolor="#1177BB"]
+    mha   [label="Multi-Head Attention",     color="#228811", fontcolor="#228811"]
+    add1  [label="+", shape=circle,          color="#999999", fontcolor="#999999", width=0.4, fixedsize=true]
+    ln2   [label="Layer Norm 2",             color="#1177BB", fontcolor="#1177BB"]
+    ffn   [label="Feed-Forward Network",     color="#CC8800", fontcolor="#CC8800"]
+    add2  [label="+", shape=circle,          color="#999999", fontcolor="#999999", width=0.4, fixedsize=true]
+    x_out [label="x  (output)",             shape=plaintext, style="", penwidth=1]
 
-![Residual stream](images/ch10_residual.png){#fig-ch10-matrix-residual fig-alt="The residual stream — information flows unimpeded through addition, gradients flow backward."}
+    x_in -> ln1 -> mha -> add1 -> ln2 -> ffn -> add2 -> x_out
+
+    x_in -> add1 [style=dashed, color="#999999", label="residual", constraint=false]
+    add1 -> add2 [style=dashed, color="#999999", label="residual", constraint=false]
+}
+```
+
+@fig-ch10-matrix-residual shows the residual stream carrying information forward while gradients flow backward through additions.
+
+```{dot}
+//| label: fig-ch10-matrix-residual
+//| fig-cap: "The residual stream — information flows unimpeded through addition, gradients flow backward."
+digraph residual {
+    rankdir=LR
+    node [fontname="monospace", shape=box, style="rounded,filled", fillcolor=white, penwidth=2]
+    edge [color="#555555"]
+
+    x   [label="x",                shape=plaintext, style="", penwidth=1]
+    sub [label="sublayer(x)",      color="#1177BB", fontcolor="#1177BB"]
+    add [label="+", shape=circle,  color="#228811", fontcolor="#228811", width=0.4, fixedsize=true]
+    out [label="x + sublayer(x)",  shape=plaintext, style="", penwidth=1]
+
+    x -> sub -> add -> out
+    x -> add [style=dashed, color="#999999", label="skip (x)", constraint=false]
+}
+```

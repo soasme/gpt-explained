@@ -1,0 +1,33 @@
+## KV Cache
+
+During inference, GPT generates one token at a time.
+At each step, the model runs a full forward pass — including attention over every previous token.
+
+Without any optimization, this is wasteful: the key and value matrices for tokens $1, \ldots, t-1$ are identical to what was computed in the previous step.
+The *KV cache* (Key-Value cache) stores those matrices and reuses them.
+
+At step $t$, only the new token's query, key, and value are computed fresh:
+
+$$
+q_t = x_t W_q, \quad k_t = x_t W_k, \quad v_t = x_t W_v
+$$
+
+Then $k_t$ and $v_t$ are appended to the cache, and attention is computed using the full cached $K$ and $V$:
+
+$$
+\text{head}_t = \operatorname{softmax}\!\left(\frac{q_t \, K_{\text{cache}}^{\top}}{\sqrt{d_k}} + M_t\right) V_{\text{cache}}
+$$
+
+The result is that each new token costs $O(N)$ compute rather than $O(N^2)$ — a large saving for long sequences.
+
+The trade-off is memory.
+For a model with $L$ layers, $H$ heads, head dimension $d_k$, and sequence length $N$, the cache holds:
+
+$$
+2 \times L \times H \times N \times d_k \text{ values}
+$$
+
+(factor of 2 for $K$ and $V$; values are stored per layer, per head).
+
+The KV cache is present in every production transformer inference engine.
+Grouped-Query Attention (next section) directly addresses the memory cost of the cache.

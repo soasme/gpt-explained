@@ -22,12 +22,8 @@ Each layer only needs two things: the gradient arriving from the layer above (ca
 
 ### Step 1: A gradient update for one weight
 
-<!-- snippet: src/python/train.py#sgd_update_scalar -->
-```python
-def sgd_update_scalar(weight: float, gradient: float, learning_rate: float) -> float:
-    return weight - learning_rate * gradient
+```{.python include="src/python/train.py" snippet="sgd_update_scalar"}
 ```
-<!-- /snippet -->
 
 If the gradient is positive (loss rises when $w$ increases), we subtract — decreasing $w$.
 If negative, we add.
@@ -50,11 +46,8 @@ For the true token $j = t$: gradient is $P_t - 1$ (negative, so we push $z_t$ up
 For every other token: gradient is $P_j$ (positive, so we push those logits down).
 The model is nudged to be more confident about the correct answer.
 
-<!-- snippet: src/python/train.py#loss_grad -->
-```python
-def softmax_cross_entropy_grad(logits: Sequence[float], true_id: int) -> Vector:
-    grad = softmax(logits)
-    grad[true_id] -= 1.0
-    return grad
+```{.python include="src/python/train.py" snippet="loss_grad"}
 ```
-<!-- /snippet -->
+
+`softmax_cross_entropy_grad` starts with the predicted probabilities, then subtracts 1 from the correct token.
+That gives the gradient signal that pushes the correct logit up and the incorrect logits down.

@@ -1,187 +1,94 @@
 ## The Code: A Micro-BPE in Python
 
 ### The Vocabulary Abstraction
-A vocab maps string tokens to integer IDs.
-These helpers create, extend, and query that mapping.
+
+```{.python include="src/python/micro_bpe.py" snippet="make_vocab"}
+```
 
 `make_vocab` starts with an empty token-to-ID mapping.
 
-<!-- snippet: src/python/micro_bpe.py#make_vocab -->
-```python
-def make_vocab() -> dict[str, int]:
-    return {}
+```{.python include="src/python/micro_bpe.py" snippet="vocab_extend"}
 ```
-<!-- /snippet -->
 
 `vocab_extend` returns a vocabulary with one more token ID.
 
-<!-- snippet: src/python/micro_bpe.py#vocab_extend -->
-```python
-def vocab_extend(vocab: dict[str, int], token: str, token_id: int) -> dict[str, int]:
-    return vocab | {token: token_id}
+```{.python include="src/python/micro_bpe.py" snippet="vocab_lookup"}
 ```
-<!-- /snippet -->
 
 `vocab_lookup` retrieves the ID for a token, or `None` if the token is unknown.
-
-<!-- snippet: src/python/micro_bpe.py#vocab_lookup -->
-```python
-def vocab_lookup(vocab: dict[str, int], token: str) -> int | None:
-    return vocab.get(token)
-```
-<!-- /snippet -->
+Together, these helpers create, extend, and query the mapping from string tokens to integer IDs.
 
 ### Characters and Corpus
+
+```{.python include="src/python/micro_bpe.py" snippet="word_to_tokens"}
+```
+
 `word_to_tokens` turns one word into characters and appends `"_"` as the end-of-word marker.
 
-<!-- snippet: src/python/micro_bpe.py#word_to_tokens -->
-```python
-def word_to_tokens(word: str) -> list[str]:
-    return list(word) + ["_"]
+```{.python include="src/python/micro_bpe.py" snippet="words_to_corpus"}
 ```
-<!-- /snippet -->
 
 `words_to_corpus` applies that conversion to every word in the training corpus.
 
-<!-- snippet: src/python/micro_bpe.py#words_to_corpus -->
-```python
-def words_to_corpus(words: Sequence[str]) -> list[list[str]]:
-    return [word_to_tokens(word) for word in words]
-```
-<!-- /snippet -->
-
 ### Counting Pairs
+
+```{.python include="src/python/micro_bpe.py" snippet="imports"}
+```
+
 This section uses `Counter` to tally pair frequencies and `Sequence` for read-only sequence type hints.
 
-<!-- snippet: src/python/micro_bpe.py#imports -->
-```python
-from collections import Counter
-from typing import Sequence
+```{.python include="src/python/micro_bpe.py" snippet="adjacent_pairs"}
 ```
-<!-- /snippet -->
 
 `adjacent_pairs` lists every neighboring token pair in one token sequence.
 
-<!-- snippet: src/python/micro_bpe.py#adjacent_pairs -->
-```python
-def adjacent_pairs(tokens: Sequence[str]) -> list[tuple[str, str]]:
-    return list(zip(tokens, tokens[1:]))
+```{.python include="src/python/micro_bpe.py" snippet="count_pairs"}
 ```
-<!-- /snippet -->
 
 `count_pairs` counts those neighboring pairs across the whole corpus.
 
-<!-- snippet: src/python/micro_bpe.py#count_pairs -->
-```python
-def count_pairs(corpus: Sequence[Sequence[str]]) -> Counter[tuple[str, str]]:
-    return Counter(pair for tokens in corpus for pair in adjacent_pairs(tokens))
+```{.python include="src/python/micro_bpe.py" snippet="most_frequent"}
 ```
-<!-- /snippet -->
 
 `most_frequent` chooses the pair with the highest count.
 
-<!-- snippet: src/python/micro_bpe.py#most_frequent -->
-```python
-def most_frequent(counts: Counter[tuple[str, str]]) -> tuple[str, str]:
-    return max(counts, key=counts.get)
-```
-<!-- /snippet -->
-
 ### Applying a Merge
+
+```{.python include="src/python/micro_bpe.py" snippet="merge_pair"}
+```
+
 `merge_pair` scans one token sequence and replaces every matching adjacent pair with the joined token.
 
-<!-- snippet: src/python/micro_bpe.py#merge_pair -->
-```python
-def merge_pair(tokens: Sequence[str], left: str, right: str) -> list[str]:
-    merged = []
-    i = 0
-    while i < len(tokens):
-        if i + 1 < len(tokens) and tokens[i] == left and tokens[i + 1] == right:
-            merged.append(left + right)
-            i += 2
-        else:
-            merged.append(tokens[i])
-            i += 1
-    return merged
+```{.python include="src/python/micro_bpe.py" snippet="merge_corpus"}
 ```
-<!-- /snippet -->
 
 `merge_corpus` applies the same merge to every token sequence in the corpus.
 
-<!-- snippet: src/python/micro_bpe.py#merge_corpus -->
-```python
-def merge_corpus(corpus: Sequence[Sequence[str]], left: str, right: str) -> list[list[str]]:
-    return [merge_pair(tokens, left, right) for tokens in corpus]
-```
-<!-- /snippet -->
-
 ### The Training Loop
+
+```{.python include="src/python/micro_bpe.py" snippet="unique_tokens"}
+```
+
 `unique_tokens` collects the current vocabulary items from the tokenized corpus.
 
-<!-- snippet: src/python/micro_bpe.py#unique_tokens -->
-```python
-def unique_tokens(corpus: Sequence[Sequence[str]]) -> list[str]:
-    return sorted({token for tokens in corpus for token in tokens})
+```{.python include="src/python/micro_bpe.py" snippet="train_bpe"}
 ```
-<!-- /snippet -->
 
 `train_bpe` repeatedly counts pairs, merges the most frequent pair, records the merge rule, and adds each new token to the vocabulary.
 
-<!-- snippet: src/python/micro_bpe.py#train_bpe -->
-```python
-def train_bpe(words: Sequence[str], target_size: int) -> tuple[dict[str, int], list[tuple[str, str]]]:
-    corpus = words_to_corpus(words)
-    vocab = {token: token_id for token_id, token in enumerate(unique_tokens(corpus))}
-    merges = []
-
-    while len(vocab) < target_size:
-        counts = count_pairs(corpus)
-        if not counts:
-            break
-        left, right = most_frequent(counts)
-        new_token = left + right
-        if new_token not in vocab:
-            vocab[new_token] = len(vocab)
-        merges.append((left, right))
-        corpus = merge_corpus(corpus, left, right)
-
-    return vocab, merges
-```
-<!-- /snippet -->
-
 ### Encoding
+
+```{.python include="src/python/micro_bpe.py" snippet="encode"}
+```
+
 `encode` applies the trained merge rules to a new word and returns the final token IDs.
 
-<!-- snippet: src/python/micro_bpe.py#encode -->
-```python
-def encode(word: str, merges: Sequence[tuple[str, str]], vocab: dict[str, int]) -> list[int]:
-    tokens = word_to_tokens(word)
-    for left, right in merges:
-        tokens = merge_pair(tokens, left, right)
-    missing = [token for token in tokens if token not in vocab]
-    if missing:
-        raise ValueError(f"unknown token(s): {missing}")
-    return [vocab[token] for token in tokens]
-```
-<!-- /snippet -->
-
 ### Demo
-`demo` trains a tiny tokenizer and encodes two example words.
 
-<!-- snippet: src/python/micro_bpe.py#demo -->
-```python
-def demo() -> dict[str, object]:
-    words = ["low", "lower", "newest", "widest"]
-    vocab, merges = train_bpe(words, 20)
-    return {
-        "vocab": vocab,
-        "merges": merges,
-        "low": encode("low", merges, vocab),
-        "lower": encode("lower", merges, vocab),
-    }
+```{.python include="src/python/micro_bpe.py" snippet="demo"}
 ```
-<!-- /snippet -->
 
+`demo` trains a tiny tokenizer and encodes two example words.
 Run this file directly with `python3 src/python/micro_bpe.py`.
 
 Output:

@@ -18,7 +18,7 @@ from common import (
 )
 
 
-# tag::generation[]
+# start snippet generation
 def temperature_scale(logits: Sequence[float], temperature: float) -> list[float]:
     return [value / temperature for value in logits]
 
@@ -56,10 +56,10 @@ def generate(
         tokens.append(next_token)
         generated.append(next_token)
     return generated
-# end::generation[]
+# end snippet generation
 
 
-# tag::demo[]
+# start snippet demo
 def demo(seed: int = 7) -> dict[str, object]:
     config = GPTConfig(vocab_size=100, d_model=32, num_heads=4, num_layers=2, max_seq_len=64)
     model_rng = random.Random(seed)
@@ -78,7 +78,7 @@ def demo(seed: int = 7) -> dict[str, object]:
         "generated": generated,
         "full_sequence": [1, 2, 3] + generated,
     }
-# end::demo[]
+# end snippet demo
 
 
 if __name__ == "__main__":

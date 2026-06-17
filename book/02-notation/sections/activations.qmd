@@ -25,25 +25,8 @@ Without activations, stacking linear layers collapses to a single linear transfo
 
 ### Python Implementation
 
-<!-- snippet: src/python/common.py#activations -->
-```python
-def sigmoid(x: float) -> float:
-    return 1.0 / (1.0 + math.exp(-x))
-
-
-def relu(x: float) -> float:
-    return max(0.0, x)
-
-
-def gelu(x: float) -> float:
-    scale = math.sqrt(2.0 / math.pi)
-    return 0.5 * x * (1.0 + math.tanh(scale * (x + 0.044715 * x**3)))
-
-
-def gelu_matrix(matrix: Matrix) -> Matrix:
-    return [[gelu(value) for value in row] for row in matrix]
+```{.python include="src/python/common.py" snippet="activations"}
 ```
-<!-- /snippet -->
 
 ### Example
 

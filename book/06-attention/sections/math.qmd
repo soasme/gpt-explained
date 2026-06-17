@@ -25,15 +25,6 @@ $$
 `S[i,j]` measures how relevant token `j` is to token `i`.
 The division by $\sqrt{d_k}$ prevents the dot products from growing too large.
 
-::: {.callout-note}
-*Math Minute — Matrix Multiplication*
-
-For matrices $A \in \mathbb{R}^{m\times n}$ and $B \in \mathbb{R}^{n\times p}$:
-$(AB)[i,j] = \sum_k A[i,k] \cdot B[k,j]$.
-The result has shape $[m\times p]$.
-Each entry is a dot product of a row of `A` and a column of `B`.
-:::
-
 ### Step 3: Apply Causal Mask (for autoregressive models)
 
 GPT is *autoregressive*: when predicting token `t`, it must not look at tokens `t+1, t+2, …`.

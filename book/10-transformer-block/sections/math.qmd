@@ -4,8 +4,8 @@ A single transformer block (Pre-LN variant, used by most modern GPTs):
 
 $$
 \begin{aligned}
-x_1 &= x + \text{MHA}(\text{LayerNorm}(x)) && \text{(attention sub-layer)} \\
-x_2 &= x_1 + \text{FFN}(\text{LayerNorm}(x_1)) && \text{(FFN sub-layer)}
+x_1 &= x + \text{MHA}(\text{LayerNorm}(x)) && \text{(Multi-Head Attention sub-layer)} \\
+x_2 &= x_1 + \text{FFN}(\text{LayerNorm}(x_1)) && \text{(Feed-Forward Network sub-layer)}
 \end{aligned}
 $$
 

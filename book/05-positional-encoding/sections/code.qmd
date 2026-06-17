@@ -1,79 +1,37 @@
 ## The Code: Positional Encoding in Python
 
-The matrix data abstraction from @sec-ch02-notation carries over unchanged.
-
-<!-- snippet: src/python/common.py#matrix -->
-```python
-# tag::make_matrix[]
-def make_matrix(rows: int, cols: int, fill: float = 0.0) -> Matrix:
-    return [[fill for _ in range(cols)] for _ in range(rows)]
-
-
-def shape(matrix: Matrix) -> tuple[int, int]:
-    return len(matrix), len(matrix[0]) if matrix else 0
-# end::make_matrix[]
-
-
-# tag::random_matrix[]
-def random_matrix(
-    rows: int,
-    cols: int,
-    rng: random.Random,
-    scale: float | None = None,
-) -> Matrix:
-    scale = math.sqrt(2.0 / (rows + cols)) if scale is None else scale
-    return [[rng.uniform(-scale, scale) for _ in range(cols)] for _ in range(rows)]
-# end::random_matrix[]
+```{.python include="src/python/common.py" snippet="make_matrix"}
 ```
-<!-- /snippet -->
+
+The matrix data abstraction from @sec-ch02-notation carries over unchanged.
+`make_matrix` creates a fixed-size grid, and `shape` reads its dimensions.
+
+```{.python include="src/python/common.py" snippet="random_matrix"}
+```
+
+`random_matrix` initializes numeric weights with small random values.
+
+```{.python include="src/python/common.py" snippet="sinusoidal_position"}
+```
 
 `sinusoidal_position` encodes one position as a vector of alternating sine and cosine values.
 Dimension pair $k$ oscillates at frequency $\omega_k = 1/10000^{2k/d}$, so each position gets a unique fingerprint.
 
-<!-- snippet: src/python/common.py#sinusoidal_position -->
-```python
-def sinusoidal_position(position: int, d_model: int) -> Vector:
-    row = []
-    for i in range(d_model):
-        k = i // 2
-        omega = 1.0 / (10000.0 ** (2.0 * k / d_model))
-        row.append(math.sin(position * omega) if i % 2 == 0 else math.cos(position * omega))
-    return row
+```{.python include="src/python/common.py" snippet="sinusoidal_encoding"}
 ```
-<!-- /snippet -->
 
 `sinusoidal_encoding` builds the full $[T \times d]$ matrix by stacking one row per position.
 
-<!-- snippet: src/python/common.py#sinusoidal_encoding -->
-```python
-def sinusoidal_encoding(max_length: int, d_model: int) -> Matrix:
-    return [sinusoidal_position(position, d_model) for position in range(max_length)]
+```{.python include="src/python/common.py" snippet="add_positional_encoding"}
 ```
-<!-- /snippet -->
 
 `add_positional_encoding` sums the token embedding matrix $X$ with the PE matrix element-wise, giving $\tilde{X} = X + PE$.
 
-<!-- snippet: src/python/common.py#add_positional_encoding -->
-```python
-def add_positional_encoding(tokens: Matrix, positions: Matrix) -> Matrix:
-    return matrix_add(tokens, positions[: len(tokens)])
+```{.python include="src/python/chapter_demos.py" snippet="chapter_05"}
 ```
-<!-- /snippet -->
 
-*Demo.*
-Run with `python3 src/python/chapter_demos.py`:
-
-<!-- snippet: src/python/chapter_demos.py#chapter_05 -->
-```python
-def chapter_05() -> dict[str, object]:
-    encoding = sinusoidal_encoding(4, 6)
-    return {
-        "shape": (len(encoding), len(encoding[0])),
-        "first": encoding[0],
-        "second": encoding[1],
-    }
-```
-<!-- /snippet -->
+The demo builds a small positional encoding matrix and returns its shape plus the first two rows.
+Run it with `python3 src/python/chapter_demos.py`.
 
 Figure @fig-ch05-code-pe-matrix shows the positional encoding matrix whose rows are added to token embeddings.
 

@@ -12,28 +12,28 @@ import random
 from typing import Iterable, Sequence
 
 
-# tag::types[]
-# tag::vector_type[]
+# start snippet types
+# start snippet vector_type
 Vector = list[float]
-# end::vector_type[]
-# tag::matrix_type[]
+# end snippet vector_type
+# start snippet matrix_type
 Matrix = list[list[float]]
-# end::matrix_type[]
-# end::types[]
+# end snippet matrix_type
+# end snippet types
 
 
-# tag::matrix[]
-# tag::make_matrix[]
+# start snippet matrix
+# start snippet make_matrix
 def make_matrix(rows: int, cols: int, fill: float = 0.0) -> Matrix:
     return [[fill for _ in range(cols)] for _ in range(rows)]
 
 
 def shape(matrix: Matrix) -> tuple[int, int]:
     return len(matrix), len(matrix[0]) if matrix else 0
-# end::make_matrix[]
+# end snippet make_matrix
 
 
-# tag::random_matrix[]
+# start snippet random_matrix
 def random_matrix(
     rows: int,
     cols: int,
@@ -42,95 +42,101 @@ def random_matrix(
 ) -> Matrix:
     scale = math.sqrt(2.0 / (rows + cols)) if scale is None else scale
     return [[rng.uniform(-scale, scale) for _ in range(cols)] for _ in range(rows)]
-# end::random_matrix[]
-# end::matrix[]
+# end snippet random_matrix
+# end snippet matrix
 
 
-# tag::vectors[]
-# tag::vector_ops[]
-# tag::add_vectors[]
+# start snippet vectors
+# start snippet vector_ops
+# start snippet add_vectors
 def add_vectors(left: Vector, right: Vector) -> Vector:
     return [a + b for a, b in zip(left, right)]
-# end::add_vectors[]
+# end snippet add_vectors
 
 
-# tag::scale_vector[]
+# start snippet scale_vector
 def scale_vector(vector: Vector, scalar: float) -> Vector:
     return [scalar * value for value in vector]
-# end::scale_vector[]
+# end snippet scale_vector
 
 
-# tag::vector_norm[]
+# start snippet vector_norm
 def vector_norm(vector: Sequence[float]) -> float:
     return math.sqrt(sum(value * value for value in vector))
-# end::vector_norm[]
+# end snippet vector_norm
 
 
-# tag::unit_vector[]
+# start snippet unit_vector
 def unit_vector(vector: Vector) -> Vector:
     return scale_vector(vector, 1.0 / vector_norm(vector))
-# end::unit_vector[]
-# end::vector_ops[]
+# end snippet unit_vector
+# end snippet vector_ops
 
 
-# tag::dot[]
+# start snippet dot
 def dot(left: Sequence[float], right: Sequence[float]) -> float:
     return sum(a * b for a, b in zip(left, right))
-# end::dot[]
+# end snippet dot
 
 
-# tag::cosine_similarity[]
+# start snippet cosine_similarity
 def cosine_similarity(left: Sequence[float], right: Sequence[float]) -> float:
     return dot(left, right) / (vector_norm(left) * vector_norm(right))
-# end::cosine_similarity[]
-# end::vectors[]
+# end snippet cosine_similarity
+# end snippet vectors
 
 
-# tag::matrix_ops[]
-# tag::transpose[]
+# start snippet matrix_ops
+# start snippet transpose
 def transpose(matrix: Matrix) -> Matrix:
     return [list(col) for col in zip(*matrix)]
-# end::transpose[]
+# end snippet transpose
 
 
+# start snippet matrix_add
 def matrix_add(left: Matrix, right: Matrix) -> Matrix:
     return [[a + b for a, b in zip(row_a, row_b)] for row_a, row_b in zip(left, right)]
+# end snippet matrix_add
 
 
+# start snippet matrix_scale
 def matrix_scale(matrix: Matrix, scalar: float) -> Matrix:
     return [[scalar * value for value in row] for row in matrix]
+# end snippet matrix_scale
 
 
-# tag::matrix_multiply[]
+# start snippet matrix_multiply
 def matrix_multiply(left: Matrix, right: Matrix) -> Matrix:
     right_t = transpose(right)
     return [[dot(row, col) for col in right_t] for row in left]
-# end::matrix_multiply[]
+# end snippet matrix_multiply
 
 
+# start snippet hstack
 def hstack(matrices: Sequence[Matrix]) -> Matrix:
     return [sum((matrix[row] for matrix in matrices), []) for row in range(len(matrices[0]))]
-# end::matrix_ops[]
+# end snippet hstack
+# end snippet matrix_ops
 
 
-# tag::softmax[]
-# tag::softmax_vector[]
+# start snippet softmax
+# start snippet softmax_vector
 def softmax(logits: Sequence[float]) -> Vector:
     max_logit = max(logits)
     exp_values = [math.exp(value - max_logit) for value in logits]
     total = sum(exp_values)
     return [value / total for value in exp_values]
-# end::softmax_vector[]
+# end snippet softmax_vector
 
 
-# tag::softmax_rows[]
+# start snippet softmax_rows
 def softmax_rows(matrix: Matrix) -> Matrix:
     return [softmax(row) for row in matrix]
-# end::softmax_rows[]
-# end::softmax[]
+# end snippet softmax_rows
+# end snippet softmax
 
 
-# tag::activations[]
+# start snippet activations
 def sigmoid(x: float) -> float:
     return 1.0 / (1.0 + math.exp(-x))
 
@@ -146,60 +152,60 @@ def gelu(x: float) -> float:
 
 def gelu_matrix(matrix: Matrix) -> Matrix:
     return [[gelu(value) for value in row] for row in matrix]
-# end::activations[]
+# end snippet activations
 
 
-# tag::logarithm[]
-# tag::natural_log[]
+# start snippet logarithm
+# start snippet natural_log
 def natural_log(value: float) -> float:
     return math.log(value)
-# end::natural_log[]
+# end snippet natural_log
 
 
-# tag::natural_exp[]
+# start snippet natural_exp
 def natural_exp(value: float) -> float:
     return math.exp(value)
-# end::natural_exp[]
-# end::logarithm[]
+# end snippet natural_exp
+# end snippet logarithm
 
 
-# tag::statistics[]
-# tag::mean[]
+# start snippet statistics
+# start snippet mean
 def mean(values: Sequence[float]) -> float:
     return sum(values) / len(values)
-# end::mean[]
+# end snippet mean
 
 
-# tag::variance[]
+# start snippet variance
 def variance(values: Sequence[float]) -> float:
     avg = mean(values)
     return sum((value - avg) ** 2 for value in values) / len(values)
-# end::variance[]
+# end snippet variance
 
 
-# tag::standard_deviation[]
+# start snippet standard_deviation
 def standard_deviation(values: Sequence[float]) -> float:
     return math.sqrt(variance(values))
-# end::standard_deviation[]
-# end::statistics[]
+# end snippet standard_deviation
+# end snippet statistics
 
 
-# tag::embedding[]
-# tag::embed_token[]
+# start snippet embedding
+# start snippet embed_token
 def embed_token(embedding: Matrix, token_id: int) -> Vector:
     return list(embedding[token_id])
-# end::embed_token[]
+# end snippet embed_token
 
 
-# tag::embed_sequence[]
+# start snippet embed_sequence
 def embed_sequence(embedding: Matrix, token_ids: Sequence[int]) -> Matrix:
     return [embed_token(embedding, token_id) for token_id in token_ids]
-# end::embed_sequence[]
-# end::embedding[]
+# end snippet embed_sequence
+# end snippet embedding
 
 
-# tag::positional_encoding[]
-# tag::sinusoidal_position[]
+# start snippet positional_encoding
+# start snippet sinusoidal_position
 def sinusoidal_position(position: int, d_model: int) -> Vector:
     row = []
     for i in range(d_model):
@@ -207,34 +213,39 @@ def sinusoidal_position(position: int, d_model: int) -> Vector:
         omega = 1.0 / (10000.0 ** (2.0 * k / d_model))
         row.append(math.sin(position * omega) if i % 2 == 0 else math.cos(position * omega))
     return row
-# end::sinusoidal_position[]
+# end snippet sinusoidal_position
 
 
-# tag::sinusoidal_encoding[]
+# start snippet sinusoidal_encoding
 def sinusoidal_encoding(max_length: int, d_model: int) -> Matrix:
     return [sinusoidal_position(position, d_model) for position in range(max_length)]
-# end::sinusoidal_encoding[]
+# end snippet sinusoidal_encoding
 
 
-# tag::add_positional_encoding[]
+# start snippet add_positional_encoding
 def add_positional_encoding(tokens: Matrix, positions: Matrix) -> Matrix:
     return matrix_add(tokens, positions[: len(tokens)])
-# end::add_positional_encoding[]
-# end::positional_encoding[]
+# end snippet add_positional_encoding
+# end snippet positional_encoding
 
 
-# tag::rope[]
-# tag::rope_rotate_vector[]
+# start snippet rope
+# start snippet rope_rotate_vector
+# start snippet rope_angle
 def rope_angle(position: int, pair_index: int, d_model: int) -> float:
     return position / (10000.0 ** (2.0 * pair_index / d_model))
+# end snippet rope_angle
 
 
+# start snippet rotate_pair
 def rotate_pair(x: float, y: float, angle: float) -> tuple[float, float]:
     cos_theta = math.cos(angle)
     sin_theta = math.sin(angle)
     return x * cos_theta - y * sin_theta, x * sin_theta + y * cos_theta
+# end snippet rotate_pair
 
 
+# start snippet apply_rope_to_vector
 def apply_rope_to_vector(vector: Vector, position: int) -> Vector:
     if len(vector) % 2 != 0:
         raise ValueError("RoPE requires an even vector dimension")
@@ -246,27 +257,28 @@ def apply_rope_to_vector(vector: Vector, position: int) -> Vector:
         x, y = rotate_pair(vector[i], vector[i + 1], angle)
         rotated.extend([x, y])
     return rotated
-# end::rope_rotate_vector[]
+# end snippet apply_rope_to_vector
+# end snippet rope_rotate_vector
 
 
-# tag::rope_matrix[]
+# start snippet rope_matrix
 def apply_rope(matrix: Matrix) -> Matrix:
     return [
         apply_rope_to_vector(row, position)
         for position, row in enumerate(matrix)
     ]
-# end::rope_matrix[]
-# end::rope[]
+# end snippet rope_matrix
+# end snippet rope
 
 
-# tag::attention[]
-# tag::causal_mask[]
+# start snippet attention
+# start snippet causal_mask
 def causal_mask(size: int) -> Matrix:
     return [[0.0 if j <= i else -1.0e9 for j in range(size)] for i in range(size)]
-# end::causal_mask[]
+# end snippet causal_mask
 
 
-# tag::sdpa[]
+# start snippet sdpa
 def scaled_dot_product_attention(query: Matrix, key: Matrix, value: Matrix) -> tuple[Matrix, Matrix]:
     d_key = shape(query)[1]
     scores = matrix_scale(matrix_multiply(query, transpose(key)), 1.0 / math.sqrt(d_key))
@@ -281,10 +293,10 @@ def self_attention(x: Matrix, wq: Matrix, wk: Matrix, wv: Matrix) -> tuple[Matri
         matrix_multiply(x, wk),
         matrix_multiply(x, wv),
     )
-# end::sdpa[]
+# end snippet sdpa
 
 
-# tag::rope_attention[]
+# start snippet rope_attention
 def scaled_dot_product_attention_with_rope(
     query: Matrix,
     key: Matrix,
@@ -295,12 +307,12 @@ def scaled_dot_product_attention_with_rope(
         apply_rope(key),
         value,
     )
-# end::rope_attention[]
-# end::attention[]
+# end snippet rope_attention
+# end snippet attention
 
 
-# tag::mha[]
-# tag::mha_params[]
+# start snippet mha
+# start snippet mha_params
 @dataclass
 class AttentionHead:
     wq: Matrix
@@ -327,10 +339,10 @@ def make_multi_head_attention(d_model: int, num_heads: int, rng: random.Random) 
         for _ in range(num_heads)
     ]
     return MultiHeadAttention(heads=heads, wo=random_matrix(d_model, d_model, rng))
-# end::mha_params[]
+# end snippet mha_params
 
 
-# tag::mha_forward[]
+# start snippet mha_forward
 def multi_head_attention(x: Matrix, params: MultiHeadAttention) -> tuple[Matrix, list[Matrix]]:
     results = [
         self_attention(x, head.wq, head.wk, head.wv)
@@ -338,12 +350,12 @@ def multi_head_attention(x: Matrix, params: MultiHeadAttention) -> tuple[Matrix,
     ]
     concatenated = hstack([output for output, _weights in results])
     return matrix_multiply(concatenated, params.wo), [weights for _output, weights in results]
-# end::mha_forward[]
-# end::mha[]
+# end snippet mha_forward
+# end snippet mha
 
 
-# tag::ffn[]
-# tag::make_feed_forward[]
+# start snippet ffn
+# start snippet make_feed_forward
 @dataclass
 class FeedForward:
     w1: Matrix
@@ -360,25 +372,25 @@ def make_feed_forward(d_model: int, rng: random.Random) -> FeedForward:
         w2=random_matrix(d_hidden, d_model, rng),
         b2=[0.0] * d_model,
     )
-# end::make_feed_forward[]
+# end snippet make_feed_forward
 
 
-# tag::add_bias[]
+# start snippet add_bias
 def add_bias(matrix: Matrix, bias: Vector) -> Matrix:
     return [[value + bias[j] for j, value in enumerate(row)] for row in matrix]
-# end::add_bias[]
+# end snippet add_bias
 
 
-# tag::feed_forward[]
+# start snippet feed_forward
 def feed_forward(x: Matrix, params: FeedForward) -> Matrix:
     hidden = gelu_matrix(add_bias(matrix_multiply(x, params.w1), params.b1))
     return add_bias(matrix_multiply(hidden, params.w2), params.b2)
-# end::feed_forward[]
-# end::ffn[]
+# end snippet feed_forward
+# end snippet ffn
 
 
-# tag::layer_norm[]
-# tag::layer_norm_vec[]
+# start snippet layer_norm
+# start snippet layer_norm_vec
 @dataclass
 class LayerNorm:
     gamma: Vector
@@ -397,18 +409,18 @@ def layer_norm_vector(vector: Vector, params: LayerNorm) -> Vector:
         params.gamma[i] * ((value - avg) / std) + params.beta[i]
         for i, value in enumerate(vector)
     ]
-# end::layer_norm_vec[]
+# end snippet layer_norm_vec
 
 
-# tag::layer_norm_matrix[]
+# start snippet layer_norm_matrix
 def layer_norm_matrix(matrix: Matrix, params: LayerNorm) -> Matrix:
     return [layer_norm_vector(row, params) for row in matrix]
-# end::layer_norm_matrix[]
-# end::layer_norm[]
+# end snippet layer_norm_matrix
+# end snippet layer_norm
 
 
-# tag::transformer_block[]
-# tag::transformer_block_params[]
+# start snippet transformer_block
+# start snippet transformer_block_params
 @dataclass
 class TransformerBlock:
     attention: MultiHeadAttention
@@ -424,10 +436,10 @@ def make_transformer_block(d_model: int, num_heads: int, rng: random.Random) -> 
         ln1=make_layer_norm(d_model),
         ln2=make_layer_norm(d_model),
     )
-# end::transformer_block_params[]
+# end snippet transformer_block_params
 
 
-# tag::transformer_block_forward[]
+# start snippet transformer_block_forward
 def transformer_block(x: Matrix, params: TransformerBlock) -> Matrix:
     attn_out, _weights = multi_head_attention(layer_norm_matrix(x, params.ln1), params.attention)
     x1 = matrix_add(x, attn_out)
@@ -439,11 +451,11 @@ def forward_stack(x: Matrix, blocks: Iterable[TransformerBlock]) -> Matrix:
     for block in blocks:
         x = transformer_block(x, block)
     return x
-# end::transformer_block_forward[]
-# end::transformer_block[]
+# end snippet transformer_block_forward
+# end snippet transformer_block
 
 
-# tag::gpt_config[]
+# start snippet gpt_config
 @dataclass(frozen=True)
 class GPTConfig:
     vocab_size: int
@@ -451,10 +463,10 @@ class GPTConfig:
     num_heads: int
     num_layers: int
     max_seq_len: int
-# end::gpt_config[]
+# end snippet gpt_config
 
 
-# tag::gpt_params[]
+# start snippet gpt_params
 @dataclass
 class GPTParams:
     wte: Matrix
@@ -473,10 +485,10 @@ def make_gpt_params(config: GPTConfig, rng: random.Random) -> GPTParams:
         ],
         ln_f=make_layer_norm(config.d_model),
     )
-# end::gpt_params[]
+# end snippet gpt_params
 
 
-# tag::gpt_forward[]
+# start snippet gpt_forward
 def gpt_forward(token_ids: Sequence[int], params: GPTParams, config: GPTConfig) -> Vector:
     if len(token_ids) > config.max_seq_len:
         raise ValueError("token_ids exceeds max_seq_len")
@@ -487,10 +499,10 @@ def gpt_forward(token_ids: Sequence[int], params: GPTParams, config: GPTConfig) 
     x = forward_stack(x, params.blocks)
     h = layer_norm_vector(x[-1], params.ln_f)
     return [dot(h, token_vector) for token_vector in params.wte]
-# end::gpt_forward[]
+# end snippet gpt_forward
 
 
-# tag::parameter_count[]
+# start snippet parameter_count
 def count_parameters(config: GPTConfig) -> int:
     d = config.d_model
     return (
@@ -499,4 +511,4 @@ def count_parameters(config: GPTConfig) -> int:
         + config.num_layers * (4 * d * d + 8 * d * d + 4 * d)
         + 2 * d
     )
-# end::parameter_count[]
+# end snippet parameter_count

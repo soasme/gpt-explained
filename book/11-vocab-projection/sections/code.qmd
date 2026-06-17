@@ -1,106 +1,27 @@
 ## The Code: Full microGPT Forward Pass in Python
 
-Configuration is data.
-We represent the model's five hyperparameters as a plain list and define selectors once.
-
-<!-- snippet: src/python/common.py#gpt_config -->
-```python
-@dataclass(frozen=True)
-class GPTConfig:
-    vocab_size: int
-    d_model: int
-    num_heads: int
-    num_layers: int
-    max_seq_len: int
+```{.python include="src/python/common.py" snippet="gpt_config"}
 ```
-<!-- /snippet -->
+
+Configuration is data.
+`GPTConfig` stores the model's five hyperparameters in one immutable object.
+
+```{.python include="src/python/common.py" snippet="gpt_params"}
+```
 
 `make_gpt_params` allocates all learnable weights.
 `wte` is the token embedding matrix $[|V| \times d]$; `wpe` is the position embedding matrix.
-Weight tying means the unembedding step will reuse `wte` transposed — no separate parameter is stored.
+Weight tying means the unembedding step will reuse `wte` transposed, so no separate parameter is stored.
 
-<!-- snippet: src/python/common.py#gpt_params -->
-```python
-@dataclass
-class GPTParams:
-    wte: Matrix
-    wpe: Matrix
-    blocks: list[TransformerBlock]
-    ln_f: LayerNorm
-
-
-def make_gpt_params(config: GPTConfig, rng: random.Random) -> GPTParams:
-    return GPTParams(
-        wte=random_matrix(config.vocab_size, config.d_model, rng),
-        wpe=random_matrix(config.max_seq_len, config.d_model, rng),
-        blocks=[
-            make_transformer_block(config.d_model, config.num_heads, rng)
-            for _ in range(config.num_layers)
-        ],
-        ln_f=make_layer_norm(config.d_model),
-    )
+```{.python include="src/python/common.py" snippet="gpt_forward"}
 ```
-<!-- /snippet -->
 
 `gpt_forward` is the full pipeline: embed token IDs, add position embeddings, pass through $N$ transformer blocks, apply the final layer norm to the last token's vector, then compute dot products with every row of `wte`.
 
-<!-- snippet: src/python/common.py#gpt_forward -->
-```python
-def gpt_forward(token_ids: Sequence[int], params: GPTParams, config: GPTConfig) -> Vector:
-    if len(token_ids) > config.max_seq_len:
-        raise ValueError("token_ids exceeds max_seq_len")
-
-    token_embeddings = embed_sequence(params.wte, token_ids)
-    position_embeddings = embed_sequence(params.wpe, range(len(token_ids)))
-    x = matrix_add(token_embeddings, position_embeddings)
-    x = forward_stack(x, params.blocks)
-    h = layer_norm_vector(x[-1], params.ln_f)
-    return [dot(h, token_vector) for token_vector in params.wte]
+```{.python include="src/python/inference.py" snippet="generation"}
 ```
-<!-- /snippet -->
 
 `generate` is the autoregressive loop.
-
-<!-- snippet: src/python/inference.py#generation -->
-```python
-def temperature_scale(logits: Sequence[float], temperature: float) -> list[float]:
-    return [value / temperature for value in logits]
-
-
-def top_k_filter(logits: Sequence[float], k: int) -> list[float]:
-    keep = {index for index, _value in sorted(enumerate(logits), key=lambda item: item[1], reverse=True)[:k]}
-    return [value if index in keep else -1.0e9 for index, value in enumerate(logits)]
-
-
-def sample_token(probabilities: Sequence[float], rng: random.Random) -> int:
-    threshold = rng.random()
-    cumulative = 0.0
-    for index, probability in enumerate(probabilities):
-        cumulative += probability
-        if threshold <= cumulative:
-            return index
-    return len(probabilities) - 1
-
-
-def generate(
-    params: GPTParams,
-    config: GPTConfig,
-    start_ids: Sequence[int],
-    max_new_tokens: int,
-    temperature: float,
-    top_k: int,
-    rng: random.Random,
-) -> list[int]:
-    tokens = list(start_ids)
-    generated = []
-    for _ in range(max_new_tokens):
-        logits = gpt_forward(tokens, params, config)
-        probabilities = softmax(top_k_filter(temperature_scale(logits, temperature), top_k))
-        next_token = sample_token(probabilities, rng)
-        tokens.append(next_token)
-        generated.append(next_token)
-    return generated
-```
-<!-- /snippet -->
+It repeatedly runs the model, scales and filters the logits, samples one next token, appends it to the context, and continues.
 
 Run with `python3 src/python/chapter_demos.py`.

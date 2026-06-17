@@ -3,52 +3,26 @@
 Chapter 3 already showed how text becomes token IDs.
 Here we start from those IDs and look up vectors.
 
-<!-- snippet: src/python/common.py#make_matrix -->
-```python
-def make_matrix(rows: int, cols: int, fill: float = 0.0) -> Matrix:
-    return [[fill for _ in range(cols)] for _ in range(rows)]
-
-
-def shape(matrix: Matrix) -> tuple[int, int]:
-    return len(matrix), len(matrix[0]) if matrix else 0
+```{.python include="src/python/common.py" snippet="make_matrix"}
 ```
-<!-- /snippet -->
 
 This helper creates a rows-by-cols grid of numbers.
 The embedding matrix uses the same matrix abstraction introduced earlier, so chapter 4 does not need a new data structure.
 
-<!-- snippet: src/python/common.py#random_matrix -->
-```python
-def random_matrix(
-    rows: int,
-    cols: int,
-    rng: random.Random,
-    scale: float | None = None,
-) -> Matrix:
-    scale = math.sqrt(2.0 / (rows + cols)) if scale is None else scale
-    return [[rng.uniform(-scale, scale) for _ in range(cols)] for _ in range(rows)]
+```{.python include="src/python/common.py" snippet="random_matrix"}
 ```
-<!-- /snippet -->
 
 `random_matrix` fills that grid with small random values.
 With the default Xavier scale, the random values are sized by $\sqrt{2/(fan_{in}+fan_{out})}$ so activations are less likely to explode or vanish.
 
-<!-- snippet: src/python/common.py#embed_token -->
-```python
-def embed_token(embedding: Matrix, token_id: int) -> Vector:
-    return list(embedding[token_id])
+```{.python include="src/python/common.py" snippet="embed_token"}
 ```
-<!-- /snippet -->
 
 The embedding of token $i$ is row $i$ of the matrix.
 This is a table lookup, not a calculation over the token ID itself.
 
-<!-- snippet: src/python/common.py#embed_sequence -->
-```python
-def embed_sequence(embedding: Matrix, token_ids: Sequence[int]) -> Matrix:
-    return [embed_token(embedding, token_id) for token_id in token_ids]
+```{.python include="src/python/common.py" snippet="embed_sequence"}
 ```
-<!-- /snippet -->
 
 A sequence of $T$ token IDs becomes $T$ row lookups stacked into a $[T \times d]$ matrix.
 The vector helpers used to compare rows are the same ones from @sec-ch02-notation.
@@ -56,19 +30,8 @@ The vector helpers used to compare rows are the same ones from @sec-ch02-notatio
 *Demo.*
 Run with `python3 src/python/chapter_demos.py`:
 
-<!-- snippet: src/python/chapter_demos.py#chapter_04 -->
-```python
-def chapter_04(seed: int = 4) -> dict[str, object]:
-    rng = random.Random(seed)
-    embedding = random_matrix(100, 8, rng)
-    x = embed_sequence(embedding, [1, 2, 3])
-    return {
-        "sequence_shape": (len(x), len(x[0])),
-        "dot": dot(embedding[1], embedding[2]),
-        "cosine": cosine_similarity(embedding[1], embedding[2]),
-    }
+```{.python include="src/python/chapter_demos.py" snippet="chapter_04"}
 ```
-<!-- /snippet -->
 
 The demo starts with token IDs, creates an embedding table, and returns the embedded sequence shape.
 It also compares two embedding rows with dot product and cosine similarity, reusing the chapter 2 helpers instead of repeating them here.
