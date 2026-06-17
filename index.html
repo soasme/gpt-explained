@@ -45,7 +45,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-5c6455a84bcea5f5637e4293716dd56f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-6a3bbeb4c3e7118f5bb1e8593622cb1d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -229,20 +229,26 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch07-multi-head-attention.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span></a>
+  <a href="./ch07-rope.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">RoPE: Position Inside Attention</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch08-feed-forward.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span></a>
+  <a href="./ch08-multi-head-attention.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch09-transformer-block.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span></a>
+  <a href="./ch09-feed-forward.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch10-transformer-block.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span></a>
   </div>
 </li>
       </ul>
@@ -258,20 +264,20 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch10-vocab-projection.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span></a>
+  <a href="./ch11-vocab-projection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch11-loss.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span></a>
+  <a href="./ch12-loss.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch12-training.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></a>
+  <a href="./ch13-training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></a>
   </div>
 </li>
       </ul>
@@ -287,8 +293,8 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch13-modern-gpt.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Modern GPT</span></span></a>
+  <a href="./ch14-modern-gpt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Modern GPT</span></span></a>
   </div>
 </li>
       </ul>
@@ -363,7 +369,7 @@ ul.task-list li input[type="checkbox"] {
 <p><em>A hands-on guide to transformer architecture, from tokens to text generation, with math, matrices, Python, and diagrams.</em></p>
 <p><strong>This is the website for <em>GPT Explained</em></strong>, an open book about how GPT-style language models actually work — from the inside out.</p>
 <p><strong>This book will teach you</strong> how transformers are built and trained. Not at a high level — at the level where you can read the code, follow the math, and trace a single token all the way through a real model.</p>
-<p><strong>You will learn</strong> tokenization, embeddings, positional encoding, attention, multi-head attention, feed-forward networks, transformer blocks, vocabulary projection, cross-entropy loss, and backpropagation. Each concept arrives as a focused chapter: a plain-language explanation, the math in full, a Python implementation you can run, and diagrams generated from code.</p>
+<p><strong>You will learn</strong> tokenization, embeddings, positional encoding, attention, RoPE, multi-head attention, feed-forward networks, transformer blocks, vocabulary projection, cross-entropy loss, and backpropagation. Each concept arrives as a focused chapter: a plain-language explanation, the math in full, a Python implementation you can run, and diagrams generated from code.</p>
 <p>In this book, you will build a small but complete GPT from scratch. Not a toy metaphor — actual matrix multiplications, actual softmax, actual multi-head attention, actual gradient descent. By the final chapter you will have a working miniature language model you can inspect line by line, and a clear mental model of every step a modern LLM takes between reading your prompt and writing its reply. The only prerequisites are basic Python and enough math to follow an equation when it is explained in words next to it. No machine-learning background is assumed.</p>
 <p><em>GPT Explained</em> is free to read online under the <a href="https://creativecommons.org/licenses/by-nc-sa/3.0/">Creative Commons Attribution-NonCommercial-ShareAlike 3.0</a> license. You may share and adapt the material for non-commercial purposes as long as you give credit and keep the same license. Ebook and PDF versions are available for download on the releases page.</p>
 <p>Contributions are welcome — whether that is a typo fix, a clearer explanation, a better diagram, or a new section. Open an issue or a pull request on <a href="https://github.com/soasme/gpt-explained">GitHub</a>. Please read the <a href="https://github.com/soasme/gpt-explained/blob/main/CODE_OF_CONDUCT.md">Code of Conduct</a> before contributing; we want this project to be a welcoming place for everyone learning how these models work.</p>

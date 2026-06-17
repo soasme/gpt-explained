@@ -9,7 +9,7 @@
 <meta name="author" content="Ju Lin">
 <meta name="description" content="A practical guide to GPT-style transformer architecture, from tokens to text generation, with math, matrices, Python, and diagrams.">
 
-<title>7&nbsp; Multi-Head Attention — Many Conversations at Once – GPT Explained</title>
+<title>12&nbsp; Loss — How the Model Learns – GPT Explained</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -70,8 +70,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./ch08-feed-forward.html" rel="next">
-<link href="./ch06-attention.html" rel="prev">
+<link href="./ch13-training.html" rel="next">
+<link href="./ch11-vocab-projection.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -81,7 +81,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-5c6455a84bcea5f5637e4293716dd56f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-6a3bbeb4c3e7118f5bb1e8593622cb1d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -151,7 +151,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./parts/transformer-core.html">Transformer Core</a></li><li class="breadcrumb-item"><a href="./ch07-multi-head-attention.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./parts/prediction-and-learning.html">Prediction and Learning</a></li><li class="breadcrumb-item"><a href="./ch12-loss.html"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -294,20 +294,26 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch07-multi-head-attention.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span></a>
+  <a href="./ch07-rope.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">RoPE: Position Inside Attention</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch08-feed-forward.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span></a>
+  <a href="./ch08-multi-head-attention.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch09-transformer-block.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span></a>
+  <a href="./ch09-feed-forward.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch10-transformer-block.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span></a>
   </div>
 </li>
       </ul>
@@ -323,20 +329,20 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch10-vocab-projection.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span></a>
+  <a href="./ch11-vocab-projection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch11-loss.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span></a>
+  <a href="./ch12-loss.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch12-training.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></a>
+  <a href="./ch13-training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></a>
   </div>
 </li>
       </ul>
@@ -352,8 +358,8 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch13-modern-gpt.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Modern GPT</span></span></a>
+  <a href="./ch14-modern-gpt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Modern GPT</span></span></a>
   </div>
 </li>
       </ul>
@@ -385,21 +391,21 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul class="collapse">
-  <li><a href="#the-idea" id="toc-the-idea" class="nav-link active" data-scroll-target="#the-idea"><span class="header-section-number">7.1</span> The Idea</a></li>
-  <li><a href="#the-math" id="toc-the-math" class="nav-link" data-scroll-target="#the-math"><span class="header-section-number">7.2</span> The Math</a></li>
-  <li><a href="#the-matrix-worked-example" id="toc-the-matrix-worked-example" class="nav-link" data-scroll-target="#the-matrix-worked-example"><span class="header-section-number">7.3</span> The Matrix: Worked Example</a></li>
-  <li><a href="#the-code-multi-head-attention-in-python" id="toc-the-code-multi-head-attention-in-python" class="nav-link" data-scroll-target="#the-code-multi-head-attention-in-python"><span class="header-section-number">7.4</span> The Code: Multi-Head Attention in Python</a></li>
-  <li><a href="#why-multi-head-attention-works" id="toc-why-multi-head-attention-works" class="nav-link" data-scroll-target="#why-multi-head-attention-works"><span class="header-section-number">7.5</span> Why Multi-Head Attention Works</a></li>
-  <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways"><span class="header-section-number">7.6</span> Key Takeaways</a></li>
+  <li><a href="#the-idea" id="toc-the-idea" class="nav-link active" data-scroll-target="#the-idea"><span class="header-section-number">12.1</span> The Idea</a></li>
+  <li><a href="#the-problem-evaluating-a-probability-distribution" id="toc-the-problem-evaluating-a-probability-distribution" class="nav-link" data-scroll-target="#the-problem-evaluating-a-probability-distribution"><span class="header-section-number">12.2</span> The Problem: Evaluating a Probability Distribution</a></li>
+  <li><a href="#cross-entropy-loss" id="toc-cross-entropy-loss" class="nav-link" data-scroll-target="#cross-entropy-loss"><span class="header-section-number">12.3</span> Cross-Entropy Loss</a></li>
+  <li><a href="#the-matrix-worked-example" id="toc-the-matrix-worked-example" class="nav-link" data-scroll-target="#the-matrix-worked-example"><span class="header-section-number">12.4</span> The Matrix: Worked Example</a></li>
+  <li><a href="#python-implementation" id="toc-python-implementation" class="nav-link" data-scroll-target="#python-implementation"><span class="header-section-number">12.5</span> Python Implementation</a></li>
+  <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways"><span class="header-section-number">12.6</span> Key Takeaways</a></li>
   </ul>
-<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch07-multi-head-attention.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch12-loss.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./parts/transformer-core.html">Transformer Core</a></li><li class="breadcrumb-item"><a href="./ch07-multi-head-attention.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./parts/prediction-and-learning.html">Prediction and Learning</a></li><li class="breadcrumb-item"><a href="./ch12-loss.html"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="sec-ch07-multi-head-attention" class="quarto-section-identifier"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span></h1>
+<h1 class="title"><span id="sec-ch12-loss" class="quarto-section-identifier"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span></h1>
 </div>
 
 
@@ -416,181 +422,278 @@ window.Quarto = {
 </header>
 
 
-<p>A single attention head is expressive, but limited. It produces one set of attention weights — one pattern of “who attends to whom.” In natural language, multiple distinct relationships coexist in the same sentence. Consider:</p>
-<pre class="text"><code>"The animal didn't cross the street because it was too tired."</code></pre>
-<ul>
-<li>One pattern might link “it” → “animal” (coreference)</li>
-<li>Another might link “cross” → “street” (verb-object)</li>
-<li>Another might track the causal structure “because”</li>
-</ul>
-<p>Multi-head attention runs <code>H</code> independent attention heads in parallel, each free to specialize on a different relationship type. Their outputs are concatenated and projected back to the model dimension.</p>
-<section id="the-idea" class="level2" data-number="7.1">
-<h2 data-number="7.1" class="anchored" data-anchor-id="the-idea"><span class="header-section-number">7.1</span> The Idea</h2>
-<p>A single attention operation produces one pattern of “who attends to whom.” But a sentence carries many different kinds of relationships at the same time.</p>
-<p>In “The animal didn’t cross the street because it was too tired”:</p>
-<ul>
-<li><em>it</em> refers back to <em>animal</em> — that is a <em>coreference</em> relationship.</li>
-<li><em>cross</em> links to <em>street</em> — that is a <em>verb-object</em> relationship.</li>
-<li><em>because</em> connects a cause to an effect — that is a <em>logical</em> relationship.</li>
-</ul>
-<p>One attention head can only focus on one of these at a time. Multi-head attention runs several independent attention operations <em>in parallel</em> — each one free to specialize on a different pattern. Each head sees the same input but learns to ask a different question of it.</p>
-<p>At the end, the results from all heads are stitched back together and projected into a single vector, the same size as before. The model learns entirely from data which head should track grammar, which should track meaning, which should track proximity — no one programs this in explicitly.</p>
-<p>The result is a richer representation than any single head could produce: each token’s final vector has been informed by multiple different lenses simultaneously.</p>
+<p>So far we have traced the forward pass from end to end. But none of that knowledge was conjured from thin air. The model <em>learned</em> by making predictions, measuring how wrong they were, and nudging every weight in the right direction — billions of times.</p>
+<p>This chapter is about that measurement: the <em>loss function</em>.</p>
+<section id="the-idea" class="level2" data-number="12.1">
+<h2 data-number="12.1" class="anchored" data-anchor-id="the-idea"><span class="header-section-number">12.1</span> The Idea</h2>
+<p>The model reads a sentence and, at each position, guesses what word comes next. Those guesses are never perfect — but how do we measure <em>how wrong</em> a guess is?</p>
+<p>We need a single number that captures “wrongness” in a way that is small when the model is doing well and large when it is doing badly. That number is the <em>loss</em>. And crucially, it needs to be computable from the model’s output so we can use it to improve the model.</p>
+<p>Here is the key insight: the model already outputs a probability for every word in the vocabulary. If the true next word is “cat” and the model assigns a 90% probability to “cat,” that is a good prediction — loss should be low. If the model assigns only 1% probability to “cat” (spreading the rest across unrelated words), that is a bad prediction — loss should be high.</p>
+<p>The <em>cross-entropy loss</em> formalizes this: it measures how much probability the model assigned to the <em>correct</em> answer. A perfect model assigns 100% to the right word — loss is zero. A confused model spreads probability thinly — loss is high.</p>
 </section>
-<section id="the-math" class="level2" data-number="7.2">
-<h2 data-number="7.2" class="anchored" data-anchor-id="the-math"><span class="header-section-number">7.2</span> The Math</h2>
-<p><em>Step 1 — Compute each head independently:</em></p>
-<p>For <span class="math inline">\(h = 1, \ldots, H\)</span>:</p>
+<section id="the-problem-evaluating-a-probability-distribution" class="level2" data-number="12.2">
+<h2 data-number="12.2" class="anchored" data-anchor-id="the-problem-evaluating-a-probability-distribution"><span class="header-section-number">12.2</span> The Problem: Evaluating a Probability Distribution</h2>
+<p>After the forward pass, the model produces a probability distribution over the vocabulary:</p>
 <p><span class="math display">\[
-\begin{aligned}
-Q^{h} &amp;= X W_q^{h} \in \mathbb{R}^{T\times d_k} \\
-K^{h} &amp;= X W_k^{h} \in \mathbb{R}^{T\times d_k} \\
-V^{h} &amp;= X W_v^{h} \in \mathbb{R}^{T\times d_v} \\
-\text{head}^{h} &amp;= \operatorname{softmax}\!\left(\frac{Q^{h}{K^{h}}^{\top}}{\sqrt{d_k}} + M\right) V^{h}
-\end{aligned}
+P(\cdot \mid t_1, \ldots, t_t) \in \mathbb{R}^{|V|}
 \]</span></p>
-<p><em>Step 2 — Concatenate:</em></p>
-<p><span class="math display">\[
-\operatorname{MultiHead} = \operatorname{concat}(\text{head}^1, \text{head}^2, \ldots, \text{head}^{H})   \in \mathbb{R}^{T \times (H\cdot d_v)}
-\]</span></p>
-<p>Since <span class="math inline">\(d_v = d/H\)</span>, the concatenated output has shape <span class="math inline">\([T \times d]\)</span> — the same as the input.</p>
-<p><em>Step 3 — Output projection:</em></p>
-<p><span class="math inline">\(W_o \in \mathbb{R}^{d\times d}\)</span> is a learned output projection matrix.</p>
-<p><span class="math display">\[
-\text{Output} = \operatorname{MultiHead} \cdot W_o \in \mathbb{R}^{T\times d}
-\]</span></p>
-<p>The final output projection mixes information across heads.</p>
-<p><em>Full formula:</em></p>
-<p><span class="math display">\[
-\text{MHA}(X) = [\text{head}^1 \| \text{head}^2 \| \ldots \| \text{head}^{H}]\, W_o
-\]</span></p>
-<p>where <span class="math inline">\(\text{head}^{h} = \operatorname{Attention}(X W_q^{h}, X W_k^{h}, X W_v^{h})\)</span>.</p>
+<p>We know the true next token <span class="math inline">\(t_{t+1}\)</span> (because it comes from the training text). The question is: <em>how do we turn “how wrong is this distribution” into a single differentiable number?</em></p>
+<p>The answer is <em>cross-entropy loss</em>.</p>
 </section>
-<section id="the-matrix-worked-example" class="level2" data-number="7.3">
-<h2 data-number="7.3" class="anchored" data-anchor-id="the-matrix-worked-example"><span class="header-section-number">7.3</span> The Matrix: Worked Example</h2>
-<p>Let <code>T = 3</code>, <code>d = 4</code>, <code>H = 2</code> heads, so <span class="math inline">\(d_k = d_v = 2\)</span>.</p>
-<p>Input:</p>
-<pre class="text"><code>X = [[1, 0, 1, 0],
-     [0, 1, 0, 1],
-     [1, 1, 0, 0]]   (3×4)</code></pre>
-<p><em>Head 1</em> uses the first 2 dimensions primarily.</p>
-<pre class="text"><code>Wq¹ = Wk¹ = Wv¹ = [[1,0],[0,1],[0,0],[0,0]]   (4×2)
-
-Q¹ = X Wq¹ = [[1,0],[0,1],[1,1]]   (3×2)</code></pre>
-<p>Scores: <span class="math inline">\(S^1 = Q^1{K^1}^{\top} / \sqrt{2}\)</span>:</p>
-<pre class="text"><code>Q¹K¹ᵀ = [[1,0,1],[0,1,1],[1,1,2]]
-S¹    = [[0.71, 0.00, 0.71],
-         [0.00, 0.71, 0.71],
-         [0.71, 0.71, 1.41]]</code></pre>
-<p>After causal mask and softmax:</p>
-<pre class="text"><code>A¹ = [[1.000, 0.000, 0.000],
-      [0.414, 0.586, 0.000],
-      [0.221, 0.221, 0.558]]
-
-head¹ = A¹ V¹ = [[1.000, 0.000],
-                 [0.586, 0.414],
-                 [0.779, 0.779]]    (3×2)</code></pre>
-<p><em>Head 2</em> focuses on last 2 dimensions, producing similarly shaped output. After concatenating both heads and applying the output projection <span class="math inline">\(W_o \in \mathbb{R}^{4\times 4}\)</span>:</p>
-<pre class="text"><code>MultiHead = [head¹ ‖ head²] =
-  [[1.000, 0.000, 1.000, 0.000],
-   [0.586, 0.414, 0.500, 0.500],
-   [0.779, 0.779, 0.421, 0.211]]   (3×4)</code></pre>
-<p>Figure <a href="#fig-ch07-matrix-mha" class="quarto-xref">Figure&nbsp;<span>7.1</span></a> shows parallel attention heads whose outputs are concatenated and projected back to model width.</p>
-<div id="fig-ch07-matrix-mha" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Multi-head attention — H parallel heads each attend independently, then concat + project.">
+<section id="cross-entropy-loss" class="level2" data-number="12.3">
+<h2 data-number="12.3" class="anchored" data-anchor-id="cross-entropy-loss"><span class="header-section-number">12.3</span> Cross-Entropy Loss</h2>
+<section id="the-formula" class="level3" data-number="12.3.1">
+<h3 data-number="12.3.1" class="anchored" data-anchor-id="the-formula"><span class="header-section-number">12.3.1</span> The Formula</h3>
+<p>For a single prediction at position <span class="math inline">\(t\)</span>:</p>
+<p><span class="math display">\[
+\mathcal{L}(t) = -\log P(t_{t+1} \mid t_1, \ldots, t_t)
+\]</span></p>
+<p>That’s it. Negative log of the probability assigned to the <em>true</em> next token.</p>
+</section>
+<section id="why-negative-log" class="level3" data-number="12.3.2">
+<h3 data-number="12.3.2" class="anchored" data-anchor-id="why-negative-log"><span class="header-section-number">12.3.2</span> Why Negative Log?</h3>
+<p>The model outputs a probability <span class="math inline">\(p \in (0, 1]\)</span>. We want a loss that is zero when the prediction is perfect (<span class="math inline">\(p = 1\)</span>), large when the model is wrong (<span class="math inline">\(p \to 0\)</span>), and differentiable everywhere.</p>
+<p><span class="math inline">\(-\log(p)\)</span> delivers all three:</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Predicted probability <span class="math inline">\(p\)</span></th>
+<th><span class="math inline">\(-\log(p)\)</span></th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>1.00</td>
+<td>0.00</td>
+<td>Perfect</td>
+</tr>
+<tr class="even">
+<td>0.80</td>
+<td>0.22</td>
+<td>Pretty good</td>
+</tr>
+<tr class="odd">
+<td>0.50</td>
+<td>0.69</td>
+<td>Random guess</td>
+</tr>
+<tr class="even">
+<td>0.10</td>
+<td>2.30</td>
+<td>Mostly wrong</td>
+</tr>
+<tr class="odd">
+<td>0.01</td>
+<td>4.61</td>
+<td>Very wrong</td>
+</tr>
+<tr class="even">
+<td>0.001</td>
+<td>6.91</td>
+<td>Catastrophically wrong</td>
+</tr>
+</tbody>
+</table>
+<p>Suppose the vocabulary has four tokens and the model assigns probabilities <span class="math inline">\([0.1, 0.6, 0.2, 0.1]\)</span>. If the correct token index is <span class="math inline">\(1\)</span>, then the probability of the correct answer is <span class="math inline">\(0.6\)</span>. The loss is:</p>
+<p><span class="math display">\[
+\mathcal{L} = -\log(0.6) \approx 0.511
+\]</span></p>
+<p>If the model assigned probability <span class="math inline">\(1.0\)</span> to the correct token, the loss would be <span class="math inline">\(0.0\)</span>. If it assigned <span class="math inline">\(0.01\)</span>, the loss would jump to <span class="math inline">\(4.605\)</span>. Low confidence in the correct answer is expensive, as <a href="#fig-ch12-cross-entropy" class="quarto-xref">Figure&nbsp;<span>12.1</span></a> shows.</p>
+<div id="cell-fig-ch12-cross-entropy" class="cell" data-execution_count="1">
+<div class="cell-output cell-output-display">
+<div id="fig-ch12-cross-entropy" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ch07-matrix-mha-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="images/ch05_mha.png" class="img-fluid figure-img" alt="Multi-head attention — H parallel heads each attend independently, then concat + project.">
+<div aria-describedby="fig-ch12-cross-entropy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="ch12-loss_files/figure-html/fig-ch12-cross-entropy-output-1.png" width="951" height="374" class="figure-img">
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch07-matrix-mha-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;7.1: Multi-head attention
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch12-cross-entropy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;12.1: Cross-entropy loss grows steeply as the model assigns less probability to the correct token
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p><em>Math Minute — Logarithms</em></p>
+<p><span class="math inline">\(\log(p)\)</span> for <span class="math inline">\(p \in (0,1]\)</span> is always <span class="math inline">\(\leq 0\)</span>. It passes through <span class="math inline">\((1, 0)\)</span> and tends to <span class="math inline">\(-\infty\)</span> as <span class="math inline">\(p \to 0\)</span>. Because we negate it, <span class="math inline">\(-\log(p) \geq 0\)</span>: zero means perfect, large means wrong. All modern ML uses natural log (base <span class="math inline">\(e\)</span>), so loss is measured in <em>nats</em>. Using base 2 gives <em>bits</em>.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="the-full-training-loss" class="level3" data-number="12.3.3">
+<h3 data-number="12.3.3" class="anchored" data-anchor-id="the-full-training-loss"><span class="header-section-number">12.3.3</span> The Full Training Loss</h3>
+<p>A single document of length <span class="math inline">\(T\)</span> contributes:</p>
+<p><span class="math display">\[
+\mathcal{L}_{\text{doc}} = \frac{1}{T} \sum_{t=1}^{T} -\log P(t_{t+1} \mid t_1, \ldots, t_t)
+\]</span></p>
+</section>
+<section id="perplexity" class="level3" data-number="12.3.4">
+<h3 data-number="12.3.4" class="anchored" data-anchor-id="perplexity"><span class="header-section-number">12.3.4</span> Perplexity</h3>
+<p>Loss as nats is hard to interpret intuitively. <em>Perplexity</em> converts it to something more concrete:</p>
+<p><span class="math display">\[
+\text{PPL} = e^{\mathcal{L}}
+\]</span></p>
+<p>Perplexity is the <em>effective branching factor</em>: on average, how many equally likely choices does the model think there are at each step?</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Loss <span class="math inline">\(\mathcal{L}\)</span></th>
+<th>Perplexity</th>
+<th>Interpretation</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>0.00</td>
+<td>1.0</td>
+<td>Perfect — only one plausible token</td>
+</tr>
+<tr class="even">
+<td>0.69</td>
+<td>2.0</td>
+<td>Two equally likely tokens</td>
+</tr>
+<tr class="odd">
+<td>2.30</td>
+<td>10.0</td>
+<td>Ten equally likely tokens</td>
+</tr>
+<tr class="even">
+<td>4.61</td>
+<td>100</td>
+<td>Random guess over 100 tokens</td>
+</tr>
+<tr class="odd">
+<td>6.91</td>
+<td>1000</td>
+<td>Very confused</td>
+</tr>
+</tbody>
+</table>
+<p>GPT-2 (1.5B) reached ~18 perplexity on WikiText-103. GPT-4 is estimated well below 5 on standard benchmarks. Early training starts around 100–1000; loss curves falling to perplexity ~10–20 signals the model has learned real language structure.</p>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p><em>Math Minute — Why Exponential?</em></p>
+<p>If a model assigns uniform probability <span class="math inline">\(1/k\)</span> to each of <span class="math inline">\(k\)</span> options, the cross-entropy is <span class="math inline">\(-\log(1/k) = \log k\)</span>. Exponentiating: <span class="math inline">\(e^{\log k} = k\)</span>. So perplexity of <span class="math inline">\(k\)</span> means the model behaves like a uniform distribution over <span class="math inline">\(k\)</span> choices. Perplexity 1 = model is certain. Perplexity <span class="math inline">\(|V|\)</span> ≈ 50,000 = model knows nothing.</p>
+</div>
+</div>
+</div>
+</section>
+<section id="teacher-forcing" class="level3" data-number="12.3.5">
+<h3 data-number="12.3.5" class="anchored" data-anchor-id="teacher-forcing"><span class="header-section-number">12.3.5</span> Teacher Forcing</h3>
+<p>Notice the formula conditions on <em>true</em> past tokens, not the model’s <em>own predictions</em>. This is called <em>teacher forcing</em>: during training, we always feed the ground-truth context.</p>
+<p>This makes training stable, parallelizable, and simple. The causal mask from <a href="ch06-attention.html" class="quarto-xref"><span>Chapter 6</span></a> is what enables this — position <span class="math inline">\(t\)</span> can only attend to positions <span class="math inline">\(1 \ldots t\)</span>, so the model’s prediction at position <span class="math inline">\(t\)</span> is causally correct even when processing all positions in parallel.</p>
+</section>
+<section id="cross-entropy-as-information-theory" class="level3" data-number="12.3.6">
+<h3 data-number="12.3.6" class="anchored" data-anchor-id="cross-entropy-as-information-theory"><span class="header-section-number">12.3.6</span> Cross-Entropy as Information Theory</h3>
+<p>Cross-entropy comes from information theory. The <em>cross-entropy</em> between true <span class="math inline">\(q\)</span> and predicted <span class="math inline">\(p\)</span> is:</p>
+<p><span class="math display">\[
+H(q, p) = -\sum_j q_j \log p_j
+\]</span></p>
+<p>When <span class="math inline">\(q\)</span> is one-hot, only the true token’s term survives: <span class="math inline">\(H(q, p) = -\log p_{t_{t+1}}\)</span>. Exactly our loss.</p>
+<p><em>Minimizing cross-entropy is equivalent to minimizing the KL divergence between the model’s predictions and the true data distribution.</em> This is why cross-entropy is the natural loss for language models.</p>
+</section>
+</section>
+<section id="the-matrix-worked-example" class="level2" data-number="12.4">
+<h2 data-number="12.4" class="anchored" data-anchor-id="the-matrix-worked-example"><span class="header-section-number">12.4</span> The Matrix: Worked Example</h2>
+<p>Trace the loss for a 4-token sequence <code>["The", "cat", "sat", "on"]</code> with <span class="math inline">\(|V| = 5\)</span> (toy vocabulary).</p>
+<section id="forward-pass-outputs" class="level3" data-number="12.4.1">
+<h3 data-number="12.4.1" class="anchored" data-anchor-id="forward-pass-outputs"><span class="header-section-number">12.4.1</span> Forward Pass Outputs</h3>
+<p>The model produces logits at each position. After softmax:</p>
+<pre class="text"><code>Position 0 (predicting token after "The"):
+  P = [0.05, 0.10, 0.60, 0.20, 0.05]   ← true next = token 3
+  P(true) = 0.20,  loss = -log(0.20) = 1.609
+
+Position 1 (predicting after "The cat"):
+  P = [0.10, 0.05, 0.15, 0.10, 0.60]   ← true next = token 4
+  P(true) = 0.60,  loss = -log(0.60) = 0.511
+
+Position 2 (predicting after "The cat sat"):
+  P = [0.40, 0.20, 0.15, 0.15, 0.10]   ← true next = token 0
+  P(true) = 0.40,  loss = -log(0.40) = 0.916
+
+Position 3 (predicting after "The cat sat on"):
+  P = [0.05, 0.05, 0.80, 0.05, 0.05]   ← true next = token 2
+  P(true) = 0.80,  loss = -log(0.80) = 0.223</code></pre>
+</section>
+<section id="total-loss" class="level3" data-number="12.4.2">
+<h3 data-number="12.4.2" class="anchored" data-anchor-id="total-loss"><span class="header-section-number">12.4.2</span> Total Loss</h3>
+<p><span class="math display">\[
+\mathcal{L} = \frac{1}{4}(1.609 + 0.511 + 0.916 + 0.223) = 0.815
+\]</span></p>
+<p><span class="math display">\[
+\text{PPL} = e^{0.815} \approx 2.26
+\]</span></p>
+<p>The model is effectively choosing between about 2.3 equally likely tokens on average.</p>
+<p>Figure <a href="#fig-ch12-matrix-loss" class="quarto-xref">Figure&nbsp;<span>12.2</span></a> shows cross-entropy loss as softmax probability followed by the negative log of the true-token probability.</p>
+<div id="fig-ch12-matrix-loss" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Cross-entropy loss: logits → softmax → negative log of true-token probability">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ch12-matrix-loss-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/ch12_loss.png" class="img-fluid figure-img" alt="Cross-entropy loss: logits → softmax → negative log of true-token probability">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch12-matrix-loss-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;12.2: Cross-entropy loss
 </figcaption>
 </figure>
 </div>
 </section>
-<section id="the-code-multi-head-attention-in-python" class="level2" data-number="7.4">
-<h2 data-number="7.4" class="anchored" data-anchor-id="the-code-multi-head-attention-in-python"><span class="header-section-number">7.4</span> The Code: Multi-Head Attention in Python</h2>
-<p>Each attention head is a triple of weight matrices <span class="math inline">\((W_q, W_k, W_v)\)</span>, each of shape <span class="math inline">\([d \times d_k]\)</span>. <code>MultiHeadAttention</code> groups the heads with the output projection <span class="math inline">\(W_o\)</span>; <code>make_multi_head_attention</code> allocates them.</p>
-<!-- snippet: src/python/common.py#mha_params -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> AttentionHead:</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    wq: Matrix</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    wk: Matrix</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    wv: Matrix</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> MultiHeadAttention:</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    heads: <span class="bu">list</span>[AttentionHead]</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    wo: Matrix</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_multi_head_attention(d_model: <span class="bu">int</span>, num_heads: <span class="bu">int</span>, rng: random.Random) <span class="op">-&gt;</span> MultiHeadAttention:</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> d_model <span class="op">%</span> num_heads <span class="op">!=</span> <span class="dv">0</span>:</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"d_model must be divisible by num_heads"</span>)</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    d_key <span class="op">=</span> d_model <span class="op">//</span> num_heads</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    heads <span class="op">=</span> [</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>        AttentionHead(</span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>            random_matrix(d_model, d_key, rng),</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>            random_matrix(d_model, d_key, rng),</span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>            random_matrix(d_model, d_key, rng),</span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(num_heads)</span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    ]</span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> MultiHeadAttention(heads<span class="op">=</span>heads, wo<span class="op">=</span>random_matrix(d_model, d_model, rng))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
-<p><code>multi_head_attention</code> runs each head’s SDPA independently, concatenates the per-head outputs column-wise, and applies the output projection.</p>
-<!-- snippet: src/python/common.py#mha_forward -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> multi_head_attention(x: Matrix, params: MultiHeadAttention) <span class="op">-&gt;</span> <span class="bu">tuple</span>[Matrix, <span class="bu">list</span>[Matrix]]:</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> [</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>        self_attention(x, head.wq, head.wk, head.wv)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> head <span class="kw">in</span> params.heads</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    ]</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    concatenated <span class="op">=</span> hstack([output <span class="cf">for</span> output, _weights <span class="kw">in</span> results])</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> matrix_multiply(concatenated, params.wo), [weights <span class="cf">for</span> _output, weights <span class="kw">in</span> results]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
-<p><em>Demo.</em> Run with <code>python3 src/python/chapter_demos.py</code>:</p>
-<!-- snippet: src/python/chapter_demos.py#chapter_07 -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> chapter_07(seed: <span class="bu">int</span> <span class="op">=</span> <span class="dv">7</span>) <span class="op">-&gt;</span> <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">object</span>]:</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> random.Random(seed)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> random_matrix(<span class="dv">4</span>, <span class="dv">8</span>, rng)</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    params <span class="op">=</span> make_multi_head_attention(<span class="dv">8</span>, <span class="dv">2</span>, rng)</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    output, weights <span class="op">=</span> multi_head_attention(x, params)</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"output_shape"</span>: (<span class="bu">len</span>(output), <span class="bu">len</span>(output[<span class="dv">0</span>])),</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"num_heads"</span>: <span class="bu">len</span>(weights),</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
 </section>
-<section id="why-multi-head-attention-works" class="level2" data-number="7.5">
-<h2 data-number="7.5" class="anchored" data-anchor-id="why-multi-head-attention-works"><span class="header-section-number">7.5</span> Why Multi-Head Attention Works</h2>
-<p>Each head learns to specialize. Research has identified heads that:</p>
-<ul>
-<li>Track <em>syntactic structure</em> (subject-verb agreement)</li>
-<li>Resolve <em>coreference</em> (“it” → “the cat”)</li>
-<li>Handle <em>positional offsets</em> (“look 2 tokens back”)</li>
-<li>Track <em>rare-word semantics</em></li>
-</ul>
-<p>These specializations emerge from training, not from explicit design.</p>
-<div class="callout callout-style-simple callout-note">
-<div class="callout-body d-flex">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-body-container">
-<p><em>Math Minute — Expressivity</em></p>
-<p>H heads of dimension d/H can represent attention patterns that a single head of dimension d cannot easily learn. This is analogous to having H different “lenses” looking at the same sequence — each lens focuses on different features. The output projection <code>Wo</code> then combines the views.</p>
-</div>
-</div>
-</div>
+<section id="python-implementation" class="level2" data-number="12.5">
+<h2 data-number="12.5" class="anchored" data-anchor-id="python-implementation"><span class="header-section-number">12.5</span> Python Implementation</h2>
+<p><code>cross_entropy_loss</code> computes <span class="math inline">\(-\log P(\text{true token})\)</span> for a single position.</p>
+<!-- snippet: src/python/train.py#cross_entropy_loss -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> cross_entropy_loss(logits: Sequence[<span class="bu">float</span>], true_id: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    probabilities <span class="op">=</span> softmax(logits)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">-</span>math.log(<span class="bu">max</span>(probabilities[true_id], <span class="fl">1.0e-12</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<!-- /snippet -->
+<p><code>sequence_loss</code> averages the per-position losses into one scalar — the training signal for a complete sequence. <code>perplexity</code> converts the mean loss back to an interpretable scale.</p>
+<!-- snippet: src/python/train.py#sequence_loss -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sequence_loss(logits_list: Sequence[Sequence[<span class="bu">float</span>]], true_ids: Sequence[<span class="bu">int</span>]) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    losses <span class="op">=</span> [cross_entropy_loss(logits, true_id) <span class="cf">for</span> logits, true_id <span class="kw">in</span> <span class="bu">zip</span>(logits_list, true_ids)]</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">sum</span>(losses) <span class="op">/</span> <span class="bu">len</span>(losses)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># tag::perplexity[]</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> perplexity(loss: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> math.exp(loss)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># end::perplexity[]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<!-- /snippet -->
+<p>The softmax-cross-entropy gradient has a clean closed form: <span class="math inline">\(\partial \mathcal{L} / \partial z_j = P(j) - \mathbf{1}[j = \text{true}]\)</span>.</p>
+<!-- snippet: src/python/train.py#loss_grad -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> softmax_cross_entropy_grad(logits: Sequence[<span class="bu">float</span>], true_id: <span class="bu">int</span>) <span class="op">-&gt;</span> Vector:</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    grad <span class="op">=</span> softmax(logits)</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    grad[true_id] <span class="op">-=</span> <span class="fl">1.0</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> grad</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<!-- /snippet -->
+<p>Run with <code>python3 src/python/chapter_demos.py</code>. Expected output:</p>
+<pre class="text"><code>Per-position losses:
+  pos 0 (true=3): loss=1.609  P(true)=0.200
+  pos 1 (true=4): loss=0.511  P(true)=0.600
+  pos 2 (true=0): loss=0.916  P(true)=0.400
+  pos 3 (true=2): loss=0.223  P(true)=0.800
+
+Mean loss: 0.815
+Perplexity: 2.26</code></pre>
 </section>
-<section id="key-takeaways" class="level2" data-number="7.6">
-<h2 data-number="7.6" class="anchored" data-anchor-id="key-takeaways"><span class="header-section-number">7.6</span> Key Takeaways</h2>
+<section id="key-takeaways" class="level2" data-number="12.6">
+<h2 data-number="12.6" class="anchored" data-anchor-id="key-takeaways"><span class="header-section-number">12.6</span> Key Takeaways</h2>
 <ul>
-<li>Multi-head attention runs <code>H</code> attention heads <em>in parallel</em>, each in a lower-dimensional subspace <span class="math inline">\(d_k = d/H\)</span>.</li>
-<li>Each head has independent <span class="math inline">\(W_q, W_k, W_v\)</span> matrices — each learns a different “question to ask.”</li>
-<li>Outputs are <em>concatenated</em> (not averaged), then projected back to <code>d</code> with <span class="math inline">\(W_o\)</span>.</li>
-<li>The total parameter count is <span class="math inline">\(3Hd\cdot d_k + d^2 = 3d^2 + d^2\)</span> — same as one large head.</li>
-<li>Different heads specialize in different linguistic relationships.</li>
+<li><em>Cross-entropy loss</em> is <span class="math inline">\(-\log P(\text{true next token})\)</span>. Zero when perfect, unbounded when wrong.</li>
+<li><em>Teacher forcing</em> feeds ground-truth context at training time, enabling full parallelism via causal masking.</li>
+<li><em>Perplexity</em> <span class="math inline">\(= e^{\mathcal{L}}\)</span> is the effective branching factor — more intuitive than raw nats.</li>
+<li><em>The softmax-CE gradient</em> is <span class="math inline">\(P(j) - \mathbf{1}[j = t_{t+1}]\)</span>: a closed-form, numerically stable backprop step.</li>
+<li><em>Cross-entropy = KL divergence</em> (since labels are one-hot), so training minimizes the KL from model predictions to the true data distribution.</li>
+<li>The loss is the <em>single</em> signal that shapes every weight: embeddings, attention projections, FFN weights, layer norms — all updated from this one number per token.</li>
 </ul>
 <div class="callout callout-style-simple callout-note">
 <div class="callout-body d-flex">
@@ -598,7 +701,7 @@ Figure&nbsp;7.1: Multi-head attention
 <i class="callout-icon"></i>
 </div>
 <div class="callout-body-container">
-<p><em>What’s next?</em> After attention mixes information across tokens, each token’s vector goes through a small <em>feed-forward network</em> — a two-layer MLP applied identically to every position. This is where most of the model’s stored “knowledge” lives. Chapter 6.</p>
+<p><em>What’s next?</em> <a href="#sec-ch12-loss" class="quarto-xref"><span>Chapter 12</span></a> gave us a loss: a single number measuring how wrong the model is. But knowing <em>how wrong</em> we are is not enough. We also need to know <em>which weights</em> are responsible for the error, and <em>by how much to change each one</em>. That is the job of <em>training</em> — <a href="ch13-training.html" class="quarto-xref"><span>Chapter 13</span></a>.</p>
 </div>
 </div>
 </div>
@@ -1014,13 +1117,13 @@ Figure&nbsp;7.1: Multi-head attention
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./ch06-attention.html" class="pagination-link" aria-label="Attention — Tokens Talking to Each Other">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Attention — Tokens Talking to Each Other</span></span>
+      <a href="./ch11-vocab-projection.html" class="pagination-link" aria-label="Vocabulary Projection — From Vectors to Words">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./ch08-feed-forward.html" class="pagination-link" aria-label="Feed-Forward Network — The Model's Memory">
-        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./ch13-training.html" class="pagination-link" aria-label="Training — Teaching the Model">
+        <span class="nav-page-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -1032,7 +1135,7 @@ Figure&nbsp;7.1: Multi-head attention
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch07-multi-head-attention.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch12-loss.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
 <p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
 </div>

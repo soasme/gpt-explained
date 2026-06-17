@@ -9,7 +9,7 @@
 <meta name="author" content="Ju Lin">
 <meta name="description" content="A practical guide to GPT-style transformer architecture, from tokens to text generation, with math, matrices, Python, and diagrams.">
 
-<title>Appendix A — microGPT in Python — Complete Runnable Code – GPT Explained</title>
+<title>13&nbsp; Training — Teaching the Model – GPT Explained</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -70,7 +70,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./ch14-modern-gpt.html" rel="prev">
+<link href="./parts/modern-gpt.html" rel="next">
+<link href="./ch12-loss.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -150,7 +151,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./A-microgpt.html">Appendices</a></li><li class="breadcrumb-item"><a href="./A-microgpt.html"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">microGPT in Python — Complete Runnable Code</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./parts/prediction-and-learning.html">Prediction and Learning</a></li><li class="breadcrumb-item"><a href="./ch13-training.html"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -340,7 +341,7 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch13-training.html" class="sidebar-item-text sidebar-link">
+  <a href="./ch13-training.html" class="sidebar-item-text sidebar-link active">
  <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></a>
   </div>
 </li>
@@ -374,7 +375,7 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-6" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./A-microgpt.html" class="sidebar-item-text sidebar-link active">
+  <a href="./A-microgpt.html" class="sidebar-item-text sidebar-link">
  <span class="menu-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">microGPT in Python — Complete Runnable Code</span></span></a>
   </div>
 </li>
@@ -390,19 +391,25 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul class="collapse">
-  <li><a href="#files" id="toc-files" class="nav-link active" data-scroll-target="#files"><span class="header-section-number">A.1</span> Files</a></li>
-  <li><a href="#installation-running" id="toc-installation-running" class="nav-link" data-scroll-target="#installation-running"><span class="header-section-number">A.2</span> Installation &amp; Running</a></li>
-  <li><a href="#end-to-end-demo" id="toc-end-to-end-demo" class="nav-link" data-scroll-target="#end-to-end-demo"><span class="header-section-number">A.3</span> End-to-End Demo</a></li>
-  <li><a href="#microgpt-architecture-summary-reference" id="toc-microgpt-architecture-summary-reference" class="nav-link" data-scroll-target="#microgpt-architecture-summary-reference"><span class="header-section-number">A.4</span> microGPT Architecture Summary (Reference)</a></li>
+  <li><a href="#the-idea" id="toc-the-idea" class="nav-link active" data-scroll-target="#the-idea"><span class="header-section-number">13.1</span> The Idea</a></li>
+  <li><a href="#the-goal-move-the-loss-down" id="toc-the-goal-move-the-loss-down" class="nav-link" data-scroll-target="#the-goal-move-the-loss-down"><span class="header-section-number">13.2</span> The Goal: Move the Loss Down</a></li>
+  <li><a href="#the-chain-rule" id="toc-the-chain-rule" class="nav-link" data-scroll-target="#the-chain-rule"><span class="header-section-number">13.3</span> The Chain Rule</a></li>
+  <li><a href="#backprop-through-softmax-and-cross-entropy" id="toc-backprop-through-softmax-and-cross-entropy" class="nav-link" data-scroll-target="#backprop-through-softmax-and-cross-entropy"><span class="header-section-number">13.4</span> Backprop Through Softmax and Cross-Entropy</a></li>
+  <li><a href="#backprop-through-a-linear-layer" id="toc-backprop-through-a-linear-layer" class="nav-link" data-scroll-target="#backprop-through-a-linear-layer"><span class="header-section-number">13.5</span> Backprop Through a Linear Layer</a></li>
+  <li><a href="#accumulating-gradients-across-the-sequence" id="toc-accumulating-gradients-across-the-sequence" class="nav-link" data-scroll-target="#accumulating-gradients-across-the-sequence"><span class="header-section-number">13.6</span> Accumulating Gradients Across the Sequence</a></li>
+  <li><a href="#the-gradient-descent-step" id="toc-the-gradient-descent-step" class="nav-link" data-scroll-target="#the-gradient-descent-step"><span class="header-section-number">13.7</span> The Gradient Descent Step</a></li>
+  <li><a href="#one-training-step" id="toc-one-training-step" class="nav-link" data-scroll-target="#one-training-step"><span class="header-section-number">13.8</span> One Training Step</a></li>
+  <li><a href="#watching-the-loss-fall" id="toc-watching-the-loss-fall" class="nav-link" data-scroll-target="#watching-the-loss-fall"><span class="header-section-number">13.9</span> Watching the Loss Fall</a></li>
+  <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways"><span class="header-section-number">13.10</span> Key Takeaways</a></li>
   </ul>
-<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/soasme/gpt-explained/edit/main/A-microgpt.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch13-training.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./A-microgpt.html">Appendices</a></li><li class="breadcrumb-item"><a href="./A-microgpt.html"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">microGPT in Python — Complete Runnable Code</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./parts/prediction-and-learning.html">Prediction and Learning</a></li><li class="breadcrumb-item"><a href="./ch13-training.html"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="A-microgpt" class="quarto-section-identifier">Appendix A — microGPT in Python — Complete Runnable Code</span></h1>
+<h1 class="title"><span id="sec-ch13-training" class="quarto-section-identifier"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></h1>
 </div>
 
 
@@ -419,134 +426,217 @@ window.Quarto = {
 </header>
 
 
-<p>This appendix assembles every Python snippet from the book into three files under <code>src/python/</code>, with all dependencies resolved. The implementation uses only the Python standard library.</p>
-<section id="files" class="level2" data-number="A.1">
-<h2 data-number="A.1" class="anchored" data-anchor-id="files"><span class="header-section-number">A.1</span> Files</h2>
-<ul>
-<li><code>common.py</code> — forward-pass building blocks (embeddings, attention, FFN, transformer, GPT forward)</li>
-<li><code>train.py</code> — loss functions and gradient descent (cross-entropy, backprop, SGD)</li>
-<li><code>inference.py</code> — generation and end-to-end demo</li>
-</ul>
+<p><a href="ch12-loss.html" class="quarto-xref"><span>Chapter 12</span></a> gave us a loss: a single number measuring how wrong the model is. But knowing <em>how wrong</em> we are is only half the battle. We also need to know <em>which weights</em> are responsible for the error, and <em>by how much to change each one</em>.</p>
+<p>That is the job of <em>training</em>.</p>
+<section id="the-idea" class="level2" data-number="13.1">
+<h2 data-number="13.1" class="anchored" data-anchor-id="the-idea"><span class="header-section-number">13.1</span> The Idea</h2>
+<p>The loss tells us <em>how wrong</em> the model was at its last prediction. Training uses that wrongness to <em>improve</em> the model, so it does better next time.</p>
+<p>Here is the core loop, in plain terms:</p>
+<ol type="1">
+<li><em>Forward pass</em>: feed a sentence into the model, let it predict the next word at every position, measure how wrong those predictions were (the loss).</li>
+<li><em>Backward pass</em>: trace back through every calculation the model just made and figure out, for each weight, whether increasing it would have made the loss higher or lower, and by how much. This produces a <em>gradient</em> for every weight.</li>
+<li><em>Update</em>: nudge each weight slightly in the direction that reduces the loss. Weights that caused big errors get bigger nudges; weights that barely mattered get smaller nudges.</li>
+<li><em>Repeat</em>: billions of times, across trillions of words.</li>
+</ol>
+<p>That is the entire training algorithm.</p>
 </section>
-<section id="installation-running" class="level2" data-number="A.2">
-<h2 data-number="A.2" class="anchored" data-anchor-id="installation-running"><span class="header-section-number">A.2</span> Installation &amp; Running</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode bash code-with-copy"><code class="sourceCode bash"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Run the full demo</span></span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> src/python/inference.py</span>
-<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Run every chapter's end-to-end code check</span></span>
-<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="ex">python3</span> src/python/run_book_code.py</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="the-goal-move-the-loss-down" class="level2" data-number="13.2">
+<h2 data-number="13.2" class="anchored" data-anchor-id="the-goal-move-the-loss-down"><span class="header-section-number">13.2</span> The Goal: Move the Loss Down</h2>
+<p>The model has millions of parameters. Call them collectively <span class="math inline">\(\theta\)</span>. The loss <span class="math inline">\(\mathcal{L}(\theta)\)</span> is a function of all of them. We want to find <span class="math inline">\(\theta\)</span> that minimizes the loss.</p>
+<p>The strategy is <em>gradient descent</em>: repeatedly take a small step downhill on the loss surface.</p>
+<p><span class="math display">\[
+\theta \leftarrow \theta - \eta \cdot \nabla_\theta \mathcal{L}
+\]</span></p>
+<p><span class="math inline">\(\eta &gt; 0\)</span> is the <em>learning rate</em>: how big a step to take. <span class="math inline">\(\nabla_\theta \mathcal{L}\)</span> is the <em>gradient</em>: a collection of partial derivatives, one per parameter.</p>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p><em>Math Minute — Partial Derivatives</em></p>
+<p>A partial derivative <span class="math inline">\(\frac{\partial \mathcal{L}}{\partial w}\)</span> answers: <em>if we increase <span class="math inline">\(w\)</span> by a tiny <span class="math inline">\(\epsilon\)</span> while holding every other weight fixed, by how much does <span class="math inline">\(\mathcal{L}\)</span> change?</em></p>
+<p>A large positive value means <span class="math inline">\(w\)</span> is pushing loss up; decrease it. A negative value means the opposite. Zero means <span class="math inline">\(w\)</span> is momentarily irrelevant to the loss.</p>
+<p>Notation: <span class="math inline">\(\partial\)</span> (curly d) instead of <span class="math inline">\(d\)</span> signals “partial”; other variables are held constant.</p>
+</div>
+</div>
+</div>
 </section>
-<section id="end-to-end-demo" class="level2" data-number="A.3">
-<h2 data-number="A.3" class="anchored" data-anchor-id="end-to-end-demo"><span class="header-section-number">A.3</span> End-to-End Demo</h2>
-<!-- snippet: src/python/inference.py#demo -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> demo(seed: <span class="bu">int</span> <span class="op">=</span> <span class="dv">7</span>) <span class="op">-&gt;</span> <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">object</span>]:</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    config <span class="op">=</span> GPTConfig(vocab_size<span class="op">=</span><span class="dv">100</span>, d_model<span class="op">=</span><span class="dv">32</span>, num_heads<span class="op">=</span><span class="dv">4</span>, num_layers<span class="op">=</span><span class="dv">2</span>, max_seq_len<span class="op">=</span><span class="dv">64</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    model_rng <span class="op">=</span> random.Random(seed)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    sample_rng <span class="op">=</span> random.Random(seed <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    params <span class="op">=</span> make_gpt_params(config, model_rng)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    logits <span class="op">=</span> gpt_forward([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>], params, config)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    probabilities <span class="op">=</span> softmax(logits)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    top_token <span class="op">=</span> <span class="bu">max</span>(<span class="bu">range</span>(<span class="bu">len</span>(probabilities)), key<span class="op">=</span>probabilities.<span class="fu">__getitem__</span>)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    generated <span class="op">=</span> generate(params, config, [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>], <span class="dv">10</span>, temperature<span class="op">=</span><span class="fl">0.8</span>, top_k<span class="op">=</span><span class="dv">10</span>, rng<span class="op">=</span>sample_rng)</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"config"</span>: config,</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"parameters"</span>: count_parameters(config),</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">"logits_first_10"</span>: logits[:<span class="dv">10</span>],</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">"top_token"</span>: top_token,</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">"top_probability"</span>: probabilities[top_token],</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        <span class="st">"generated"</span>: generated,</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>        <span class="st">"full_sequence"</span>: [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>] <span class="op">+</span> generated,</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<section id="the-chain-rule" class="level2" data-number="13.3">
+<h2 data-number="13.3" class="anchored" data-anchor-id="the-chain-rule"><span class="header-section-number">13.3</span> The Chain Rule</h2>
+<p>Backpropagation is the chain rule from calculus, applied to a computation graph.</p>
+<p>Suppose the loss depends on weight <span class="math inline">\(w\)</span> through a chain of intermediate values:</p>
+<p><span class="math display">\[
+w \xrightarrow{f} z \xrightarrow{g} \mathcal{L}
+\]</span></p>
+<p>The chain rule says:</p>
+<p><span class="math display">\[
+\frac{d\mathcal{L}}{dw} = \frac{d\mathcal{L}}{dz} \cdot \frac{dz}{dw}
+\]</span></p>
+<p><em>If we know how <span class="math inline">\(\mathcal{L}\)</span> varies with <span class="math inline">\(z\)</span>, and how <span class="math inline">\(z\)</span> varies with <span class="math inline">\(w\)</span>, we multiply to get how <span class="math inline">\(\mathcal{L}\)</span> varies with <span class="math inline">\(w\)</span>.</em></p>
+<p>In a transformer, the chain has hundreds of layers. Backprop starts at the loss and works backward, multiplying local derivatives as it goes. Each layer only needs two things: the gradient arriving from the layer above (called <span class="math inline">\(\delta\)</span>, “delta”), and its own local derivative.</p>
+<section id="step-1-a-gradient-update-for-one-weight" class="level3" data-number="13.3.1">
+<h3 data-number="13.3.1" class="anchored" data-anchor-id="step-1-a-gradient-update-for-one-weight"><span class="header-section-number">13.3.1</span> Step 1: A gradient update for one weight</h3>
+<!-- snippet: src/python/train.py#sgd_update_scalar -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sgd_update_scalar(weight: <span class="bu">float</span>, gradient: <span class="bu">float</span>, learning_rate: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> weight <span class="op">-</span> learning_rate <span class="op">*</span> gradient</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<!-- /snippet -->
+<p>If the gradient is positive (loss rises when <span class="math inline">\(w\)</span> increases), we subtract — decreasing <span class="math inline">\(w\)</span>. If negative, we add. The learning rate <span class="math inline">\(\eta\)</span> scales how large the step is.</p>
+<p>This is the entire idea. Everything that follows is this rule, applied to millions of weights simultaneously.</p>
+</section>
+</section>
+<section id="backprop-through-softmax-and-cross-entropy" class="level2" data-number="13.4">
+<h2 data-number="13.4" class="anchored" data-anchor-id="backprop-through-softmax-and-cross-entropy"><span class="header-section-number">13.4</span> Backprop Through Softmax and Cross-Entropy</h2>
+<p><a href="ch12-loss.html" class="quarto-xref"><span>Chapter 12</span></a> stated the softmax-CE gradient without proof:</p>
+<p><span class="math display">\[
+\frac{\partial \mathcal{L}}{\partial z_j} = P(j) - \mathbb{1}[j = t]
+\]</span></p>
+<p>where <span class="math inline">\(z_j\)</span> are the logits and <span class="math inline">\(t\)</span> is the true token.</p>
+<p>For the true token <span class="math inline">\(j = t\)</span>: gradient is <span class="math inline">\(P_t - 1\)</span> (negative, so we push <span class="math inline">\(z_t\)</span> up). For every other token: gradient is <span class="math inline">\(P_j\)</span> (positive, so we push those logits down). The model is nudged to be more confident about the correct answer.</p>
+<!-- snippet: src/python/train.py#loss_grad -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> softmax_cross_entropy_grad(logits: Sequence[<span class="bu">float</span>], true_id: <span class="bu">int</span>) <span class="op">-&gt;</span> Vector:</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    grad <span class="op">=</span> softmax(logits)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    grad[true_id] <span class="op">-=</span> <span class="fl">1.0</span></span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> grad</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <!-- /snippet -->
 </section>
-<section id="microgpt-architecture-summary-reference" class="level2" data-number="A.4">
-<h2 data-number="A.4" class="anchored" data-anchor-id="microgpt-architecture-summary-reference"><span class="header-section-number">A.4</span> microGPT Architecture Summary (Reference)</h2>
+<section id="backprop-through-a-linear-layer" class="level2" data-number="13.5">
+<h2 data-number="13.5" class="anchored" data-anchor-id="backprop-through-a-linear-layer"><span class="header-section-number">13.5</span> Backprop Through a Linear Layer</h2>
+<p>The most common operation in a transformer is a <em>linear layer</em>: <span class="math inline">\(y = Wx\)</span>.</p>
+<p>Given the upstream gradient <span class="math inline">\(\delta = \frac{\partial \mathcal{L}}{\partial y}\)</span> (arriving from the layer above), the chain rule gives:</p>
+<p><span class="math display">\[
+\frac{\partial \mathcal{L}}{\partial W} = \delta \cdot x^\top
+\qquad
+\frac{\partial \mathcal{L}}{\partial x} = W^\top \cdot \delta
+\]</span></p>
+<p>The first equation tells us how to update <span class="math inline">\(W\)</span>. The second passes the gradient backward to whatever fed <span class="math inline">\(x\)</span> into this layer.</p>
+<section id="step-2-linear-layer-backward-pass" class="level3" data-number="13.5.1">
+<h3 data-number="13.5.1" class="anchored" data-anchor-id="step-2-linear-layer-backward-pass"><span class="header-section-number">13.5.1</span> Step 2: Linear layer backward pass</h3>
+<!-- snippet: src/python/train.py#linear_backward -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> linear_backward(delta: Vector, weights: Matrix, x: Vector) <span class="op">-&gt;</span> <span class="bu">tuple</span>[Matrix, Vector]:</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    grad_w <span class="op">=</span> [[delta_i <span class="op">*</span> x_j <span class="cf">for</span> x_j <span class="kw">in</span> x] <span class="cf">for</span> delta_i <span class="kw">in</span> delta]</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    grad_x <span class="op">=</span> [<span class="bu">sum</span>(weights[i][j] <span class="op">*</span> delta[i] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(delta))) <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(x))]</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> grad_w, grad_x</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<!-- /snippet -->
+</section>
+</section>
+<section id="accumulating-gradients-across-the-sequence" class="level2" data-number="13.6">
+<h2 data-number="13.6" class="anchored" data-anchor-id="accumulating-gradients-across-the-sequence"><span class="header-section-number">13.6</span> Accumulating Gradients Across the Sequence</h2>
+<p>We compute the softmax-CE gradient independently at each position <span class="math inline">\(t\)</span>. But all positions share the same unembedding matrix <span class="math inline">\(W_u\)</span> (and the same transformer weights). Their gradient contributions must be <em>summed</em> before updating any weight.</p>
+<section id="step-4-summing-gradient-contributions" class="level3" data-number="13.6.1">
+<h3 data-number="13.6.1" class="anchored" data-anchor-id="step-4-summing-gradient-contributions"><span class="header-section-number">13.6.1</span> Step 4: Summing gradient contributions</h3>
+<!-- snippet: src/python/train.py#accumulate_gradients -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> accumulate_gradients(gradients: Sequence[Matrix]) <span class="op">-&gt;</span> Matrix:</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    rows, cols <span class="op">=</span> shape(gradients[<span class="dv">0</span>])</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    total <span class="op">=</span> make_matrix(rows, cols)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> gradient <span class="kw">in</span> gradients:</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        total <span class="op">=</span> matrix_add(total, gradient)</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> total</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<!-- /snippet -->
+<p>The more a weight influenced the output at many positions, the larger (and more reliable) its accumulated gradient.</p>
+</section>
+</section>
+<section id="the-gradient-descent-step" class="level2" data-number="13.7">
+<h2 data-number="13.7" class="anchored" data-anchor-id="the-gradient-descent-step"><span class="header-section-number">13.7</span> The Gradient Descent Step</h2>
+<p>With gradients accumulated for every parameter, the update rule is:</p>
+<p><span class="math display">\[
+W \leftarrow W - \eta \cdot \frac{\partial \mathcal{L}}{\partial W}
+\]</span></p>
+<section id="step-5-updating-a-weight-matrix-in-place" class="level3" data-number="13.7.1">
+<h3 data-number="13.7.1" class="anchored" data-anchor-id="step-5-updating-a-weight-matrix-in-place"><span class="header-section-number">13.7.1</span> Step 5: Updating a weight matrix in place</h3>
+<!-- snippet: src/python/train.py#sgd_update_matrix -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sgd_update_matrix(weights: Matrix, gradient: Matrix, learning_rate: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i, row <span class="kw">in</span> <span class="bu">enumerate</span>(weights):</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> j, value <span class="kw">in</span> <span class="bu">enumerate</span>(row):</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>            row[j] <span class="op">=</span> value <span class="op">-</span> learning_rate <span class="op">*</span> gradient[i][j]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<!-- /snippet -->
+<p>Every entry <span class="math inline">\(W_{ij}\)</span> moves a small step in the direction that reduces the loss.</p>
+</section>
+</section>
+<section id="one-training-step" class="level2" data-number="13.8">
+<h2 data-number="13.8" class="anchored" data-anchor-id="one-training-step"><span class="header-section-number">13.8</span> One Training Step</h2>
+<p>Now we can assemble the full cycle: forward pass to get predictions and loss, backward pass to get gradients, update pass to improve every weight.</p>
+</section>
+<section id="watching-the-loss-fall" class="level2" data-number="13.9">
+<h2 data-number="13.9" class="anchored" data-anchor-id="watching-the-loss-fall"><span class="header-section-number">13.9</span> Watching the Loss Fall</h2>
+<p>Running thousands of training steps, the loss curve looks roughly like this:</p>
 <table class="caption-top table">
-<colgroup>
-<col style="width: 25%">
-<col style="width: 25%">
-<col style="width: 25%">
-<col style="width: 25%">
-</colgroup>
 <thead>
 <tr class="header">
-<th>Component</th>
-<th>Input</th>
-<th>Output</th>
-<th>Parameters</th>
+<th>Step</th>
+<th>Loss</th>
+<th>Perplexity</th>
+<th>Interpretation</th>
 </tr>
 </thead>
 <tbody>
 <tr class="odd">
-<td>Token Embedding</td>
-<td><code>[T]</code> ints</td>
-<td><span class="math inline">\([T \times d]\)</span></td>
-<td><span class="math inline">\(|V| \times d\)</span></td>
-</tr>
-<tr class="even">
-<td>Positional Embedding</td>
-<td><code>[T]</code> positions</td>
-<td><span class="math inline">\([T \times d]\)</span></td>
-<td><span class="math inline">\(T_{max} \times d\)</span></td>
-</tr>
-<tr class="odd">
-<td>× N Transformer Blocks</td>
-<td></td>
-<td></td>
-<td></td>
-</tr>
-<tr class="even">
-<td>LayerNorm 1</td>
-<td><span class="math inline">\([T \times d]\)</span></td>
-<td><span class="math inline">\([T \times d]\)</span></td>
-<td><code>2d</code></td>
-</tr>
-<tr class="odd">
-<td>Multi-Head Attn</td>
-<td><span class="math inline">\([T \times d]\)</span></td>
-<td><span class="math inline">\([T \times d]\)</span></td>
-<td><span class="math inline">\(4d^2\)</span></td>
-</tr>
-<tr class="even">
-<td>Residual</td>
-<td><span class="math inline">\([T \times d]\)</span></td>
-<td><span class="math inline">\([T \times d]\)</span></td>
 <td>0</td>
-</tr>
-<tr class="odd">
-<td>LayerNorm 2</td>
-<td><span class="math inline">\([T \times d]\)</span></td>
-<td><span class="math inline">\([T \times d]\)</span></td>
-<td><code>2d</code></td>
+<td>10.82</td>
+<td>50,000</td>
+<td>Random — model knows nothing</td>
 </tr>
 <tr class="even">
-<td>FFN</td>
-<td><span class="math inline">\([T \times d]\)</span></td>
-<td><span class="math inline">\([T \times d]\)</span></td>
-<td><span class="math inline">\(8d^2\)</span></td>
+<td>100</td>
+<td>6.91</td>
+<td>1,000</td>
+<td>Ruling out most tokens</td>
 </tr>
 <tr class="odd">
-<td>Residual</td>
-<td><span class="math inline">\([T \times d]\)</span></td>
-<td><span class="math inline">\([T \times d]\)</span></td>
-<td>0</td>
+<td>1,000</td>
+<td>4.61</td>
+<td>100</td>
+<td>Learned basic frequency</td>
 </tr>
 <tr class="even">
-<td>Final LayerNorm</td>
-<td><span class="math inline">\([T \times d]\)</span></td>
-<td><span class="math inline">\([T \times d]\)</span></td>
-<td><code>2d</code></td>
+<td>10,000</td>
+<td>2.30</td>
+<td>10</td>
+<td>Has rough grammar</td>
 </tr>
 <tr class="odd">
-<td>Unembedding</td>
-<td><code>[d]</code></td>
-<td><span class="math inline">\([|V|]\)</span></td>
-<td><span class="math inline">\(d \times |V|\)</span> (tied)</td>
+<td>100,000</td>
+<td>0.92</td>
+<td>2.5</td>
+<td>Strong language model</td>
 </tr>
 </tbody>
 </table>
-<p><em>Total parameters:</em> <span class="math inline">\(2|V|d + T_{max}\cdot d + N(12d^2 + 4d) + 2d\)</span></p>
-<p>For GPT-2 small: <code>d=768, N=12, |V|=50257, T_max=1024</code> → ~117M params.</p>
+<p>The curve drops steeply at first (obvious mistakes are easy to fix) then more slowly and noisily (subtle patterns are harder and data points disagree).</p>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p><em>Why does loss get noisy later?</em></p>
+<p>Early on, large gradients correct glaring errors. Later, gradients are smaller and point in slightly different directions for different training examples. The noise is not a bug: random variation in gradient direction helps the model escape poor local minima. This is the <em>stochastic</em> in <em>stochastic gradient descent</em> (SGD).</p>
+</div>
+</div>
+</div>
+<p>Figure <a href="#fig-ch13-update-training" class="quarto-xref">Figure&nbsp;<span>13.1</span></a> shows gradients flowing backward from the loss through each layer while weights are updated.</p>
+<div id="fig-ch13-update-training" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Backpropagation: gradient flowing from loss backward through each layer, updating weights">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ch13-update-training-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/ch13_training.png" class="img-fluid figure-img" alt="Backpropagation: gradient flowing from loss backward through each layer, updating weights">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch13-update-training-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;13.1: Backpropagation and weight updates
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="key-takeaways" class="level2" data-number="13.10">
+<h2 data-number="13.10" class="anchored" data-anchor-id="key-takeaways"><span class="header-section-number">13.10</span> Key Takeaways</h2>
+<ul>
+<li><em>Gradient descent</em> moves every weight downhill: <span class="math inline">\(\theta \leftarrow \theta - \eta \nabla_\theta \mathcal{L}\)</span>.</li>
+<li><em>Partial derivatives</em> measure the sensitivity of the loss to each individual weight, holding all others fixed.</li>
+<li><em>Backpropagation</em> is the chain rule applied layer by layer from loss to inputs. Each layer only needs the upstream gradient <span class="math inline">\(\delta\)</span> and its own local derivative; no global information required.</li>
+<li><em>Linear layer backward:</em> <span class="math inline">\(\frac{\partial \mathcal{L}}{\partial W} = \delta x^\top\)</span>, <span class="math inline">\(\frac{\partial \mathcal{L}}{\partial x} = W^\top \delta\)</span>. The same two matrices as the forward pass, just transposed and multiplied in a different order.</li>
+<li><em>Softmax-CE gradient</em> is <span class="math inline">\(P(j) - \mathbb{1}[j = t]\)</span>: the model’s predicted probability minus the true label. Nearly zero when correct and confident; large when wrong.</li>
+<li><em>Shared weights accumulate gradients</em> from every position in the sequence before any update is applied.</li>
+<li>The six-step cycle (forward, loss, backward, accumulate, update, repeat) is all of training. Every weight in the model, over billions of tokens, updated by exactly this loop.</li>
+</ul>
 
 
 </section>
@@ -959,11 +1049,14 @@ window.Quarto = {
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./ch14-modern-gpt.html" class="pagination-link" aria-label="Modern GPT">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Modern GPT</span></span>
+      <a href="./ch12-loss.html" class="pagination-link" aria-label="Loss — How the Model Learns">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
+      <a href="./parts/modern-gpt.html" class="pagination-link" aria-label="Modern Extensions">
+        <span class="nav-page-text">Modern Extensions</span> <i class="bi bi-arrow-right-short"></i>
+      </a>
   </div>
 </nav>
 </div> <!-- /content -->
@@ -974,7 +1067,7 @@ window.Quarto = {
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/soasme/gpt-explained/edit/main/A-microgpt.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch13-training.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
 <p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
 </div>

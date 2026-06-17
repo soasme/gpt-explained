@@ -81,7 +81,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-5c6455a84bcea5f5637e4293716dd56f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-6a3bbeb4c3e7118f5bb1e8593622cb1d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -294,20 +294,26 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch07-multi-head-attention.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span></a>
+  <a href="./ch07-rope.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">RoPE: Position Inside Attention</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch08-feed-forward.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span></a>
+  <a href="./ch08-multi-head-attention.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch09-transformer-block.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span></a>
+  <a href="./ch09-feed-forward.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch10-transformer-block.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span></a>
   </div>
 </li>
       </ul>
@@ -323,20 +329,20 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch10-vocab-projection.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span></a>
+  <a href="./ch11-vocab-projection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch11-loss.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span></a>
+  <a href="./ch12-loss.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch12-training.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></a>
+  <a href="./ch13-training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></a>
   </div>
 </li>
       </ul>
@@ -352,8 +358,8 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch13-modern-gpt.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Modern GPT</span></span></a>
+  <a href="./ch14-modern-gpt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Modern GPT</span></span></a>
   </div>
 </li>
       </ul>
@@ -447,7 +453,7 @@ PE(t,\, 2i+1) &amp;= \cos\!\left(\frac{t}{10000^{2i/d}}\right)
 <li><em>Smooth:</em> Nearby positions have similar encodings, so the model can learn “close in position → related in meaning.”</li>
 <li><em>Extrapolatable:</em> The formula works for any <code>t</code>, even positions not seen during training.</li>
 </ol>
-<p><em>A key property:</em> The encoding for position <code>t+k</code> can be expressed as a <em>linear transformation</em> of the encoding for position <code>t</code>. This means the model can learn to attend to “the token 3 positions back” using a simple linear operation — no memorization of absolute positions required.</p>
+<p><em>Relative position:</em> The encoding for position <code>t+k</code> can be expressed as a linear transformation of the encoding for position <code>t</code>. The model can therefore attend to “the token 3 positions back” with a simple linear operation, without memorizing absolute positions.</p>
 </section>
 <section id="the-math" class="level2" data-number="5.3">
 <h2 data-number="5.3" class="anchored" data-anchor-id="the-math"><span class="header-section-number">5.3</span> The Math</h2>
@@ -510,7 +516,7 @@ Figure&nbsp;5.1: Sinusoidal positional encoding heatmap
 </section>
 <section id="the-code-positional-encoding-in-python" class="level2" data-number="5.5">
 <h2 data-number="5.5" class="anchored" data-anchor-id="the-code-positional-encoding-in-python"><span class="header-section-number">5.5</span> The Code: Positional Encoding in Python</h2>
-<p>The matrix data abstraction from Chapter 2 carries over unchanged.</p>
+<p>The matrix data abstraction from <a href="ch02-notation.html" class="quarto-xref"><span>Chapter 2</span></a> carries over unchanged.</p>
 <!-- snippet: src/python/common.py#matrix -->
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tag::make_matrix[]</span></span>
 <span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_matrix(rows: <span class="bu">int</span>, cols: <span class="bu">int</span>, fill: <span class="bu">float</span> <span class="op">=</span> <span class="fl">0.0</span>) <span class="op">-&gt;</span> Matrix:</span>
@@ -598,6 +604,7 @@ Figure&nbsp;5.3: Sinusoidal positional frequencies
 <li>Cannot generalize to sequences longer than <span class="math inline">\(T_{max}\)</span> (the training context length).</li>
 </ul>
 <p>Sinusoidal encoding is deterministic and extrapolates naturally. Modern architectures (LLaMA, Mistral) use a more sophisticated variant called <em>Rotary Positional Encoding (RoPE)</em> which applies the positional information inside the attention computation rather than at the input stage.</p>
+<p>So far, position has been added to the token representation. Modern GPT-style models put position into attention itself rather than adding it at the input. That idea is called RoPE.</p>
 </section>
 <section id="key-takeaways" class="level2" data-number="5.7">
 <h2 data-number="5.7" class="anchored" data-anchor-id="key-takeaways"><span class="header-section-number">5.7</span> Key Takeaways</h2>
@@ -614,7 +621,7 @@ Figure&nbsp;5.3: Sinusoidal positional frequencies
 <i class="callout-icon"></i>
 </div>
 <div class="callout-body-container">
-<p><em>What’s next?</em> We now have <span class="math inline">\(\tilde{X} \in \mathbb{R}^{T\times d}\)</span> — a matrix that knows both what each token is and where it sits. Now the interesting part begins: <em>attention</em>, the mechanism that lets tokens share information with each other. Chapter 4.</p>
+<p><em>What’s next?</em> We now have <span class="math inline">\(\tilde{X} \in \mathbb{R}^{T\times d}\)</span> — a matrix that knows both what each token is and where it sits. Next: <em>attention</em>, the mechanism that lets tokens share information with each other. See <a href="ch06-attention.html" class="quarto-xref"><span>Chapter 6</span></a>.</p>
 </div>
 </div>
 </div>

@@ -46,7 +46,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-5c6455a84bcea5f5637e4293716dd56f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-6a3bbeb4c3e7118f5bb1e8593622cb1d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -230,20 +230,26 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../ch07-multi-head-attention.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span></a>
+  <a href="../ch07-rope.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">RoPE: Position Inside Attention</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../ch08-feed-forward.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span></a>
+  <a href="../ch08-multi-head-attention.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../ch09-transformer-block.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span></a>
+  <a href="../ch09-feed-forward.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../ch10-transformer-block.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span></a>
   </div>
 </li>
       </ul>
@@ -259,20 +265,20 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../ch10-vocab-projection.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span></a>
+  <a href="../ch11-vocab-projection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../ch11-loss.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span></a>
+  <a href="../ch12-loss.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../ch12-training.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></a>
+  <a href="../ch13-training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></a>
   </div>
 </li>
       </ul>
@@ -288,8 +294,8 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../ch13-modern-gpt.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Modern GPT</span></span></a>
+  <a href="../ch14-modern-gpt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Modern GPT</span></span></a>
   </div>
 </li>
       </ul>
@@ -344,9 +350,10 @@ ul.task-list li input[type="checkbox"] {
 <p>This part builds the transformer block from its major components. The chapters move from one attention head to a full block that can be stacked into a GPT model.</p>
 <ul>
 <li>In <a href="../ch06-attention.html" class="quarto-xref"><span>6&nbsp; Attention — Tokens Talking to Each Other</span></a>, each token learns which other tokens to read from.</li>
-<li>In <a href="../ch07-multi-head-attention.html" class="quarto-xref"><span>7&nbsp; Multi-Head Attention — Many Conversations at Once</span></a>, several attention patterns run in parallel.</li>
-<li>In <a href="../ch08-feed-forward.html" class="quarto-xref"><span>8&nbsp; Feed-Forward Network — The Model’s Memory</span></a>, each token representation is transformed by a position-wise neural network.</li>
-<li>In <a href="../ch09-transformer-block.html" class="quarto-xref"><span>9&nbsp; The Transformer Block — Putting It Together</span></a>, attention, feed-forward layers, residual connections, and normalization become one reusable block.</li>
+<li>In <a href="../ch07-rope.html" class="quarto-xref"><span>7&nbsp; RoPE: Position Inside Attention</span></a>, position moves inside the attention score through rotary position encoding.</li>
+<li>In <a href="../ch08-multi-head-attention.html" class="quarto-xref"><span>8&nbsp; Multi-Head Attention — Many Conversations at Once</span></a>, several attention patterns run in parallel.</li>
+<li>In <a href="../ch09-feed-forward.html" class="quarto-xref"><span>9&nbsp; Feed-Forward Network — The Model’s Memory</span></a>, each token representation is transformed by a position-wise neural network.</li>
+<li>In <a href="../ch10-transformer-block.html" class="quarto-xref"><span>10&nbsp; The Transformer Block — Putting It Together</span></a>, attention, feed-forward layers, residual connections, and normalization become one reusable block.</li>
 </ul>
 
 

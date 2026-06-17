@@ -46,7 +46,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="../site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="../site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="../site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="../site_libs/bootstrap/bootstrap-5c6455a84bcea5f5637e4293716dd56f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="../site_libs/bootstrap/bootstrap-6a3bbeb4c3e7118f5bb1e8593622cb1d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -230,20 +230,26 @@ ul.task-list li input[type="checkbox"] {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../ch07-multi-head-attention.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span></a>
+  <a href="../ch07-rope.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">RoPE: Position Inside Attention</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../ch08-feed-forward.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span></a>
+  <a href="../ch08-multi-head-attention.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../ch09-transformer-block.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span></a>
+  <a href="../ch09-feed-forward.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="../ch10-transformer-block.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span></a>
   </div>
 </li>
       </ul>
@@ -259,20 +265,20 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../ch10-vocab-projection.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span></a>
+  <a href="../ch11-vocab-projection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../ch11-loss.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span></a>
+  <a href="../ch12-loss.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../ch12-training.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></a>
+  <a href="../ch13-training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></a>
   </div>
 </li>
       </ul>
@@ -288,8 +294,8 @@ ul.task-list li input[type="checkbox"] {
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="../ch13-modern-gpt.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Modern GPT</span></span></a>
+  <a href="../ch14-modern-gpt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Modern GPT</span></span></a>
   </div>
 </li>
       </ul>
@@ -323,7 +329,7 @@ ul.task-list li input[type="checkbox"] {
   <ul class="collapse">
   <li><a href="#who-this-book-is-for" id="toc-who-this-book-is-for" class="nav-link active" data-scroll-target="#who-this-book-is-for">Who This Book is For?</a></li>
   <li><a href="#how-to-use-this-book" id="toc-how-to-use-this-book" class="nav-link" data-scroll-target="#how-to-use-this-book">How to Use This Book</a></li>
-  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
+  <li><a href="#what-the-book-covers" id="toc-what-the-book-covers" class="nav-link" data-scroll-target="#what-the-book-covers">What the book covers</a></li>
   <li><a href="#should-i-buy-this-book" id="toc-should-i-buy-this-book" class="nav-link" data-scroll-target="#should-i-buy-this-book">Should I Buy This Book?</a></li>
   </ul>
 <div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/soasme/gpt-explained/edit/main/book/preface.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
@@ -362,14 +368,14 @@ ul.task-list li input[type="checkbox"] {
 <p>Every code snippet is part of a complete, runnable program. The source lives in <code>src/python/</code> and can be run with <code>python3 src/python/run_book_code.py</code>. Every diagram is generated from code in <code>src/matplotlib/</code>, <code>src/figures/</code>, or directly inside the chapter files. If a diagram surprises you, open its source and change the numbers.</p>
 <p>Work through the exercises at the end of each chapter. The exercises are not optional decoration — they are the fastest way to verify that you understood the material rather than just read it.</p>
 </section>
-<section id="summary" class="level2">
-<h2 class="anchored" data-anchor-id="summary">Summary</h2>
-<p>The book covers thirteen chapters and one appendix:</p>
-<p><strong>Foundations.</strong> Chapter 1 gives an overview of GPT and its history. Chapter 2 introduces the math notation used throughout: vectors, matrices, dot products, softmax, logarithms, mean, and variance.</p>
-<p><strong>Representations.</strong> Chapter 3 explains tokenization and byte-pair encoding. Chapter 4 covers word embeddings and the embedding lookup. Chapter 5 introduces sinusoidal positional encoding.</p>
-<p><strong>Transformer Core.</strong> Chapter 6 derives scaled dot-product attention step by step. Chapter 7 extends it to multi-head attention. Chapter 8 covers the feed-forward sub-layer. Chapter 9 assembles these pieces into a full transformer block with residual connections and layer normalization.</p>
-<p><strong>Prediction and Learning.</strong> Chapter 10 covers vocabulary projection. Chapter 11 derives cross-entropy loss and perplexity. Chapter 12 traces backpropagation and the Adam optimizer through the full model.</p>
-<p><strong>Modern GPT.</strong> Chapter 13 describes the changes in current models: RoPE positional encoding, grouped-query attention, SwiGLU activations, and RMSNorm.</p>
+<section id="what-the-book-covers" class="level2">
+<h2 class="anchored" data-anchor-id="what-the-book-covers">What the book covers</h2>
+<p>The book covers fourteen chapters and one appendix:</p>
+<p><strong>Foundations.</strong> <a href="../ch01-introduction.html" class="quarto-xref"><span>1&nbsp; Introduction</span></a> gives an overview of GPT and its history. <a href="../ch02-notation.html" class="quarto-xref"><span>2&nbsp; Notation and Definitions</span></a> introduces the math notation used throughout: vectors, matrices, dot products, softmax, logarithms, mean, and variance.</p>
+<p><strong>Representations.</strong> <a href="../ch03-tokens.html" class="quarto-xref"><span>3&nbsp; Tokens — Text to Numbers</span></a> explains tokenization and byte-pair encoding. <a href="../ch04-embeddings.html" class="quarto-xref"><span>4&nbsp; Embeddings — Numbers to Meaning</span></a> covers word embeddings and the embedding lookup. <a href="../ch05-positional-encoding.html" class="quarto-xref"><span>5&nbsp; Positional Encoding — Giving Order to Meaning</span></a> introduces sinusoidal positional encoding.</p>
+<p><strong>Transformer Core.</strong> <a href="../ch06-attention.html" class="quarto-xref"><span>6&nbsp; Attention — Tokens Talking to Each Other</span></a> derives scaled dot-product attention step by step. <a href="../ch07-rope.html" class="quarto-xref"><span>7&nbsp; RoPE: Position Inside Attention</span></a> shows how modern GPT-style models put position directly inside attention. <a href="../ch08-multi-head-attention.html" class="quarto-xref"><span>8&nbsp; Multi-Head Attention — Many Conversations at Once</span></a> extends it to multi-head attention. <a href="../ch09-feed-forward.html" class="quarto-xref"><span>9&nbsp; Feed-Forward Network — The Model’s Memory</span></a> covers the feed-forward sub-layer. <a href="../ch10-transformer-block.html" class="quarto-xref"><span>10&nbsp; The Transformer Block — Putting It Together</span></a> assembles these pieces into a full transformer block with residual connections and layer normalization.</p>
+<p><strong>Prediction and Learning.</strong> <a href="../ch11-vocab-projection.html" class="quarto-xref"><span>11&nbsp; Vocabulary Projection — From Vectors to Words</span></a> covers vocabulary projection. <a href="../ch12-loss.html" class="quarto-xref"><span>12&nbsp; Loss — How the Model Learns</span></a> derives cross-entropy loss and perplexity. <a href="../ch13-training.html" class="quarto-xref"><span>13&nbsp; Training — Teaching the Model</span></a> traces backpropagation and the Adam optimizer through the full model.</p>
+<p><strong>Modern GPT.</strong> <a href="../ch14-modern-gpt.html" class="quarto-xref"><span>14&nbsp; Modern GPT</span></a> describes the changes in current models: RoPE positional encoding, grouped-query attention, SwiGLU activations, and RMSNorm.</p>
 <p><strong>Appendix A</strong> presents the complete micro-GPT implementation — the same code from across the chapters assembled into one readable file.</p>
 </section>
 <section id="should-i-buy-this-book" class="level2">

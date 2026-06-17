@@ -81,7 +81,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-5c6455a84bcea5f5637e4293716dd56f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-6a3bbeb4c3e7118f5bb1e8593622cb1d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -294,20 +294,26 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch07-multi-head-attention.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span></a>
+  <a href="./ch07-rope.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">RoPE: Position Inside Attention</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch08-feed-forward.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span></a>
+  <a href="./ch08-multi-head-attention.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch09-transformer-block.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span></a>
+  <a href="./ch09-feed-forward.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch10-transformer-block.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span></a>
   </div>
 </li>
       </ul>
@@ -323,20 +329,20 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch10-vocab-projection.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span></a>
+  <a href="./ch11-vocab-projection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch11-loss.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span></a>
+  <a href="./ch12-loss.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch12-training.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></a>
+  <a href="./ch13-training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></a>
   </div>
 </li>
       </ul>
@@ -352,8 +358,8 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch13-modern-gpt.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Modern GPT</span></span></a>
+  <a href="./ch14-modern-gpt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Modern GPT</span></span></a>
   </div>
 </li>
       </ul>
@@ -420,7 +426,6 @@ window.Quarto = {
 <p>The mechanism is called <em>the embedding matrix</em>, and it is the model’s first learned representation.</p>
 <section id="the-idea" class="level2" data-number="4.1">
 <h2 data-number="4.1" class="anchored" data-anchor-id="the-idea"><span class="header-section-number">4.1</span> The Idea</h2>
-<p>A token ID is just a number — say, <code>42</code>. That integer is an address, not a meaning. You cannot do useful arithmetic on addresses: <code>42 + 7 = 49</code> tells you nothing about the relationship between the two words.</p>
 <p>To give each token a meaning the model can actually compute with, we replace its ID with a <em>list of hundreds of decimal numbers</em> — a vector. Think of it like this: the model keeps a big table, one row per word in the vocabulary. When it sees token <code>42</code>, it pulls out row <code>42</code> and uses those numbers as the token’s representation going forward.</p>
 <p>The key property that makes this useful is that the table is <em>learned</em>. After training on billions of words, tokens with similar meanings end up with similar rows. “Cat” and “kitten” cluster together. “Run” and “sprint” are nearby. “Cat” and “justice” are far apart. The model discovers these relationships entirely from how words appear together in text — no human labels required.</p>
 <p>This learned table is the <em>embedding matrix</em>, and the step that converts a sequence of IDs into a sequence of vectors is called <em>embedding</em>.</p>
@@ -428,51 +433,58 @@ window.Quarto = {
 <section id="why-learned-vectors" class="level2" data-number="4.2">
 <h2 data-number="4.2" class="anchored" data-anchor-id="why-learned-vectors"><span class="header-section-number">4.2</span> Why Learned Vectors?</h2>
 <p>The values in the embedding matrix are not hand-crafted. They are initialized randomly and then <em>learned via gradient descent</em> during training, just like any other model parameter.</p>
-<p>The training objective is next-token prediction: given <span class="math inline">\(t_1, t_2, \ldots, t_n\)</span>, predict <span class="math inline">\(t_{n+1}\)</span>. Because the model must do this well across billions of examples, it is forced to arrange embeddings such that tokens that appear in similar contexts land near each other in the embedding space.</p>
-<p>This produces the famous arithmetic property:</p>
-<p><span class="math display">\[
-\mathrm{embedding}(\mathrm{king}) - \mathrm{embedding}(\mathrm{man}) + \mathrm{embedding}(\mathrm{woman}) \approx \mathrm{embedding}(\mathrm{queen})
-\]</span></p>
-<p>No one programmed this. It is a geometric consequence of how the vectors were shaped by the training signal.</p>
 <div class="callout callout-style-simple callout-note">
 <div class="callout-body d-flex">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-body-container">
-<p><em>Math Minute — Dot Product</em></p>
-<p>The dot product of two vectors <span class="math inline">\(u = [u_1,\ldots,u_n]\)</span> and <span class="math inline">\(v = [v_1,\ldots,v_n]\)</span> is: <span class="math inline">\(u \cdot v = u_1 v_1 + u_2 v_2 + \ldots + u_n v_n\)</span>. It is a single number. If both vectors point in the same direction, the dot product is large and positive. If they are perpendicular, it is zero. If they point opposite, it is negative. Dot product measures <em>alignment</em>.</p>
+<p><em>Math Minute — Gradient Descent</em></p>
+<p>Gradient descent is the basic training rule: measure the model’s error, compute which direction would increase that error, then nudge each parameter a small step in the opposite direction. Repeated millions or billions of times, these tiny updates turn random numbers into useful weights. For embeddings, that means each token’s row moves toward values that help the model predict text better.</p>
 </div>
 </div>
 </div>
+<p>The training objective is next-token prediction: given <span class="math inline">\(t_1, t_2, \ldots, t_n\)</span>, predict <span class="math inline">\(t_{n+1}\)</span>. Because the model must do this well across billions of examples, it is forced to arrange embeddings such that tokens that appear in similar contexts land near each other in the embedding space.</p>
+<p>This produces the famous arithmetic property:</p>
+<p><span class="math display">\[
+\mathrm{embedding}(\mathrm{king}) - \mathrm{embedding}(\mathrm{man}) + \mathrm{embedding}(\mathrm{woman}) \approx \mathrm{embedding}(\mathrm{queen})
+\]</span></p>
+<p>No one programmed this. It is a geometric consequence of how the vectors were shaped by the training signal.</p>
 </section>
 <section id="the-math" class="level2" data-number="4.3">
 <h2 data-number="4.3" class="anchored" data-anchor-id="the-math"><span class="header-section-number">4.3</span> The Math</h2>
-<p>Given:</p>
-<ul>
-<li><span class="math inline">\(|V|\)</span> = vocabulary size</li>
-<li><span class="math inline">\(d\)</span> = <span class="math inline">\(d_{\text{model}}\)</span> (hidden dimension)</li>
-<li><span class="math inline">\(E \in \mathbb{R}^{|V| \times d}\)</span> = embedding matrix (learned)</li>
-<li><span class="math inline">\(i \in \{0, \ldots, |V|-1\}\)</span> = token ID</li>
-</ul>
-<p>The embedding of token <span class="math inline">\(i\)</span> is:</p>
+<p>The embedding matrix <span class="math inline">\(E \in \mathbb{R}^{|V| \times d}\)</span> holds one learned row per token — <span class="math inline">\(|V|\)</span> tokens wide, <span class="math inline">\(d_{\text{model}}\)</span> dimensions deep. To embed token <span class="math inline">\(i \in \{0, \ldots, |V|-1\}\)</span>, we pull out its row:</p>
 <p><span class="math display">\[
 e_i = E_{i,\cdot} \in \mathbb{R}^d
 \]</span></p>
-<p>(Row <span class="math inline">\(i\)</span> of matrix <span class="math inline">\(E\)</span>.)</p>
-<p>For a sequence of <span class="math inline">\(T\)</span> tokens <span class="math inline">\([i_1, \ldots, i_T]\)</span>, the embedding operation is:</p>
+<p>For a sequence of <span class="math inline">\(T\)</span> tokens <span class="math inline">\([i_1, \ldots, i_T]\)</span>, we collect the corresponding rows into a matrix:</p>
 <p><span class="math display">\[
 X = E[[i_1,\ldots,i_T], :]  \in \mathbb{R}^{T \times d}
 \]</span></p>
-<p>This is just row indexing — no multiplication. In practice it is implemented as a matrix multiplication with a one-hot vector:</p>
+<p>Row indexing, no arithmetic. We can also write the same lookup as a matrix multiplication using a one-hot vector:</p>
 <p><span class="math display">\[
 e_i = o_i^{\top} \cdot E, \quad \text{where } o_i \in \{0,1\}^{|V|},\quad (o_i)_j = \begin{cases} 1 &amp; j = i \\ 0 &amp; j \neq i \end{cases}
 \]</span></p>
-<p>But implementations use the index directly because it is faster.</p>
+<p>The one-hot form shows up in theoretical derivations, but implementations skip it and index directly — it is much faster.</p>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p><em>Math Minute — One-Hot Vector</em></p>
+<p>A one-hot vector has exactly one entry equal to <span class="math inline">\(1\)</span> and all others <span class="math inline">\(0\)</span>. Token ID <span class="math inline">\(2\)</span> in a vocabulary of size 5 becomes:</p>
+<p><span class="math display">\[
+o_2 = [0, 0, 1, 0, 0]
+\]</span></p>
+<p>Multiplying <span class="math inline">\(o_2^{\top}\)</span> by <span class="math inline">\(E\)</span> selects row 2 — the same result as <span class="math inline">\(E_{2,\cdot}\)</span>.</p>
+</div>
+</div>
+</div>
 </section>
 <section id="the-matrix-worked-example" class="level2" data-number="4.4">
 <h2 data-number="4.4" class="anchored" data-anchor-id="the-matrix-worked-example"><span class="header-section-number">4.4</span> The Matrix: Worked Example</h2>
-<p>Let’s use tiny numbers: <span class="math inline">\(|V| = 5\)</span>, <span class="math inline">\(d = 4\)</span>.</p>
+<p>Take tiny numbers: <span class="math inline">\(|V| = 5\)</span>, <span class="math inline">\(d = 4\)</span>.</p>
 <p>Embedding matrix <span class="math inline">\(E\)</span> (<span class="math inline">\(5\times 4\)</span>):</p>
 <pre class="text"><code>       col0   col1   col2   col3
 tok 0: [ 0.10  -0.20   0.30  -0.40 ]
@@ -510,7 +522,7 @@ Figure&nbsp;4.1: Token IDs mapped to embedding rows
 </section>
 <section id="the-code-embedding-in-python" class="level2" data-number="4.5">
 <h2 data-number="4.5" class="anchored" data-anchor-id="the-code-embedding-in-python"><span class="header-section-number">4.5</span> The Code: Embedding in Python</h2>
-<p>Before writing a single line of embedding logic, we name what a matrix <em>is</em>. A matrix is a rows-by-cols grid of numbers. We store it as a flat vector in row-major order, but nothing above this interface will ever need to know that.</p>
+<p>Chapter 3 already showed how text becomes token IDs. Here we start from those IDs and look up vectors.</p>
 <!-- snippet: src/python/common.py#make_matrix -->
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_matrix(rows: <span class="bu">int</span>, cols: <span class="bu">int</span>, fill: <span class="bu">float</span> <span class="op">=</span> <span class="fl">0.0</span>) <span class="op">-&gt;</span> Matrix:</span>
 <span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [[fill <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(cols)] <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(rows)]</span>
@@ -519,7 +531,7 @@ Figure&nbsp;4.1: Token IDs mapped to embedding rows
 <span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> shape(matrix: Matrix) <span class="op">-&gt;</span> <span class="bu">tuple</span>[<span class="bu">int</span>, <span class="bu">int</span>]:</span>
 <span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">len</span>(matrix), <span class="bu">len</span>(matrix[<span class="dv">0</span>]) <span class="cf">if</span> matrix <span class="cf">else</span> <span class="dv">0</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <!-- /snippet -->
-<p><code>random_matrix</code> uses Xavier initialization: it scales the random values by <span class="math inline">\(\sqrt{2/(fan_{in}+fan_{out})}\)</span>, which keeps activations from exploding or vanishing.</p>
+<p>This helper creates a rows-by-cols grid of numbers. The embedding matrix uses the same matrix abstraction introduced earlier, so chapter 4 does not need a new data structure.</p>
 <!-- snippet: src/python/common.py#random_matrix -->
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> random_matrix(</span>
 <span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    rows: <span class="bu">int</span>,</span>
@@ -530,67 +542,30 @@ Figure&nbsp;4.1: Token IDs mapped to embedding rows
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>    scale <span class="op">=</span> math.sqrt(<span class="fl">2.0</span> <span class="op">/</span> (rows <span class="op">+</span> cols)) <span class="cf">if</span> scale <span class="kw">is</span> <span class="va">None</span> <span class="cf">else</span> scale</span>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [[rng.uniform(<span class="op">-</span>scale, scale) <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(cols)] <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(rows)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <!-- /snippet -->
-<p>The embedding of token <span class="math inline">\(i\)</span> is literally row <span class="math inline">\(i\)</span> of the matrix — a table lookup.</p>
+<p><code>random_matrix</code> fills that grid with small random values. With the default Xavier scale, the random values are sized by <span class="math inline">\(\sqrt{2/(fan_{in}+fan_{out})}\)</span> so activations are less likely to explode or vanish.</p>
 <!-- snippet: src/python/common.py#embed_token -->
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> embed_token(embedding: Matrix, token_id: <span class="bu">int</span>) <span class="op">-&gt;</span> Vector:</span>
 <span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">list</span>(embedding[token_id])</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <!-- /snippet -->
-<p>A sequence of <span class="math inline">\(T\)</span> token IDs calls for <span class="math inline">\(T\)</span> row lookups stacked into a <span class="math inline">\([T \times d]\)</span> matrix.</p>
+<p>The embedding of token <span class="math inline">\(i\)</span> is row <span class="math inline">\(i\)</span> of the matrix. This is a table lookup, not a calculation over the token ID itself.</p>
 <!-- snippet: src/python/common.py#embed_sequence -->
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> embed_sequence(embedding: Matrix, token_ids: Sequence[<span class="bu">int</span>]) <span class="op">-&gt;</span> Matrix:</span>
 <span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [embed_token(embedding, token_id) <span class="cf">for</span> token_id <span class="kw">in</span> token_ids]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <!-- /snippet -->
-<p>The dot product <span class="math inline">\(u \cdot v = \sum_i u_i v_i\)</span> measures geometric alignment.</p>
-<!-- snippet: src/python/common.py#vectors -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tag::vector_ops[]</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="co"># tag::add_vectors[]</span></span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> add_vectors(left: Vector, right: Vector) <span class="op">-&gt;</span> Vector:</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [a <span class="op">+</span> b <span class="cf">for</span> a, b <span class="kw">in</span> <span class="bu">zip</span>(left, right)]</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a><span class="co"># end::add_vectors[]</span></span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="co"># tag::scale_vector[]</span></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> scale_vector(vector: Vector, scalar: <span class="bu">float</span>) <span class="op">-&gt;</span> Vector:</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [scalar <span class="op">*</span> value <span class="cf">for</span> value <span class="kw">in</span> vector]</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="co"># end::scale_vector[]</span></span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-14"><a href="#cb8-14" aria-hidden="true" tabindex="-1"></a><span class="co"># tag::vector_norm[]</span></span>
-<span id="cb8-15"><a href="#cb8-15" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> vector_norm(vector: Sequence[<span class="bu">float</span>]) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb8-16"><a href="#cb8-16" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> math.sqrt(<span class="bu">sum</span>(value <span class="op">*</span> value <span class="cf">for</span> value <span class="kw">in</span> vector))</span>
-<span id="cb8-17"><a href="#cb8-17" aria-hidden="true" tabindex="-1"></a><span class="co"># end::vector_norm[]</span></span>
-<span id="cb8-18"><a href="#cb8-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-19"><a href="#cb8-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a><span class="co"># tag::unit_vector[]</span></span>
-<span id="cb8-21"><a href="#cb8-21" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> unit_vector(vector: Vector) <span class="op">-&gt;</span> Vector:</span>
-<span id="cb8-22"><a href="#cb8-22" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> scale_vector(vector, <span class="fl">1.0</span> <span class="op">/</span> vector_norm(vector))</span>
-<span id="cb8-23"><a href="#cb8-23" aria-hidden="true" tabindex="-1"></a><span class="co"># end::unit_vector[]</span></span>
-<span id="cb8-24"><a href="#cb8-24" aria-hidden="true" tabindex="-1"></a><span class="co"># end::vector_ops[]</span></span>
-<span id="cb8-25"><a href="#cb8-25" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-26"><a href="#cb8-26" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-27"><a href="#cb8-27" aria-hidden="true" tabindex="-1"></a><span class="co"># tag::dot[]</span></span>
-<span id="cb8-28"><a href="#cb8-28" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> dot(left: Sequence[<span class="bu">float</span>], right: Sequence[<span class="bu">float</span>]) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb8-29"><a href="#cb8-29" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">sum</span>(a <span class="op">*</span> b <span class="cf">for</span> a, b <span class="kw">in</span> <span class="bu">zip</span>(left, right))</span>
-<span id="cb8-30"><a href="#cb8-30" aria-hidden="true" tabindex="-1"></a><span class="co"># end::dot[]</span></span>
-<span id="cb8-31"><a href="#cb8-31" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-32"><a href="#cb8-32" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-33"><a href="#cb8-33" aria-hidden="true" tabindex="-1"></a><span class="co"># tag::cosine_similarity[]</span></span>
-<span id="cb8-34"><a href="#cb8-34" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> cosine_similarity(left: Sequence[<span class="bu">float</span>], right: Sequence[<span class="bu">float</span>]) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb8-35"><a href="#cb8-35" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> dot(left, right) <span class="op">/</span> (vector_norm(left) <span class="op">*</span> vector_norm(right))</span>
-<span id="cb8-36"><a href="#cb8-36" aria-hidden="true" tabindex="-1"></a><span class="co"># end::cosine_similarity[]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<p>A sequence of <span class="math inline">\(T\)</span> token IDs becomes <span class="math inline">\(T\)</span> row lookups stacked into a <span class="math inline">\([T \times d]\)</span> matrix. The vector helpers used to compare rows are the same ones from <a href="ch02-notation.html" class="quarto-xref"><span>Chapter 2</span></a>.</p>
 <p><em>Demo.</em> Run with <code>python3 src/python/chapter_demos.py</code>:</p>
 <!-- snippet: src/python/chapter_demos.py#chapter_04 -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> chapter_04(seed: <span class="bu">int</span> <span class="op">=</span> <span class="dv">4</span>) <span class="op">-&gt;</span> <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">object</span>]:</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> random.Random(seed)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    embedding <span class="op">=</span> random_matrix(<span class="dv">100</span>, <span class="dv">8</span>, rng)</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> embed_sequence(embedding, [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>])</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"sequence_shape"</span>: (<span class="bu">len</span>(x), <span class="bu">len</span>(x[<span class="dv">0</span>])),</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"dot"</span>: dot(embedding[<span class="dv">1</span>], embedding[<span class="dv">2</span>]),</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"cosine"</span>: cosine_similarity(embedding[<span class="dv">1</span>], embedding[<span class="dv">2</span>]),</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> chapter_04(seed: <span class="bu">int</span> <span class="op">=</span> <span class="dv">4</span>) <span class="op">-&gt;</span> <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">object</span>]:</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> random.Random(seed)</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    embedding <span class="op">=</span> random_matrix(<span class="dv">100</span>, <span class="dv">8</span>, rng)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> embed_sequence(embedding, [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>])</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"sequence_shape"</span>: (<span class="bu">len</span>(x), <span class="bu">len</span>(x[<span class="dv">0</span>])),</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"dot"</span>: dot(embedding[<span class="dv">1</span>], embedding[<span class="dv">2</span>]),</span>
+<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"cosine"</span>: cosine_similarity(embedding[<span class="dv">1</span>], embedding[<span class="dv">2</span>]),</span>
+<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <!-- /snippet -->
+<p>The demo starts with token IDs, creates an embedding table, and returns the embedded sequence shape. It also compares two embedding rows with dot product and cosine similarity, reusing the chapter 2 helpers instead of repeating them here.</p>
 <p>Figure <a href="#fig-ch04-code-embedding-lookup" class="quarto-xref">Figure&nbsp;<span>4.2</span></a> shows how each token ID indexes into one row of the embedding weight matrix.</p>
 <div id="fig-ch04-code-embedding-lookup" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Embedding matrix lookup — each token ID indexes into a row of the weight matrix.">
 <figure class="quarto-float quarto-float-fig figure">
@@ -629,7 +604,7 @@ Figure&nbsp;4.3: Semantic arithmetic in embedding space
 <i class="callout-icon"></i>
 </div>
 <div class="callout-body-container">
-<p><em>What’s next?</em> We have a matrix <code>X</code> of shape <span class="math inline">\([T \times d]\)</span>. Each row knows <em>what</em> the token is, but nothing about <em>where</em> it sits in the sequence. Swapping two tokens would produce the same rows in a different order, which the model would treat identically. We need to inject <em>position information</em> — that’s Chapter 3.</p>
+<p><em>What’s next?</em> We have a matrix <code>X</code> of shape <span class="math inline">\([T \times d]\)</span>. Each row knows <em>what</em> the token is, but nothing about <em>where</em> it sits in the sequence. Swapping two tokens would produce the same rows in a different order, which the model would treat identically. We need to inject <em>position information</em> — that is <a href="ch05-positional-encoding.html" class="quarto-xref"><span>Chapter 5</span></a>.</p>
 </div>
 </div>
 </div>

@@ -9,7 +9,7 @@
 <meta name="author" content="Ju Lin">
 <meta name="description" content="A practical guide to GPT-style transformer architecture, from tokens to text generation, with math, matrices, Python, and diagrams.">
 
-<title>8&nbsp; Feed-Forward Network — The Model’s Memory – GPT Explained</title>
+<title>11&nbsp; Vocabulary Projection — From Vectors to Words – GPT Explained</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -70,8 +70,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./ch09-transformer-block.html" rel="next">
-<link href="./ch07-multi-head-attention.html" rel="prev">
+<link href="./ch12-loss.html" rel="next">
+<link href="./parts/prediction-and-learning.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -81,7 +81,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-5c6455a84bcea5f5637e4293716dd56f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-6a3bbeb4c3e7118f5bb1e8593622cb1d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -151,7 +151,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./parts/transformer-core.html">Transformer Core</a></li><li class="breadcrumb-item"><a href="./ch08-feed-forward.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./parts/prediction-and-learning.html">Prediction and Learning</a></li><li class="breadcrumb-item"><a href="./ch11-vocab-projection.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -294,20 +294,26 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch07-multi-head-attention.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span></a>
+  <a href="./ch07-rope.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">RoPE: Position Inside Attention</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch08-feed-forward.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span></a>
+  <a href="./ch08-multi-head-attention.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch09-transformer-block.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span></a>
+  <a href="./ch09-feed-forward.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch10-transformer-block.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span></a>
   </div>
 </li>
       </ul>
@@ -323,20 +329,20 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch10-vocab-projection.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span></a>
+  <a href="./ch11-vocab-projection.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch11-loss.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span></a>
+  <a href="./ch12-loss.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch12-training.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></a>
+  <a href="./ch13-training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></a>
   </div>
 </li>
       </ul>
@@ -352,8 +358,8 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch13-modern-gpt.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Modern GPT</span></span></a>
+  <a href="./ch14-modern-gpt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Modern GPT</span></span></a>
   </div>
 </li>
       </ul>
@@ -385,22 +391,23 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul class="collapse">
-  <li><a href="#the-idea" id="toc-the-idea" class="nav-link active" data-scroll-target="#the-idea"><span class="header-section-number">8.1</span> The Idea</a></li>
-  <li><a href="#the-math" id="toc-the-math" class="nav-link" data-scroll-target="#the-math"><span class="header-section-number">8.2</span> The Math</a></li>
-  <li><a href="#gelu-deep-dive" id="toc-gelu-deep-dive" class="nav-link" data-scroll-target="#gelu-deep-dive"><span class="header-section-number">8.3</span> GELU Deep Dive</a></li>
-  <li><a href="#the-matrix-worked-example" id="toc-the-matrix-worked-example" class="nav-link" data-scroll-target="#the-matrix-worked-example"><span class="header-section-number">8.4</span> The Matrix: Worked Example</a></li>
-  <li><a href="#the-code-ffn-in-python" id="toc-the-code-ffn-in-python" class="nav-link" data-scroll-target="#the-code-ffn-in-python"><span class="header-section-number">8.5</span> The Code: FFN in Python</a></li>
-  <li><a href="#the-ffn-as-a-key-value-memory" id="toc-the-ffn-as-a-key-value-memory" class="nav-link" data-scroll-target="#the-ffn-as-a-key-value-memory"><span class="header-section-number">8.6</span> The FFN as a Key-Value Memory</a></li>
-  <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways"><span class="header-section-number">8.7</span> Key Takeaways</a></li>
+  <li><a href="#the-idea" id="toc-the-idea" class="nav-link active" data-scroll-target="#the-idea"><span class="header-section-number">11.1</span> The Idea</a></li>
+  <li><a href="#the-math" id="toc-the-math" class="nav-link" data-scroll-target="#the-math"><span class="header-section-number">11.2</span> The Math</a></li>
+  <li><a href="#the-generation-loop" id="toc-the-generation-loop" class="nav-link" data-scroll-target="#the-generation-loop"><span class="header-section-number">11.3</span> The Generation Loop</a></li>
+  <li><a href="#the-matrix-worked-example" id="toc-the-matrix-worked-example" class="nav-link" data-scroll-target="#the-matrix-worked-example"><span class="header-section-number">11.4</span> The Matrix: Worked Example</a></li>
+  <li><a href="#the-code-full-microgpt-forward-pass-in-python" id="toc-the-code-full-microgpt-forward-pass-in-python" class="nav-link" data-scroll-target="#the-code-full-microgpt-forward-pass-in-python"><span class="header-section-number">11.5</span> The Code: Full microGPT Forward Pass in Python</a></li>
+  <li><a href="#weight-tying-in-detail" id="toc-weight-tying-in-detail" class="nav-link" data-scroll-target="#weight-tying-in-detail"><span class="header-section-number">11.6</span> Weight Tying in Detail</a></li>
+  <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways"><span class="header-section-number">11.7</span> Key Takeaways</a></li>
+  <li><a href="#the-complete-picture" id="toc-the-complete-picture" class="nav-link" data-scroll-target="#the-complete-picture"><span class="header-section-number">11.8</span> The Complete Picture</a></li>
   </ul>
-<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch08-feed-forward.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch11-vocab-projection.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./parts/transformer-core.html">Transformer Core</a></li><li class="breadcrumb-item"><a href="./ch08-feed-forward.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./parts/prediction-and-learning.html">Prediction and Learning</a></li><li class="breadcrumb-item"><a href="./ch11-vocab-projection.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="sec-ch08-feed-forward" class="quarto-section-identifier"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span></h1>
+<h1 class="title"><span id="sec-ch11-vocab-projection" class="quarto-section-identifier"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span></h1>
 </div>
 
 
@@ -417,209 +424,246 @@ window.Quarto = {
 </header>
 
 
-<p>After multi-head attention has blended information across positions, each token’s vector passes through a <em>feed-forward network (FFN)</em>. This is a simple two-layer MLP — the same network, applied independently to every position.</p>
-<p>While attention does the <em>routing</em> (mixing information across tokens), the FFN does the <em>processing</em> (transforming each token’s representation). Experiments by Geva et al.&nbsp;(2021) showed that the FFN layers act as “key-value memories” — the first layer’s neurons trigger on specific input patterns, and the second layer retrieves associated information.</p>
-<section id="the-idea" class="level2" data-number="8.1">
-<h2 data-number="8.1" class="anchored" data-anchor-id="the-idea"><span class="header-section-number">8.1</span> The Idea</h2>
-<p>Attention is about <em>communication</em> — each token collects information from other tokens. The feed-forward network is about <em>computation</em> — each token processes what it just collected, entirely on its own.</p>
-<p>After attention, every token’s vector has been updated with context from the surrounding words. The FFN now takes each updated vector and runs it through a private transformation: expand it into a much larger space, filter it through a non-linearity that decides which features are “active,” then compress it back to the original size. No information crosses between tokens here — every position is handled independently with the same set of weights.</p>
-<p>Why expand and then compress? The expansion gives the model room to express a large number of potential features at once. The non-linearity then selects which combinations matter and switches the rest off. The compression packages the result back into the model’s standard vector size.</p>
-<p>This expand-filter-compress pipeline is where most of the model’s factual knowledge lives. Research has shown that individual neurons in the FFN’s expanded space can be associated with specific concepts (“Paris,” “past tense,” “chemical element”).</p>
-<p>The same FFN weights are applied to every token position in the sequence: position 1 and position 100 go through identical transformations. Only attention sees position.</p>
+<p>After <code>N</code> transformer blocks, we have a matrix <span class="math inline">\(X_{\text{final}} \in \mathbb{R}^{T\times d}\)</span>. The final row, <code>X_final[T-1]</code>, is a rich contextualized representation of the last token. The last step is to project this vector into a probability distribution over the vocabulary: which token is most likely to come next?</p>
+<p>This projection is called the <em>language model head</em>, or <em>unembedding layer</em>.</p>
+<section id="the-idea" class="level2" data-number="11.1">
+<h2 data-number="11.1" class="anchored" data-anchor-id="the-idea"><span class="header-section-number">11.1</span> The Idea</h2>
+<p>After all the attention and feed-forward layers, we have a vector representing the last token — a list of hundreds of numbers that encodes everything the model knows about what has been said so far. But the user needs a <em>word</em>, not a list of numbers.</p>
+<p>The final step converts that vector into a probability over the entire vocabulary: for each of the 50,000-odd words the model knows, what is the chance it is the right next word? The word with the highest probability (or a word sampled from the distribution) becomes the model’s output.</p>
+<p>How does a vector become a probability distribution? The model compares the vector against every word in the vocabulary and assigns a score to each one. High score means “this word fits the context well.” Low score means it does not. Then those scores are squeezed into the range 0–1 and made to sum to 1, giving a proper probability.</p>
+<p>This step is the mirror image of <a href="ch04-embeddings.html" class="quarto-xref"><span>Chapter 4</span></a>: embedding turned an integer (a word ID) into a vector; unembedding turns a vector back into a distribution over integers. Many implementations reuse the same table for both directions: the same weights that encode “cat → vector” are transposed to decode “vector → how much does this look like cat?”</p>
 </section>
-<section id="the-math" class="level2" data-number="8.2">
-<h2 data-number="8.2" class="anchored" data-anchor-id="the-math"><span class="header-section-number">8.2</span> The Math</h2>
+<section id="the-math" class="level2" data-number="11.2">
+<h2 data-number="11.2" class="anchored" data-anchor-id="the-math"><span class="header-section-number">11.2</span> The Math</h2>
+<p>Given the final hidden state <span class="math inline">\(h_t = X_{\text{final}}[T-1] \in \mathbb{R}^d\)</span>:</p>
+<p><em>Step 1 — Final Layer Norm:</em></p>
+<p><span class="math display">\[
+\tilde{h}_t = \operatorname{LayerNorm}(h_t)    \in \mathbb{R}^d
+\]</span></p>
+<p><em>Step 2 — Vocabulary Projection:</em></p>
+<p><span class="math display">\[
+\text{logits} = \tilde{h}_t W_u    \in \mathbb{R}^{|V|}
+\]</span></p>
+<p>With weight tying: <span class="math inline">\(W_u = E^{\top}\)</span>, so:</p>
+<p><span class="math display">\[
+\text{logits}[i] = \tilde{h}_t \cdot E_i
+\]</span></p>
+<p>The logit for token <code>i</code> is the dot product of the model’s “prediction vector” with token <code>i</code>’s embedding. Tokens whose embeddings align with the prediction vector get high logits.</p>
+<p><em>Step 3 — Softmax → Probabilities:</em></p>
+<p><span class="math display">\[
+P(\text{next} = i \mid \text{context}) = \operatorname{softmax}(\text{logits})[i] = \frac{\exp(\text{logits}[i])}{\sum_j \exp(\text{logits}[j])}
+\]</span></p>
 <div class="callout callout-style-simple callout-note">
 <div class="callout-body d-flex">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-body-container">
-<p><em>Math Minute — ReLU and GELU</em></p>
-<p>A <em>non-linearity</em> is a function that makes the network capable of learning complex patterns beyond linear mappings.</p>
-<p><code>ReLU(x) = max(0, x)</code> — simple: negative values → 0, positive values unchanged.</p>
-<p><span class="math inline">\(\operatorname{GELU}(x) = x \cdot \Phi(x)\)</span> where <span class="math inline">\(\Phi\)</span> is the standard normal CDF. GELU is smooth and probabilistic. GPT uses GELU. LLaMA and most modern models use <code>SwiGLU</code>, a gated variant.</p>
-<p><code>Sigmoid(x) = 1/(1+e⁻ˣ)</code> squashes any real number to (0,1). Used in gates.</p>
-</div>
-</div>
-</div>
-<p>For a sequence input <span class="math inline">\(X \in \mathbb{R}^{T\times d}\)</span>, the FFN applies identically to each row:</p>
+<p><em>Math Minute — Temperature</em></p>
+<p>We can control the “sharpness” of the distribution with a <em>temperature parameter</em> <span class="math inline">\(T_{\text{temp}}\)</span>:</p>
 <p><span class="math display">\[
-FFN(X) = \operatorname{GELU}(X W_1 + \mathbf{1}\cdot b_1^{\top}) W_2 + \mathbf{1}\cdot b_2^{\top}
+P(i) = \operatorname{softmax}(\text{logits} / T_{\text{temp}})[i]
 \]</span></p>
-<p>Breaking it down:</p>
-<p><span class="math display">\[
-\begin{aligned}
-H  &amp;= X W_1 + \mathbf{1} b_1^{\top} \in \mathbb{R}^{T \times d_{\text{ff}}} &amp;&amp; \text{(expand)} \\
-H' &amp;= \operatorname{GELU}(H)          \in \mathbb{R}^{T \times d_{\text{ff}}} &amp;&amp; \text{(activate)} \\
-Y  &amp;= H' W_2 + \mathbf{1} b_2^{\top} \in \mathbb{R}^{T \times d}            &amp;&amp; \text{(contract)}
-\end{aligned}
-\]</span></p>
-<p><em>Parameter count:</em></p>
 <ul>
-<li><span class="math inline">\(W_1\)</span>: <span class="math inline">\(d \times d_{\text{ff}} = d \times 4d = 4d^2\)</span></li>
-<li><span class="math inline">\(W_2\)</span>: <span class="math inline">\(d_{\text{ff}} \times d = 4d^2\)</span></li>
-<li>Total: <span class="math inline">\(\approx 8d^2\)</span> — <em>twice</em> the parameter count of all attention weight matrices combined!</li>
+<li><span class="math inline">\(T_{\text{temp}} \to 0\)</span>: argmax — always pick the highest-probability token (greedy)</li>
+<li><span class="math inline">\(T_{\text{temp}} = 1\)</span>: standard softmax</li>
+<li><span class="math inline">\(T_{\text{temp}} &gt; 1\)</span>: flattens the distribution — more randomness/creativity</li>
 </ul>
+<p>Temperature is not a model parameter — it’s a sampling hyperparameter set at inference time.</p>
+</div>
+</div>
+</div>
 </section>
-<section id="gelu-deep-dive" class="level2" data-number="8.3">
-<h2 data-number="8.3" class="anchored" data-anchor-id="gelu-deep-dive"><span class="header-section-number">8.3</span> GELU Deep Dive</h2>
-<p>The exact GELU formula is:</p>
-<p><span class="math display">\[
-\operatorname{GELU}(x) = x \cdot \frac{1}{2} \cdot \left[1 + \operatorname{erf}\!\left(\frac{x}{\sqrt{2}}\right)\right]
-\]</span></p>
-<p>A fast approximation (used in practice):</p>
-<p><span class="math display">\[
-\operatorname{GELU}(x) \approx 0.5 \cdot x \cdot (1 + \tanh(\sqrt{2/\pi} \cdot (x + 0.044715 \cdot x^3)))
-\]</span></p>
-<p>Key behaviors:</p>
-<ul>
-<li><code>GELU(0) = 0</code></li>
-<li>For large positive <code>x</code>: <span class="math inline">\(\operatorname{GELU}(x) \approx x\)</span> (passes through)</li>
-<li>For large negative <code>x</code>: <span class="math inline">\(\operatorname{GELU}(x) \approx 0\)</span> (suppressed)</li>
-<li>Smooth everywhere — gradient flows through during training</li>
-</ul>
+<section id="the-generation-loop" class="level2" data-number="11.3">
+<h2 data-number="11.3" class="anchored" data-anchor-id="the-generation-loop"><span class="header-section-number">11.3</span> The Generation Loop</h2>
+<p>Training and inference use the same forward pass differently.</p>
+<p><em>Training:</em> Given a sequence <span class="math inline">\([t_1, t_2, \ldots, t_n]\)</span>, the model predicts all next tokens simultaneously (thanks to causal masking): <span class="math inline">\(P(t_2|t_1), P(t_3|t_1,t_2), \ldots\)</span>. The loss is cross-entropy averaged over all positions.</p>
+<p><em>Inference (generation):</em></p>
+<ol type="1">
+<li>Start with prompt tokens <span class="math inline">\([t_1, \ldots, t_n]\)</span></li>
+<li>Forward pass → logits for position <span class="math inline">\(n\)</span></li>
+<li>Sample or <span class="math inline">\(\mathrm{argmax}\)</span> → <span class="math inline">\(t_{n+1}\)</span></li>
+<li>Append <span class="math inline">\(t_{n+1}\)</span> to the sequence</li>
+<li>Forward pass → logits for position <span class="math inline">\(n+1\)</span></li>
+<li>Repeat until stop token or max length</li>
+</ol>
+<p>This is called <em>autoregressive generation</em>: each new token is fed back in as input to generate the next.</p>
 </section>
-<section id="the-matrix-worked-example" class="level2" data-number="8.4">
-<h2 data-number="8.4" class="anchored" data-anchor-id="the-matrix-worked-example"><span class="header-section-number">8.4</span> The Matrix: Worked Example</h2>
-<p>Let <code>T = 2</code>, <code>d = 4</code>, <span class="math inline">\(d_{\text{ff}} = 8\)</span>.</p>
-<p>Input (after attention):</p>
-<pre class="text"><code>X = [[ 0.5,  1.2, -0.3,  0.8],
-     [-0.1,  0.7,  0.9, -0.4]]    (2×4)</code></pre>
-<p>Let’s trace just row 0 of X: <code>x = [0.5, 1.2, -0.3, 0.8]</code></p>
-<p><em>Step 1 — Expand:</em> <span class="math inline">\(h = x W_1\)</span></p>
-<pre class="text"><code>h = [1.1, -0.4, 0.8, 2.1, -0.3, 0.6, 1.5, -0.8]</code></pre>
-<p><em>Step 2 — GELU:</em></p>
-<pre class="text"><code>GELU(1.1)  ≈ 0.95
-GELU(-0.4) ≈ -0.12
-GELU(0.8)  ≈ 0.64
-GELU(2.1)  ≈ 2.06
-GELU(-0.3) ≈ -0.11
-GELU(0.6)  ≈ 0.44
-GELU(1.5)  ≈ 1.40
-GELU(-0.8) ≈ -0.17
+<section id="the-matrix-worked-example" class="level2" data-number="11.4">
+<h2 data-number="11.4" class="anchored" data-anchor-id="the-matrix-worked-example"><span class="header-section-number">11.4</span> The Matrix: Worked Example</h2>
+<p>Let <code>|V| = 5</code>, <code>d = 4</code>. Final hidden state:</p>
+<pre class="text"><code>h = [0.3, -0.1, 0.8, 0.2]</code></pre>
+<p>Unembedding matrix <span class="math inline">\(W_u = E^{\top}\)</span> (columns = token embeddings):</p>
+<pre class="text"><code>logits[0] = h · E[0] = (0.3)(0.10) + (-0.1)(−0.20) + (0.8)(0.30) + (0.2)(−0.40)
+          = 0.030 + 0.020 + 0.240 − 0.080 = 0.210
 
-h' = [0.95, -0.12, 0.64, 2.06, -0.11, 0.44, 1.40, -0.17]</code></pre>
-<p><em>Step 3 — Contract:</em> <span class="math inline">\(y = h' W_2\)</span></p>
-<pre class="text"><code>y ≈ [0.7, 1.1, -0.2, 0.9]</code></pre>
-<p>The output <code>y</code> is a transformed version of the input vector — same dimensionality, different values. The transformation was learned to improve next-token prediction.</p>
-<p>Figure <a href="#fig-ch08-matrix-ffn" class="quarto-xref">Figure&nbsp;<span>8.1</span></a> shows the feed-forward network expanding the hidden dimension, applying GELU, and contracting back to model width.</p>
-<div id="fig-ch08-matrix-ffn" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Feed-forward network — expand → GELU → contract.">
+logits[1] = h · E[1] = 0.150 − 0.060 − 0.560 + 0.160 = −0.310
+logits[2] = h · E[2] = −0.270 − 0.010 + 0.160 − 0.060 = −0.180
+logits[3] = h · E[3] = 0.120 + 0.050 + 0.480 − 0.140 = 0.510
+logits[4] = h · E[4] = −0.030 − 0.080 − 0.320 + 0.100 = −0.330
+
+logits = [0.210, -0.310, -0.180, 0.510, -0.330]</code></pre>
+<p><em>Softmax:</em></p>
+<pre class="text"><code>exp(logits) = [1.233, 0.733, 0.835, 1.665, 0.719]
+sum         = 5.185
+
+P = [0.238, 0.141, 0.161, 0.321, 0.139]</code></pre>
+<p><em>Token 3 has the highest probability (32.1%).</em> That is the top-ranked token for this context.</p>
+<p>Figure <a href="#fig-ch11-matrix-projection" class="quarto-xref">Figure&nbsp;<span>11.1</span></a> shows the vocabulary projection converting a hidden state into logits over the vocabulary.</p>
+<div id="fig-ch11-matrix-projection" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Vocab projection — the unembedding matrix converts hidden states to logits over 50k tokens.">
 <figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ch08-matrix-ffn-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="images/ch06_ffn.png" class="img-fluid figure-img" alt="Feed-forward network — expand → GELU → contract.">
+<div aria-describedby="fig-ch11-matrix-projection-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/ch11_projection.png" class="img-fluid figure-img" alt="Vocab projection — the unembedding matrix converts hidden states to logits over 50k tokens.">
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch08-matrix-ffn-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;8.1: Feed-forward network
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch11-matrix-projection-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.1: Vocabulary projection
 </figcaption>
 </figure>
 </div>
-<p>Figure <a href="#fig-ch08-matrix-memory" class="quarto-xref">Figure&nbsp;<span>8.2</span></a> shows the FFN interpretation as associative memory, with keys and values stored in its weight matrices.</p>
-<div id="fig-ch08-matrix-memory" class="quarto-float quarto-figure quarto-figure-center anchored" alt="The FFN as associative memory — keys and values stored in the weight matrices.">
+<p>Figure <a href="#fig-ch11-matrix-generation" class="quarto-xref">Figure&nbsp;<span>11.2</span></a> shows autoregressive generation, where each predicted token is appended and fed back into the model.</p>
+<div id="fig-ch11-matrix-generation" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Autoregressive generation loop — each predicted token is appended and fed back into the model.">
 <figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ch08-matrix-memory-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="images/ch06_memory.png" class="img-fluid figure-img" alt="The FFN as associative memory — keys and values stored in the weight matrices.">
+<div aria-describedby="fig-ch11-matrix-generation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/ch11_generation.png" class="img-fluid figure-img" alt="Autoregressive generation loop — each predicted token is appended and fed back into the model.">
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch08-matrix-memory-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;8.2: Feed-forward network as associative memory
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch11-matrix-generation-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;11.2: Autoregressive generation loop
 </figcaption>
 </figure>
 </div>
 </section>
-<section id="the-code-ffn-in-python" class="level2" data-number="8.5">
-<h2 data-number="8.5" class="anchored" data-anchor-id="the-code-ffn-in-python"><span class="header-section-number">8.5</span> The Code: FFN in Python</h2>
-<p>GELU is the activation function used in GPT-2. For large positive <span class="math inline">\(x\)</span>, GELU approaches <span class="math inline">\(x\)</span> — the value passes through. For large negative <span class="math inline">\(x\)</span>, it approaches 0 — the value is suppressed. <code>gelu_matrix</code> applies the scalar GELU to every element of a matrix.</p>
-<!-- snippet: src/python/common.py#activations -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sigmoid(x: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="fl">1.0</span> <span class="op">/</span> (<span class="fl">1.0</span> <span class="op">+</span> math.exp(<span class="op">-</span>x))</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> relu(x: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">max</span>(<span class="fl">0.0</span>, x)</span>
+<section id="the-code-full-microgpt-forward-pass-in-python" class="level2" data-number="11.5">
+<h2 data-number="11.5" class="anchored" data-anchor-id="the-code-full-microgpt-forward-pass-in-python"><span class="header-section-number">11.5</span> The Code: Full microGPT Forward Pass in Python</h2>
+<p>Configuration is data. We represent the model’s five hyperparameters as a plain list and define selectors once.</p>
+<!-- snippet: src/python/common.py#gpt_config -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span>(frozen<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> GPTConfig:</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    vocab_size: <span class="bu">int</span></span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    d_model: <span class="bu">int</span></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    num_heads: <span class="bu">int</span></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    num_layers: <span class="bu">int</span></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    max_seq_len: <span class="bu">int</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<!-- /snippet -->
+<p><code>make_gpt_params</code> allocates all learnable weights. <code>wte</code> is the token embedding matrix <span class="math inline">\([|V| \times d]\)</span>; <code>wpe</code> is the position embedding matrix. Weight tying means the unembedding step will reuse <code>wte</code> transposed — no separate parameter is stored.</p>
+<!-- snippet: src/python/common.py#gpt_params -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> GPTParams:</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    wte: Matrix</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    wpe: Matrix</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    blocks: <span class="bu">list</span>[TransformerBlock]</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    ln_f: LayerNorm</span>
 <span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> gelu(x: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    scale <span class="op">=</span> math.sqrt(<span class="fl">2.0</span> <span class="op">/</span> math.pi)</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="fl">0.5</span> <span class="op">*</span> x <span class="op">*</span> (<span class="fl">1.0</span> <span class="op">+</span> math.tanh(scale <span class="op">*</span> (x <span class="op">+</span> <span class="fl">0.044715</span> <span class="op">*</span> x<span class="op">**</span><span class="dv">3</span>)))</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> gelu_matrix(matrix: Matrix) <span class="op">-&gt;</span> Matrix:</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [[gelu(value) <span class="cf">for</span> value <span class="kw">in</span> row] <span class="cf">for</span> row <span class="kw">in</span> matrix]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_gpt_params(config: GPTConfig, rng: random.Random) <span class="op">-&gt;</span> GPTParams:</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> GPTParams(</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        wte<span class="op">=</span>random_matrix(config.vocab_size, config.d_model, rng),</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        wpe<span class="op">=</span>random_matrix(config.max_seq_len, config.d_model, rng),</span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>        blocks<span class="op">=</span>[</span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>            make_transformer_block(config.d_model, config.num_heads, rng)</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(config.num_layers)</span>
+<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>        ],</span>
+<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>        ln_f<span class="op">=</span>make_layer_norm(config.d_model),</span>
+<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <!-- /snippet -->
-<p><code>add_bias</code> broadcasts a bias vector <span class="math inline">\(b\)</span> across all rows of a matrix <span class="math inline">\(M\)</span>.</p>
-<!-- snippet: src/python/common.py#add_bias -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> add_bias(matrix: Matrix, bias: Vector) <span class="op">-&gt;</span> Matrix:</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [[value <span class="op">+</span> bias[j] <span class="cf">for</span> j, value <span class="kw">in</span> <span class="bu">enumerate</span>(row)] <span class="cf">for</span> row <span class="kw">in</span> matrix]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>gpt_forward</code> is the full pipeline: embed token IDs, add position embeddings, pass through <span class="math inline">\(N\)</span> transformer blocks, apply the final layer norm to the last token’s vector, then compute dot products with every row of <code>wte</code>.</p>
+<!-- snippet: src/python/common.py#gpt_forward -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> gpt_forward(token_ids: Sequence[<span class="bu">int</span>], params: GPTParams, config: GPTConfig) <span class="op">-&gt;</span> Vector:</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(token_ids) <span class="op">&gt;</span> config.max_seq_len:</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"token_ids exceeds max_seq_len"</span>)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    token_embeddings <span class="op">=</span> embed_sequence(params.wte, token_ids)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    position_embeddings <span class="op">=</span> embed_sequence(params.wpe, <span class="bu">range</span>(<span class="bu">len</span>(token_ids)))</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> matrix_add(token_embeddings, position_embeddings)</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> forward_stack(x, params.blocks)</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    h <span class="op">=</span> layer_norm_vector(x[<span class="op">-</span><span class="dv">1</span>], params.ln_f)</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [dot(h, token_vector) <span class="cf">for</span> token_vector <span class="kw">in</span> params.wte]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <!-- /snippet -->
-<p><code>FeedForward</code> holds the four parameters; <code>make_feed_forward</code> allocates them — <span class="math inline">\(W_1\)</span> expands the model dimension <span class="math inline">\(d\)</span> to <span class="math inline">\(4d\)</span>; <span class="math inline">\(W_2\)</span> contracts it back.</p>
-<!-- snippet: src/python/common.py#make_feed_forward -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> FeedForward:</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    w1: Matrix</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    b1: Vector</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    w2: Matrix</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    b2: Vector</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<p><code>generate</code> is the autoregressive loop.</p>
+<!-- snippet: src/python/inference.py#generation -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> temperature_scale(logits: Sequence[<span class="bu">float</span>], temperature: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">float</span>]:</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [value <span class="op">/</span> temperature <span class="cf">for</span> value <span class="kw">in</span> logits]</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> top_k_filter(logits: Sequence[<span class="bu">float</span>], k: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">float</span>]:</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    keep <span class="op">=</span> {index <span class="cf">for</span> index, _value <span class="kw">in</span> <span class="bu">sorted</span>(<span class="bu">enumerate</span>(logits), key<span class="op">=</span><span class="kw">lambda</span> item: item[<span class="dv">1</span>], reverse<span class="op">=</span><span class="va">True</span>)[:k]}</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [value <span class="cf">if</span> index <span class="kw">in</span> keep <span class="cf">else</span> <span class="op">-</span><span class="fl">1.0e9</span> <span class="cf">for</span> index, value <span class="kw">in</span> <span class="bu">enumerate</span>(logits)]</span>
 <span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_feed_forward(d_model: <span class="bu">int</span>, rng: random.Random) <span class="op">-&gt;</span> FeedForward:</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    d_hidden <span class="op">=</span> <span class="dv">4</span> <span class="op">*</span> d_model</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> FeedForward(</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        w1<span class="op">=</span>random_matrix(d_model, d_hidden, rng),</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        b1<span class="op">=</span>[<span class="fl">0.0</span>] <span class="op">*</span> d_hidden,</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        w2<span class="op">=</span>random_matrix(d_hidden, d_model, rng),</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        b2<span class="op">=</span>[<span class="fl">0.0</span>] <span class="op">*</span> d_model,</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sample_token(probabilities: Sequence[<span class="bu">float</span>], rng: random.Random) <span class="op">-&gt;</span> <span class="bu">int</span>:</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    threshold <span class="op">=</span> rng.random()</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    cumulative <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> index, probability <span class="kw">in</span> <span class="bu">enumerate</span>(probabilities):</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        cumulative <span class="op">+=</span> probability</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> threshold <span class="op">&lt;=</span> cumulative:</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> index</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">len</span>(probabilities) <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> generate(</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    params: GPTParams,</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    config: GPTConfig,</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    start_ids: Sequence[<span class="bu">int</span>],</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    max_new_tokens: <span class="bu">int</span>,</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    temperature: <span class="bu">float</span>,</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    top_k: <span class="bu">int</span>,</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>    rng: random.Random,</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">int</span>]:</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    tokens <span class="op">=</span> <span class="bu">list</span>(start_ids)</span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    generated <span class="op">=</span> []</span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(max_new_tokens):</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>        logits <span class="op">=</span> gpt_forward(tokens, params, config)</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>        probabilities <span class="op">=</span> softmax(top_k_filter(temperature_scale(logits, temperature), top_k))</span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>        next_token <span class="op">=</span> sample_token(probabilities, rng)</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>        tokens.append(next_token)</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>        generated.append(next_token)</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> generated</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <!-- /snippet -->
-<p><code>feed_forward</code> composes the two linear layers with GELU: expand → activate → contract.</p>
-<!-- snippet: src/python/common.py#feed_forward -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> feed_forward(x: Matrix, params: FeedForward) <span class="op">-&gt;</span> Matrix:</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    hidden <span class="op">=</span> gelu_matrix(add_bias(matrix_multiply(x, params.w1), params.b1))</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> add_bias(matrix_multiply(hidden, params.w2), params.b2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
-<p><em>Demo.</em> Run with <code>python3 src/python/chapter_demos.py</code>:</p>
-<!-- snippet: src/python/chapter_demos.py#chapter_08 -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> chapter_08(seed: <span class="bu">int</span> <span class="op">=</span> <span class="dv">8</span>) <span class="op">-&gt;</span> <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">object</span>]:</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> random.Random(seed)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> random_matrix(<span class="dv">3</span>, <span class="dv">8</span>, rng)</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    params <span class="op">=</span> make_feed_forward(<span class="dv">8</span>, rng)</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    output <span class="op">=</span> feed_forward(x, params)</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {<span class="st">"output_shape"</span>: (<span class="bu">len</span>(output), <span class="bu">len</span>(output[<span class="dv">0</span>]))}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<p>Run with <code>python3 src/python/chapter_demos.py</code>.</p>
 </section>
-<section id="the-ffn-as-a-key-value-memory" class="level2" data-number="8.6">
-<h2 data-number="8.6" class="anchored" data-anchor-id="the-ffn-as-a-key-value-memory"><span class="header-section-number">8.6</span> The FFN as a Key-Value Memory</h2>
-<p>A striking insight from Geva et al.&nbsp;(2021): the FFN layers act like <em>associative memories</em>.</p>
-<p>The first layer <span class="math inline">\(W_1\)</span> stores “keys” — each column of <span class="math inline">\(W_1\)</span> is a pattern to match against the input. GELU fires when the input matches. The second layer <span class="math inline">\(W_2\)</span> stores “values” — the corresponding information to retrieve.</p>
-<p>Concretely:</p>
-<p><span class="math display">\[
-h = \operatorname{GELU}(x W_1)
-\]</span></p>
-<p>where each component <span class="math inline">\(h_k \approx x \cdot W_1[:,k]\)</span> — a dot-product “match score” for pattern <span class="math inline">\(k\)</span>. High <span class="math inline">\(h_k\)</span> means “input matches pattern <span class="math inline">\(k\)</span>.”</p>
-<p><span class="math display">\[
-y = h W_2
-\]</span></p>
-<p>Pull out value <span class="math inline">\(W_2[k,:]\)</span> weighted by <span class="math inline">\(h_k\)</span>.</p>
-<p>This means the model can learn: “if the input contains patterns related to France, activate neuron 47, which retrieves ‘Paris’ associations.”</p>
-</section>
-<section id="key-takeaways" class="level2" data-number="8.7">
-<h2 data-number="8.7" class="anchored" data-anchor-id="key-takeaways"><span class="header-section-number">8.7</span> Key Takeaways</h2>
+<section id="weight-tying-in-detail" class="level2" data-number="11.6">
+<h2 data-number="11.6" class="anchored" data-anchor-id="weight-tying-in-detail"><span class="header-section-number">11.6</span> Weight Tying in Detail</h2>
+<p>Why does weight tying work so well?</p>
 <ul>
-<li>The FFN is a two-layer MLP applied <em>identically to every position</em>: <span class="math inline">\(FFN(x) = \operatorname{GELU}(xW_1 + b_1) W_2 + b_2\)</span>.</li>
-<li>The inner dimension <span class="math inline">\(d_{\text{ff}} = 4d\)</span> means the FFN has <em>more parameters than the attention layers</em>.</li>
-<li>GELU is a smooth activation function that “softly gates” negative values.</li>
-<li>The FFN acts as an <em>associative memory</em>: first layer matches patterns, second layer retrieves associated information.</li>
-<li>No cross-position communication happens here — that’s attention’s job.</li>
+<li>The embedding <code>E[i]</code> is learned to represent token <code>i</code> such that tokens that appear in similar contexts have similar embeddings.</li>
+<li>The unembedding <span class="math inline">\(\text{logits}[i] = h \cdot E[i]\)</span> measures the alignment between the model’s prediction vector <code>h</code> and token <code>i</code>’s embedding.</li>
+<li>If <code>h</code> is pointing in the direction of “tokens that follow this context,” and <code>E[i]</code> represents token <code>i</code>’s meaning, then tokens that are semantically appropriate will naturally score higher.</li>
 </ul>
-<div class="callout callout-style-simple callout-note">
-<div class="callout-body d-flex">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-body-container">
-<p><em>What’s next?</em> We now have all the pieces: attention that mixes information, and an FFN that processes each token’s vector. How are they wired together? With <em>residual connections</em> and <em>layer normalization</em> to form the <em>transformer block</em> — Chapter 7.</p>
-</div>
-</div>
-</div>
+<p>Weight tying forces the model to use a single geometric space for both “what a token means” and “how to predict a token,” a constraint that also regularizes learning.</p>
+</section>
+<section id="key-takeaways" class="level2" data-number="11.7">
+<h2 data-number="11.7" class="anchored" data-anchor-id="key-takeaways"><span class="header-section-number">11.7</span> Key Takeaways</h2>
+<ul>
+<li>The <em>unembedding</em> projects the final hidden state to logits: <span class="math inline">\(\text{logits} = h W_u \in \mathbb{R}^{|V|}\)</span>.</li>
+<li><em>Weight tying</em> (<span class="math inline">\(W_u = E^{\top}\)</span>) reuses the embedding matrix and reduces parameters.</li>
+<li><em>Softmax</em> converts logits to a probability distribution.</li>
+<li><em>Temperature</em> controls sampling sharpness; <em>top-K</em> restricts the candidate set.</li>
+<li><em>Autoregressive generation</em>: sample one token at a time, feeding each back as input.</li>
+</ul>
+</section>
+<section id="the-complete-picture" class="level2" data-number="11.8">
+<h2 data-number="11.8" class="anchored" data-anchor-id="the-complete-picture"><span class="header-section-number">11.8</span> The Complete Picture</h2>
+<p>You have now seen every piece:</p>
+<pre class="text"><code>Input text
+   ↓ tokenizer
+Token IDs: [3, 7, 12, 5, …]
+   ↓ embedding matrix E
+Token embeddings: [T × d]
+   ↓ + positional encoding
+X̃ = X + PE: [T × d]
+   ↓ transformer block × N
+   │   LayerNorm
+   │   Multi-Head Attention (Q, K, V projections + causal mask + softmax + weighted sum)
+   │   Residual
+   │   LayerNorm
+   │   Feed-Forward Network (expand → GELU → contract)
+   │   Residual
+   ↓
+X_final: [T × d]
+   ↓ final LayerNorm + unembedding
+Logits: [|V|]
+   ↓ softmax (+ temperature + top-K)
+P(next token): [|V|]  →  sample  →  next token ID</code></pre>
+<p>Every box in that diagram corresponds to one chapter of this book.</p>
 
 
 </section>
@@ -1032,13 +1076,13 @@ y = h W_2
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./ch07-multi-head-attention.html" class="pagination-link" aria-label="Multi-Head Attention — Many Conversations at Once">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span>
+      <a href="./parts/prediction-and-learning.html" class="pagination-link" aria-label="Prediction and Learning">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Prediction and Learning</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./ch09-transformer-block.html" class="pagination-link" aria-label="The Transformer Block — Putting It Together">
-        <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./ch12-loss.html" class="pagination-link" aria-label="Loss — How the Model Learns">
+        <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -1050,7 +1094,7 @@ y = h W_2
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch08-feed-forward.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch11-vocab-projection.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
 <p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
 </div>

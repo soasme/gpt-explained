@@ -9,7 +9,7 @@
 <meta name="author" content="Ju Lin">
 <meta name="description" content="A practical guide to GPT-style transformer architecture, from tokens to text generation, with math, matrices, Python, and diagrams.">
 
-<title>12&nbsp; Training — Teaching the Model – GPT Explained</title>
+<title>7&nbsp; RoPE: Position Inside Attention – GPT Explained</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -70,8 +70,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./parts/modern-gpt.html" rel="next">
-<link href="./ch11-loss.html" rel="prev">
+<link href="./ch08-multi-head-attention.html" rel="next">
+<link href="./ch06-attention.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -81,7 +81,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-5c6455a84bcea5f5637e4293716dd56f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-6a3bbeb4c3e7118f5bb1e8593622cb1d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -151,7 +151,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./parts/prediction-and-learning.html">Prediction and Learning</a></li><li class="breadcrumb-item"><a href="./ch12-training.html"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./parts/transformer-core.html">Transformer Core</a></li><li class="breadcrumb-item"><a href="./ch07-rope.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">RoPE: Position Inside Attention</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -294,20 +294,26 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch07-multi-head-attention.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span></a>
+  <a href="./ch07-rope.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">RoPE: Position Inside Attention</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch08-feed-forward.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span></a>
+  <a href="./ch08-multi-head-attention.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch09-transformer-block.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span></a>
+  <a href="./ch09-feed-forward.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch10-transformer-block.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span></a>
   </div>
 </li>
       </ul>
@@ -323,20 +329,20 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch10-vocab-projection.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span></a>
+  <a href="./ch11-vocab-projection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch11-loss.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span></a>
+  <a href="./ch12-loss.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch12-training.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></a>
+  <a href="./ch13-training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></a>
   </div>
 </li>
       </ul>
@@ -352,8 +358,8 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch13-modern-gpt.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Modern GPT</span></span></a>
+  <a href="./ch14-modern-gpt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Modern GPT</span></span></a>
   </div>
 </li>
       </ul>
@@ -385,25 +391,20 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul class="collapse">
-  <li><a href="#the-idea" id="toc-the-idea" class="nav-link active" data-scroll-target="#the-idea"><span class="header-section-number">12.1</span> The Idea</a></li>
-  <li><a href="#the-goal-move-the-loss-down" id="toc-the-goal-move-the-loss-down" class="nav-link" data-scroll-target="#the-goal-move-the-loss-down"><span class="header-section-number">12.2</span> The Goal: Move the Loss Down</a></li>
-  <li><a href="#the-chain-rule" id="toc-the-chain-rule" class="nav-link" data-scroll-target="#the-chain-rule"><span class="header-section-number">12.3</span> The Chain Rule</a></li>
-  <li><a href="#backprop-through-softmax-and-cross-entropy" id="toc-backprop-through-softmax-and-cross-entropy" class="nav-link" data-scroll-target="#backprop-through-softmax-and-cross-entropy"><span class="header-section-number">12.4</span> Backprop Through Softmax and Cross-Entropy</a></li>
-  <li><a href="#backprop-through-a-linear-layer" id="toc-backprop-through-a-linear-layer" class="nav-link" data-scroll-target="#backprop-through-a-linear-layer"><span class="header-section-number">12.5</span> Backprop Through a Linear Layer</a></li>
-  <li><a href="#accumulating-gradients-across-the-sequence" id="toc-accumulating-gradients-across-the-sequence" class="nav-link" data-scroll-target="#accumulating-gradients-across-the-sequence"><span class="header-section-number">12.6</span> Accumulating Gradients Across the Sequence</a></li>
-  <li><a href="#the-gradient-descent-step" id="toc-the-gradient-descent-step" class="nav-link" data-scroll-target="#the-gradient-descent-step"><span class="header-section-number">12.7</span> The Gradient Descent Step</a></li>
-  <li><a href="#one-training-step" id="toc-one-training-step" class="nav-link" data-scroll-target="#one-training-step"><span class="header-section-number">12.8</span> One Training Step</a></li>
-  <li><a href="#watching-the-loss-fall" id="toc-watching-the-loss-fall" class="nav-link" data-scroll-target="#watching-the-loss-fall"><span class="header-section-number">12.9</span> Watching the Loss Fall</a></li>
-  <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways"><span class="header-section-number">12.10</span> Key Takeaways</a></li>
+  <li><a href="#the-idea" id="toc-the-idea" class="nav-link active" data-scroll-target="#the-idea"><span class="header-section-number">7.1</span> The Idea</a></li>
+  <li><a href="#the-math" id="toc-the-math" class="nav-link" data-scroll-target="#the-math"><span class="header-section-number">7.2</span> The Math</a></li>
+  <li><a href="#a-small-example" id="toc-a-small-example" class="nav-link" data-scroll-target="#a-small-example"><span class="header-section-number">7.3</span> A Small Example</a></li>
+  <li><a href="#the-code-structure" id="toc-the-code-structure" class="nav-link" data-scroll-target="#the-code-structure"><span class="header-section-number">7.4</span> The Code Structure</a></li>
+  <li><a href="#takeaways" id="toc-takeaways" class="nav-link" data-scroll-target="#takeaways"><span class="header-section-number">7.5</span> Takeaways</a></li>
   </ul>
-<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch12-training.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch07-rope.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./parts/prediction-and-learning.html">Prediction and Learning</a></li><li class="breadcrumb-item"><a href="./ch12-training.html"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./parts/transformer-core.html">Transformer Core</a></li><li class="breadcrumb-item"><a href="./ch07-rope.html"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">RoPE: Position Inside Attention</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="sec-ch12-training" class="quarto-section-identifier"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></h1>
+<h1 class="title"><span id="sec-ch07-rope" class="quarto-section-identifier"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">RoPE: Position Inside Attention</span></span></h1>
 </div>
 
 
@@ -420,217 +421,160 @@ window.Quarto = {
 </header>
 
 
-<p>Chapter 9 gave us a loss: a single number measuring how wrong the model is. But knowing <em>how wrong</em> we are is only half the battle. We also need to know <em>which weights</em> are responsible for the error, and <em>by how much to change each one</em>.</p>
-<p>That is the job of <em>training</em>.</p>
-<section id="the-idea" class="level2" data-number="12.1">
-<h2 data-number="12.1" class="anchored" data-anchor-id="the-idea"><span class="header-section-number">12.1</span> The Idea</h2>
-<p>The loss tells us <em>how wrong</em> the model was at its last prediction. Training uses that wrongness to <em>improve</em> the model — so it does better next time.</p>
-<p>Here is the core loop, in plain terms:</p>
-<ol type="1">
-<li><em>Forward pass</em>: feed a sentence into the model, let it predict the next word at every position, measure how wrong those predictions were (the loss).</li>
-<li><em>Backward pass</em>: trace back through every calculation the model just made and figure out — for each weight — whether increasing it would have made the loss higher or lower, and by how much. This produces a <em>gradient</em> for every weight.</li>
-<li><em>Update</em>: nudge each weight slightly in the direction that reduces the loss. Weights that caused big errors get bigger nudges; weights that barely mattered get smaller nudges.</li>
-<li><em>Repeat</em>: billions of times, across trillions of words.</li>
-</ol>
-<p>That is the entire training algorithm.</p>
-</section>
-<section id="the-goal-move-the-loss-down" class="level2" data-number="12.2">
-<h2 data-number="12.2" class="anchored" data-anchor-id="the-goal-move-the-loss-down"><span class="header-section-number">12.2</span> The Goal: Move the Loss Down</h2>
-<p>The model has millions of parameters. Call them collectively <span class="math inline">\(\theta\)</span>. The loss <span class="math inline">\(\mathcal{L}(\theta)\)</span> is a function of all of them. We want to find <span class="math inline">\(\theta\)</span> that minimizes the loss.</p>
-<p>The strategy is <em>gradient descent</em>: repeatedly take a small step downhill on the loss surface.</p>
+<p>So far, position has been added to the token representation. Sinusoidal and learned positional embeddings both create a position vector and add it to the token embedding before attention begins.</p>
+<p>Modern GPT-style models often do something more subtle: they put position into attention itself. That idea is called <em>Rotary Positional Encoding</em>, or <em>RoPE</em>.</p>
+<section id="the-idea" class="level2" data-number="7.1">
+<h2 data-number="7.1" class="anchored" data-anchor-id="the-idea"><span class="header-section-number">7.1</span> The Idea</h2>
+<p>Standard positional encoding changes the input stream:</p>
 <p><span class="math display">\[
-\theta \leftarrow \theta - \eta \cdot \nabla_\theta \mathcal{L}
+\tilde{X} = X + PE
 \]</span></p>
-<p><span class="math inline">\(\eta &gt; 0\)</span> is the <em>learning rate</em> — how big a step to take. <span class="math inline">\(\nabla_\theta \mathcal{L}\)</span> is the <em>gradient</em>: a collection of partial derivatives, one per parameter.</p>
-<div class="callout callout-style-simple callout-note">
-<div class="callout-body d-flex">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-body-container">
-<p><em>Math Minute — Partial Derivatives</em></p>
-<p>A partial derivative <span class="math inline">\(\frac{\partial \mathcal{L}}{\partial w}\)</span> answers: <em>if we increase <span class="math inline">\(w\)</span> by a tiny <span class="math inline">\(\epsilon\)</span> while holding every other weight fixed, by how much does <span class="math inline">\(\mathcal{L}\)</span> change?</em></p>
-<p>A large positive value means <span class="math inline">\(w\)</span> is pushing loss up — decrease it. A negative value means the opposite. Zero means <span class="math inline">\(w\)</span> is momentarily irrelevant to the loss.</p>
-<p>Notation: <span class="math inline">\(\partial\)</span> (curly d) instead of <span class="math inline">\(d\)</span> signals “partial” — other variables are held constant.</p>
-</div>
-</div>
-</div>
-</section>
-<section id="the-chain-rule" class="level2" data-number="12.3">
-<h2 data-number="12.3" class="anchored" data-anchor-id="the-chain-rule"><span class="header-section-number">12.3</span> The Chain Rule</h2>
-<p>Backpropagation is the chain rule from calculus, applied to a computation graph.</p>
-<p>Suppose the loss depends on weight <span class="math inline">\(w\)</span> through a chain of intermediate values:</p>
+<p>Attention then projects <span class="math inline">\(\tilde{X}\)</span> into <span class="math inline">\(Q\)</span>, <span class="math inline">\(K\)</span>, and <span class="math inline">\(V\)</span>.</p>
+<p>RoPE changes a different point in the pipeline. It first computes the usual query, key, and value vectors:</p>
 <p><span class="math display">\[
-w \xrightarrow{f} z \xrightarrow{g} \mathcal{L}
+Q = XW_q,\quad K = XW_k,\quad V = XW_v
 \]</span></p>
-<p>The chain rule says:</p>
+<p>Then it rotates each query and key according to that token’s position. Values are not rotated.</p>
+<p>The attention score is still a dot product, but now it compares rotated vectors:</p>
 <p><span class="math display">\[
-\frac{d\mathcal{L}}{dw} = \frac{d\mathcal{L}}{dz} \cdot \frac{dz}{dw}
+S[i,j] = \frac{(R_i q_i) \cdot (R_j k_j)}{\sqrt{d_k}}
 \]</span></p>
-<p><em>If we know how <span class="math inline">\(\mathcal{L}\)</span> varies with <span class="math inline">\(z\)</span>, and how <span class="math inline">\(z\)</span> varies with <span class="math inline">\(w\)</span>, we multiply to get how <span class="math inline">\(\mathcal{L}\)</span> varies with <span class="math inline">\(w\)</span>.</em></p>
-<p>In a transformer, the chain has hundreds of layers. Backprop starts at the loss and works backward, multiplying local derivatives as it goes. Each layer only needs two things: the gradient arriving from the layer above (called <span class="math inline">\(\delta\)</span>, “delta”), and its own local derivative.</p>
-<section id="step-1-a-gradient-update-for-one-weight" class="level3" data-number="12.3.1">
-<h3 data-number="12.3.1" class="anchored" data-anchor-id="step-1-a-gradient-update-for-one-weight"><span class="header-section-number">12.3.1</span> Step 1: A gradient update for one weight</h3>
-<!-- snippet: src/python/train.py#sgd_update_scalar -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sgd_update_scalar(weight: <span class="bu">float</span>, gradient: <span class="bu">float</span>, learning_rate: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> weight <span class="op">-</span> learning_rate <span class="op">*</span> gradient</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
-<p>If the gradient is positive (loss rises when <span class="math inline">\(w\)</span> increases), we subtract — decreasing <span class="math inline">\(w\)</span>. If negative, we add. The learning rate <span class="math inline">\(\eta\)</span> scales how large the step is.</p>
-<p>This is the entire idea. Everything that follows is this rule, applied to millions of weights simultaneously.</p>
+<p>This lets position affect <em>which tokens attend to which other tokens</em>. Instead of saying “position is another feature in the token vector,” RoPE says “position changes the geometry of query-key matching.”</p>
 </section>
-</section>
-<section id="backprop-through-softmax-and-cross-entropy" class="level2" data-number="12.4">
-<h2 data-number="12.4" class="anchored" data-anchor-id="backprop-through-softmax-and-cross-entropy"><span class="header-section-number">12.4</span> Backprop Through Softmax and Cross-Entropy</h2>
-<p>Chapter 9 stated the softmax-CE gradient without proof:</p>
+<section id="the-math" class="level2" data-number="7.2">
+<h2 data-number="7.2" class="anchored" data-anchor-id="the-math"><span class="header-section-number">7.2</span> The Math</h2>
+<p>RoPE treats a vector as pairs of dimensions. For each pair, it applies a 2D rotation.</p>
+<p>For a vector pair <span class="math inline">\((x, y)\)</span> and angle <span class="math inline">\(\theta\)</span>:</p>
 <p><span class="math display">\[
-\frac{\partial \mathcal{L}}{\partial z_j} = P(j) - \mathbb{1}[j = t]
+\begin{bmatrix}
+x' \\
+y'
+\end{bmatrix}
+=
+\begin{bmatrix}
+\cos \theta &amp; -\sin \theta \\
+\sin \theta &amp; \cos \theta
+\end{bmatrix}
+\begin{bmatrix}
+x \\
+y
+\end{bmatrix}
 \]</span></p>
-<p>where <span class="math inline">\(z_j\)</span> are the logits and <span class="math inline">\(t\)</span> is the true token.</p>
-<p>For the true token <span class="math inline">\(j = t\)</span>: gradient is <span class="math inline">\(P_t - 1\)</span> (negative, so we push <span class="math inline">\(z_t\)</span> up). For every other token: gradient is <span class="math inline">\(P_j\)</span> (positive, so we push those logits down). The model is nudged to be more confident about the correct answer.</p>
-<!-- snippet: src/python/train.py#loss_grad -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> softmax_cross_entropy_grad(logits: Sequence[<span class="bu">float</span>], true_id: <span class="bu">int</span>) <span class="op">-&gt;</span> Vector:</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    grad <span class="op">=</span> softmax(logits)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    grad[true_id] <span class="op">-=</span> <span class="fl">1.0</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> grad</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
-</section>
-<section id="backprop-through-a-linear-layer" class="level2" data-number="12.5">
-<h2 data-number="12.5" class="anchored" data-anchor-id="backprop-through-a-linear-layer"><span class="header-section-number">12.5</span> Backprop Through a Linear Layer</h2>
-<p>The most common operation in a transformer is a <em>linear layer</em>: <span class="math inline">\(y = Wx\)</span>.</p>
-<p>Given the upstream gradient <span class="math inline">\(\delta = \frac{\partial \mathcal{L}}{\partial y}\)</span> (arriving from the layer above), the chain rule gives:</p>
+<p>For token position <span class="math inline">\(m\)</span> and dimension pair <span class="math inline">\(r\)</span>, RoPE uses:</p>
 <p><span class="math display">\[
-\frac{\partial \mathcal{L}}{\partial W} = \delta \cdot x^\top
-\qquad
-\frac{\partial \mathcal{L}}{\partial x} = W^\top \cdot \delta
+\theta_{m,r} = \frac{m}{10000^{2r/d}}
 \]</span></p>
-<p>The first equation tells us how to update <span class="math inline">\(W\)</span>. The second passes the gradient backward to whatever fed <span class="math inline">\(x\)</span> into this layer.</p>
-<section id="step-2-linear-layer-backward-pass" class="level3" data-number="12.5.1">
-<h3 data-number="12.5.1" class="anchored" data-anchor-id="step-2-linear-layer-backward-pass"><span class="header-section-number">12.5.1</span> Step 2: Linear layer backward pass</h3>
-<!-- snippet: src/python/train.py#linear_backward -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> linear_backward(delta: Vector, weights: Matrix, x: Vector) <span class="op">-&gt;</span> <span class="bu">tuple</span>[Matrix, Vector]:</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    grad_w <span class="op">=</span> [[delta_i <span class="op">*</span> x_j <span class="cf">for</span> x_j <span class="kw">in</span> x] <span class="cf">for</span> delta_i <span class="kw">in</span> delta]</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    grad_x <span class="op">=</span> [<span class="bu">sum</span>(weights[i][j] <span class="op">*</span> delta[i] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(delta))) <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(x))]</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> grad_w, grad_x</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
-</section>
-</section>
-<section id="accumulating-gradients-across-the-sequence" class="level2" data-number="12.6">
-<h2 data-number="12.6" class="anchored" data-anchor-id="accumulating-gradients-across-the-sequence"><span class="header-section-number">12.6</span> Accumulating Gradients Across the Sequence</h2>
-<p>We compute the softmax-CE gradient independently at each position <span class="math inline">\(t\)</span>. But all positions share the same unembedding matrix <span class="math inline">\(W_u\)</span> (and the same transformer weights). Their gradient contributions must be <em>summed</em> before updating any weight.</p>
-<section id="step-4-summing-gradient-contributions" class="level3" data-number="12.6.1">
-<h3 data-number="12.6.1" class="anchored" data-anchor-id="step-4-summing-gradient-contributions"><span class="header-section-number">12.6.1</span> Step 4: Summing gradient contributions</h3>
-<!-- snippet: src/python/train.py#accumulate_gradients -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> accumulate_gradients(gradients: Sequence[Matrix]) <span class="op">-&gt;</span> Matrix:</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    rows, cols <span class="op">=</span> shape(gradients[<span class="dv">0</span>])</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    total <span class="op">=</span> make_matrix(rows, cols)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> gradient <span class="kw">in</span> gradients:</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        total <span class="op">=</span> matrix_add(total, gradient)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> total</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
-<p>The more a weight influenced the output at many positions, the larger (and more reliable) its accumulated gradient.</p>
-</section>
-</section>
-<section id="the-gradient-descent-step" class="level2" data-number="12.7">
-<h2 data-number="12.7" class="anchored" data-anchor-id="the-gradient-descent-step"><span class="header-section-number">12.7</span> The Gradient Descent Step</h2>
-<p>With gradients accumulated for every parameter, the update rule is:</p>
+<p>So each pair rotates at a different frequency. Early dimensions rotate quickly; later dimensions rotate slowly.</p>
+<p>The important property is what happens inside the attention dot product:</p>
 <p><span class="math display">\[
-W \leftarrow W - \eta \cdot \frac{\partial \mathcal{L}}{\partial W}
+(R_m q) \cdot (R_n k) = q \cdot (R_{n-m} k)
 \]</span></p>
-<section id="step-5-updating-a-weight-matrix-in-place" class="level3" data-number="12.7.1">
-<h3 data-number="12.7.1" class="anchored" data-anchor-id="step-5-updating-a-weight-matrix-in-place"><span class="header-section-number">12.7.1</span> Step 5: Updating a weight matrix in place</h3>
-<!-- snippet: src/python/train.py#sgd_update_matrix -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sgd_update_matrix(weights: Matrix, gradient: Matrix, learning_rate: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i, row <span class="kw">in</span> <span class="bu">enumerate</span>(weights):</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> j, value <span class="kw">in</span> <span class="bu">enumerate</span>(row):</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>            row[j] <span class="op">=</span> value <span class="op">-</span> learning_rate <span class="op">*</span> gradient[i][j]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
-<p>Every entry <span class="math inline">\(W_{ij}\)</span> moves a small step in the direction that reduces the loss.</p>
+<p>The score depends on the relative distance <span class="math inline">\(n-m\)</span> between the query position and key position. That is how RoPE encodes relative position without adding a separate position vector to <span class="math inline">\(X\)</span>.</p>
+<p>The full attention formula becomes:</p>
+<p><span class="math display">\[
+\operatorname{Attention}_{\text{RoPE}}(Q,K,V)
+=
+\operatorname{softmax}\!\left(
+\frac{(R Q)(R K)^{\top}}{\sqrt{d_k}} + M
+\right)V
+\]</span></p>
+<p>where <span class="math inline">\(RQ\)</span> means “rotate every query row by its position” and <span class="math inline">\(RK\)</span> means the same for keys.</p>
 </section>
+<section id="a-small-example" class="level2" data-number="7.3">
+<h2 data-number="7.3" class="anchored" data-anchor-id="a-small-example"><span class="header-section-number">7.3</span> A Small Example</h2>
+<p>Take a two-dimensional query and key:</p>
+<p><span class="math display">\[
+q = [1, 0], \quad k = [1, 0]
+\]</span></p>
+<p>Before rotation, their dot product is:</p>
+<p><span class="math display">\[
+q \cdot k = 1
+\]</span></p>
+<p>Now place the query at position 1 and the key at position 3. In two dimensions the frequency is 1, so the rotations use angles 1 and 3 radians:</p>
+<p><span class="math display">\[
+R_1 q = [\cos 1, \sin 1]
+\]</span></p>
+<p><span class="math display">\[
+R_3 k = [\cos 3, \sin 3]
+\]</span></p>
+<p>Their dot product is:</p>
+<p><span class="math display">\[
+\cos 1 \cos 3 + \sin 1 \sin 3 = \cos(3 - 1)
+\]</span></p>
+<p>The result depends on the distance between positions, not just on the original vector contents. For real model dimensions, many dimension pairs rotate at many frequencies, so attention gets a detailed relative-position signal.</p>
 </section>
-<section id="one-training-step" class="level2" data-number="12.8">
-<h2 data-number="12.8" class="anchored" data-anchor-id="one-training-step"><span class="header-section-number">12.8</span> One Training Step</h2>
-<p>Now we can assemble the full cycle: forward pass to get predictions and loss, backward pass to get gradients, update pass to improve every weight.</p>
+<section id="the-code-structure" class="level2" data-number="7.4">
+<h2 data-number="7.4" class="anchored" data-anchor-id="the-code-structure"><span class="header-section-number">7.4</span> The Code Structure</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> rope_angle(position: <span class="bu">int</span>, pair_index: <span class="bu">int</span>, d_model: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> position <span class="op">/</span> (<span class="fl">10000.0</span> <span class="op">**</span> (<span class="fl">2.0</span> <span class="op">*</span> pair_index <span class="op">/</span> d_model))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>rope_angle</code> computes the rotation angle for one position and one pair of dimensions. The formula matches the sinusoidal frequency schedule: early dimension pairs rotate faster, later pairs rotate more slowly.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> rotate_pair(x: <span class="bu">float</span>, y: <span class="bu">float</span>, angle: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">tuple</span>[<span class="bu">float</span>, <span class="bu">float</span>]:</span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    cos_theta <span class="op">=</span> math.cos(angle)</span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    sin_theta <span class="op">=</span> math.sin(angle)</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> x <span class="op">*</span> cos_theta <span class="op">-</span> y <span class="op">*</span> sin_theta, x <span class="op">*</span> sin_theta <span class="op">+</span> y <span class="op">*</span> cos_theta</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>rotate_pair</code> is the 2D rotation from the math section. It takes two neighboring vector components and returns the rotated pair.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> apply_rope_to_vector(vector: Vector, position: <span class="bu">int</span>) <span class="op">-&gt;</span> Vector:</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(vector) <span class="op">%</span> <span class="dv">2</span> <span class="op">!=</span> <span class="dv">0</span>:</span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"RoPE requires an even vector dimension"</span>)</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    rotated: Vector <span class="op">=</span> []</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    d_model <span class="op">=</span> <span class="bu">len</span>(vector)</span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, d_model, <span class="dv">2</span>):</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        angle <span class="op">=</span> rope_angle(position, i <span class="op">//</span> <span class="dv">2</span>, d_model)</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        x, y <span class="op">=</span> rotate_pair(vector[i], vector[i <span class="op">+</span> <span class="dv">1</span>], angle)</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        rotated.extend([x, y])</span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> rotated</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>apply_rope_to_vector</code> walks through a query or key vector two dimensions at a time. Each pair gets its own angle, determined by the token position and the pair index. RoPE requires an even vector dimension because every dimension must belong to a pair.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> apply_rope(matrix: Matrix) <span class="op">-&gt;</span> Matrix:</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>        apply_rope_to_vector(row, position)</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> position, row <span class="kw">in</span> <span class="bu">enumerate</span>(matrix)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    ]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>apply_rope</code> applies that vector rotation to every row in a matrix. The row index is the token position, so row <code>0</code> gets position <code>0</code>, row <code>1</code> gets position <code>1</code>, and so on.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> scaled_dot_product_attention_with_rope(</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    query: Matrix,</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    key: Matrix,</span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    value: Matrix,</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="bu">tuple</span>[Matrix, Matrix]:</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> scaled_dot_product_attention(</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>        apply_rope(query),</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        apply_rope(key),</span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        value,</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>scaled_dot_product_attention_with_rope</code> keeps the attention formula from <a href="ch06-attention.html" class="quarto-xref"><span>Chapter 6</span></a>. The only difference is that queries and keys are rotated before the dot products are computed. Values are not rotated; they are still mixed by the final attention weights.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> chapter_07(seed: <span class="bu">int</span> <span class="op">=</span> <span class="dv">607</span>) <span class="op">-&gt;</span> <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">object</span>]:</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> random.Random(seed)</span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    query <span class="op">=</span> random_matrix(<span class="dv">4</span>, <span class="dv">8</span>, rng)</span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    key <span class="op">=</span> random_matrix(<span class="dv">4</span>, <span class="dv">8</span>, rng)</span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    value <span class="op">=</span> random_matrix(<span class="dv">4</span>, <span class="dv">8</span>, rng)</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    output, weights <span class="op">=</span> scaled_dot_product_attention_with_rope(query, key, value)</span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"rotated_first"</span>: apply_rope_to_vector([<span class="fl">1.0</span>, <span class="fl">0.0</span>], <span class="dv">1</span>),</span>
+<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"rotated_shape"</span>: (<span class="bu">len</span>(apply_rope(query)), <span class="bu">len</span>(query[<span class="dv">0</span>])),</span>
+<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">"output_shape"</span>: (<span class="bu">len</span>(output), <span class="bu">len</span>(output[<span class="dv">0</span>])),</span>
+<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"weight_rows"</span>: [<span class="bu">sum</span>(row) <span class="cf">for</span> row <span class="kw">in</span> weights],</span>
+<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>chapter_07</code> is the runnable demo used by <code>python3 src/python/chapter_demos.py</code>. It checks that RoPE preserves the query/key matrix shape and that the resulting attention rows still sum to 1 after softmax.</p>
 </section>
-<section id="watching-the-loss-fall" class="level2" data-number="12.9">
-<h2 data-number="12.9" class="anchored" data-anchor-id="watching-the-loss-fall"><span class="header-section-number">12.9</span> Watching the Loss Fall</h2>
-<p>Running thousands of training steps, the loss curve looks roughly like this:</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Step</th>
-<th>Loss</th>
-<th>Perplexity</th>
-<th>Interpretation</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>0</td>
-<td>10.82</td>
-<td>50,000</td>
-<td>Random — model knows nothing</td>
-</tr>
-<tr class="even">
-<td>100</td>
-<td>6.91</td>
-<td>1,000</td>
-<td>Ruling out most tokens</td>
-</tr>
-<tr class="odd">
-<td>1,000</td>
-<td>4.61</td>
-<td>100</td>
-<td>Learned basic frequency</td>
-</tr>
-<tr class="even">
-<td>10,000</td>
-<td>2.30</td>
-<td>10</td>
-<td>Has rough grammar</td>
-</tr>
-<tr class="odd">
-<td>100,000</td>
-<td>0.92</td>
-<td>2.5</td>
-<td>Strong language model</td>
-</tr>
-</tbody>
-</table>
-<p>The curve drops steeply at first (obvious mistakes are easy to fix) then more slowly and noisily (subtle patterns are harder and data points disagree).</p>
-<div class="callout callout-style-simple callout-note">
-<div class="callout-body d-flex">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-body-container">
-<p><em>Why does loss get noisy later?</em></p>
-<p>Early on, large gradients correct glaring errors. Later, gradients are smaller and point in slightly different directions for different training examples. The noise is not a bug: random variation in gradient direction helps the model escape poor local minima. This is the <em>stochastic</em> in <em>stochastic gradient descent</em> (SGD).</p>
-</div>
-</div>
-</div>
-<p>Figure <a href="#fig-ch10-update-training" class="quarto-xref">Figure&nbsp;<span>12.1</span></a> shows gradients flowing backward from the loss through each layer while weights are updated.</p>
-<div id="fig-ch10-update-training" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Backpropagation: gradient flowing from loss backward through each layer, updating weights">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ch10-update-training-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="images/ch10_training.png" class="img-fluid figure-img" alt="Backpropagation: gradient flowing from loss backward through each layer, updating weights">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch10-update-training-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;12.1: Backpropagation and weight updates
-</figcaption>
-</figure>
-</div>
-</section>
-<section id="key-takeaways" class="level2" data-number="12.10">
-<h2 data-number="12.10" class="anchored" data-anchor-id="key-takeaways"><span class="header-section-number">12.10</span> Key Takeaways</h2>
+<section id="takeaways" class="level2" data-number="7.5">
+<h2 data-number="7.5" class="anchored" data-anchor-id="takeaways"><span class="header-section-number">7.5</span> Takeaways</h2>
 <ul>
-<li><em>Gradient descent</em> moves every weight downhill: <span class="math inline">\(\theta \leftarrow \theta - \eta \nabla_\theta \mathcal{L}\)</span>.</li>
-<li><em>Partial derivatives</em> measure the sensitivity of the loss to each individual weight, holding all others fixed.</li>
-<li><em>Backpropagation</em> is the chain rule applied layer by layer from loss to inputs. Each layer only needs the upstream gradient <span class="math inline">\(\delta\)</span> and its own local derivative — no global information required.</li>
-<li><em>Linear layer backward:</em> <span class="math inline">\(\frac{\partial \mathcal{L}}{\partial W} = \delta x^\top\)</span>, <span class="math inline">\(\frac{\partial \mathcal{L}}{\partial x} = W^\top \delta\)</span>. The same two matrices as the forward pass, just transposed and multiplied in a different order.</li>
-<li><em>Softmax-CE gradient</em> is <span class="math inline">\(P(j) - \mathbb{1}[j = t]\)</span>: the model’s predicted probability minus the true label. Nearly zero when correct and confident; large when wrong.</li>
-<li><em>Shared weights accumulate gradients</em> from every position in the sequence before any update is applied.</li>
-<li>The six-step cycle — forward, loss, backward, accumulate, update, repeat — is all of training. Every weight in the model, over billions of tokens, updated by exactly this loop.</li>
+<li>Earlier positional encodings add position to the token representation before attention.</li>
+<li>RoPE puts position inside attention by rotating <span class="math inline">\(Q\)</span> and <span class="math inline">\(K\)</span>.</li>
+<li>Values are not rotated; they are still blended by the attention weights.</li>
+<li>The query-key dot product depends on relative distance between positions.</li>
+<li>Modern GPT-style models often prefer RoPE because it gives attention a strong relative-position signal without adding learned position parameters.</li>
 </ul>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p><em>What’s next?</em> RoPE changes how one attention head sees position. The next chapter asks how a model can track several kinds of relationships at once: <em>multi-head attention</em>. See <a href="ch08-multi-head-attention.html" class="quarto-xref"><span>Chapter 8</span></a>.</p>
+</div>
+</div>
+</div>
 
 
 </section>
@@ -1043,13 +987,13 @@ Figure&nbsp;12.1: Backpropagation and weight updates
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./ch11-loss.html" class="pagination-link" aria-label="Loss — How the Model Learns">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span>
+      <a href="./ch06-attention.html" class="pagination-link" aria-label="Attention — Tokens Talking to Each Other">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">6</span>&nbsp; <span class="chapter-title">Attention — Tokens Talking to Each Other</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./parts/modern-gpt.html" class="pagination-link" aria-label="Modern Extensions">
-        <span class="nav-page-text">Modern Extensions</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./ch08-multi-head-attention.html" class="pagination-link" aria-label="Multi-Head Attention — Many Conversations at Once">
+        <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -1061,7 +1005,7 @@ Figure&nbsp;12.1: Backpropagation and weight updates
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch12-training.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch07-rope.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
 <p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
 </div>

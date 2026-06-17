@@ -9,7 +9,7 @@
 <meta name="author" content="Ju Lin">
 <meta name="description" content="A practical guide to GPT-style transformer architecture, from tokens to text generation, with math, matrices, Python, and diagrams.">
 
-<title>11&nbsp; Loss — How the Model Learns – GPT Explained</title>
+<title>14&nbsp; Modern GPT – GPT Explained</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -25,41 +25,6 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
-/* CSS for syntax highlighting */
-html { -webkit-text-size-adjust: 100%; }
-pre > code.sourceCode { white-space: pre; position: relative; }
-pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
-pre > code.sourceCode > span:empty { height: 1.2em; }
-.sourceCode { overflow: visible; }
-code.sourceCode > span { color: inherit; text-decoration: inherit; }
-div.sourceCode { margin: 1em 0; }
-pre.sourceCode { margin: 0; }
-@media screen {
-div.sourceCode { overflow: auto; }
-}
-@media print {
-pre > code.sourceCode { white-space: pre-wrap; }
-pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
-}
-pre.numberSource code
-  { counter-reset: source-line 0; }
-pre.numberSource code > span
-  { position: relative; left: -4em; counter-increment: source-line; }
-pre.numberSource code > span > a:first-child::before
-  { content: counter(source-line);
-    position: relative; left: -1em; text-align: right; vertical-align: baseline;
-    border: none; display: inline-block;
-    -webkit-touch-callout: none; -webkit-user-select: none;
-    -khtml-user-select: none; -moz-user-select: none;
-    -ms-user-select: none; user-select: none;
-    padding: 0 4px; width: 4em;
-  }
-pre.numberSource { margin-left: 3em;  padding-left: 4px; }
-div.sourceCode
-  {   }
-@media screen {
-pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
-}
 </style>
 
 
@@ -70,8 +35,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./ch12-training.html" rel="next">
-<link href="./ch10-vocab-projection.html" rel="prev">
+<link href="./A-microgpt.html" rel="next">
+<link href="./parts/modern-gpt.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -81,7 +46,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-5c6455a84bcea5f5637e4293716dd56f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-6a3bbeb4c3e7118f5bb1e8593622cb1d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -151,7 +116,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./parts/prediction-and-learning.html">Prediction and Learning</a></li><li class="breadcrumb-item"><a href="./ch11-loss.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./parts/modern-gpt.html">Modern Extensions</a></li><li class="breadcrumb-item"><a href="./ch14-modern-gpt.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Modern GPT</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -294,20 +259,26 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch07-multi-head-attention.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span></a>
+  <a href="./ch07-rope.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">RoPE: Position Inside Attention</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch08-feed-forward.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span></a>
+  <a href="./ch08-multi-head-attention.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch09-transformer-block.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span></a>
+  <a href="./ch09-feed-forward.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch10-transformer-block.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span></a>
   </div>
 </li>
       </ul>
@@ -323,20 +294,20 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch10-vocab-projection.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span></a>
+  <a href="./ch11-vocab-projection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch11-loss.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span></a>
+  <a href="./ch12-loss.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch12-training.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></a>
+  <a href="./ch13-training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></a>
   </div>
 </li>
       </ul>
@@ -352,8 +323,8 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch13-modern-gpt.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Modern GPT</span></span></a>
+  <a href="./ch14-modern-gpt.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Modern GPT</span></span></a>
   </div>
 </li>
       </ul>
@@ -385,21 +356,20 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul class="collapse">
-  <li><a href="#the-idea" id="toc-the-idea" class="nav-link active" data-scroll-target="#the-idea"><span class="header-section-number">11.1</span> The Idea</a></li>
-  <li><a href="#the-problem-evaluating-a-probability-distribution" id="toc-the-problem-evaluating-a-probability-distribution" class="nav-link" data-scroll-target="#the-problem-evaluating-a-probability-distribution"><span class="header-section-number">11.2</span> The Problem: Evaluating a Probability Distribution</a></li>
-  <li><a href="#cross-entropy-loss" id="toc-cross-entropy-loss" class="nav-link" data-scroll-target="#cross-entropy-loss"><span class="header-section-number">11.3</span> Cross-Entropy Loss</a></li>
-  <li><a href="#the-matrix-worked-example" id="toc-the-matrix-worked-example" class="nav-link" data-scroll-target="#the-matrix-worked-example"><span class="header-section-number">11.4</span> The Matrix: Worked Example</a></li>
-  <li><a href="#python-implementation" id="toc-python-implementation" class="nav-link" data-scroll-target="#python-implementation"><span class="header-section-number">11.5</span> Python Implementation</a></li>
-  <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways"><span class="header-section-number">11.6</span> Key Takeaways</a></li>
+  <li><a href="#rotary-positional-encoding-rope" id="toc-rotary-positional-encoding-rope" class="nav-link active" data-scroll-target="#rotary-positional-encoding-rope"><span class="header-section-number">14.1</span> Rotary Positional Encoding (RoPE)</a></li>
+  <li><a href="#multi-query-and-grouped-query-attention" id="toc-multi-query-and-grouped-query-attention" class="nav-link" data-scroll-target="#multi-query-and-grouped-query-attention"><span class="header-section-number">14.2</span> Multi-Query and Grouped-Query Attention</a></li>
+  <li><a href="#flash-attention" id="toc-flash-attention" class="nav-link" data-scroll-target="#flash-attention"><span class="header-section-number">14.3</span> Flash Attention</a></li>
+  <li><a href="#alternative-architectures" id="toc-alternative-architectures" class="nav-link" data-scroll-target="#alternative-architectures"><span class="header-section-number">14.4</span> Alternative Architectures</a></li>
+  <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways"><span class="header-section-number">14.5</span> Key Takeaways</a></li>
   </ul>
-<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch11-loss.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch14-modern-gpt.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./parts/prediction-and-learning.html">Prediction and Learning</a></li><li class="breadcrumb-item"><a href="./ch11-loss.html"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./parts/modern-gpt.html">Modern Extensions</a></li><li class="breadcrumb-item"><a href="./ch14-modern-gpt.html"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Modern GPT</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="sec-ch11-loss" class="quarto-section-identifier"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span></h1>
+<h1 class="title"><span id="sec-ch14-modern-gpt" class="quarto-section-identifier"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Modern GPT</span></span></h1>
 </div>
 
 
@@ -416,289 +386,168 @@ window.Quarto = {
 </header>
 
 
-<p>So far we have traced the forward pass from end to end. But none of that knowledge was conjured from thin air. The model <em>learned</em> by making predictions, measuring how wrong they were, and nudging every weight in the right direction — billions of times.</p>
-<p>This chapter is about that measurement: the <em>loss function</em>.</p>
-<section id="the-idea" class="level2" data-number="11.1">
-<h2 data-number="11.1" class="anchored" data-anchor-id="the-idea"><span class="header-section-number">11.1</span> The Idea</h2>
-<p>The model reads a sentence and, at each position, guesses what word comes next. Those guesses are never perfect — but how do we measure <em>how wrong</em> a guess is?</p>
-<p>We need a single number that captures “wrongness” in a way that is small when the model is doing well and large when it is doing badly. That number is the <em>loss</em>. And crucially, it needs to be computable from the model’s output so we can use it to improve the model.</p>
-<p>Here is the key insight: the model already outputs a probability for every word in the vocabulary. If the true next word is “cat” and the model assigns a 90% probability to “cat,” that is a good prediction — loss should be low. If the model assigns only 1% probability to “cat” (spreading the rest across unrelated words), that is a bad prediction — loss should be high.</p>
-<p>The <em>cross-entropy loss</em> formalizes this: it measures how much probability the model assigned to the <em>correct</em> answer. A perfect model assigns 100% to the right word — loss is zero. A confused model spreads probability thinly — loss is high.</p>
-</section>
-<section id="the-problem-evaluating-a-probability-distribution" class="level2" data-number="11.2">
-<h2 data-number="11.2" class="anchored" data-anchor-id="the-problem-evaluating-a-probability-distribution"><span class="header-section-number">11.2</span> The Problem: Evaluating a Probability Distribution</h2>
-<p>After the forward pass, the model produces a probability distribution over the vocabulary:</p>
+<p>The previous chapters built a complete GPT from scratch. Real production models add several refinements that improve efficiency, context length, and capability. This chapter surveys the most important innovations beyond the baseline transformer.</p>
+<section id="rotary-positional-encoding-rope" class="level2" data-number="14.1">
+<h2 data-number="14.1" class="anchored" data-anchor-id="rotary-positional-encoding-rope"><span class="header-section-number">14.1</span> Rotary Positional Encoding (RoPE)</h2>
+<p>The sinusoidal positional encoding in <a href="ch05-positional-encoding.html" class="quarto-xref"><span>Chapter 5</span></a> adds a fixed signal to each embedding <em>before</em> the attention layers. <em>RoPE</em> (Su et al., 2021) takes a different approach: it encodes position directly into the query and key vectors inside each attention layer by rotating them.</p>
+<p>For a query vector <span class="math inline">\(q\)</span> at position <span class="math inline">\(m\)</span> and key vector <span class="math inline">\(k\)</span> at position <span class="math inline">\(n\)</span>:</p>
 <p><span class="math display">\[
-P(\cdot \mid t_1, \ldots, t_t) \in \mathbb{R}^{|V|}
+\langle R_m q,\; R_n k \rangle = \langle q, R_{n-m} k \rangle
 \]</span></p>
-<p>We know the true next token <span class="math inline">\(t_{t+1}\)</span> (because it comes from the training text). The question is: <em>how do we turn “how wrong is this distribution” into a single differentiable number?</em></p>
-<p>The answer is <em>cross-entropy loss</em>.</p>
-</section>
-<section id="cross-entropy-loss" class="level2" data-number="11.3">
-<h2 data-number="11.3" class="anchored" data-anchor-id="cross-entropy-loss"><span class="header-section-number">11.3</span> Cross-Entropy Loss</h2>
-<section id="the-formula" class="level3" data-number="11.3.1">
-<h3 data-number="11.3.1" class="anchored" data-anchor-id="the-formula"><span class="header-section-number">11.3.1</span> The Formula</h3>
-<p>For a single prediction at position <span class="math inline">\(t\)</span>:</p>
-<p><span class="math display">\[
-\mathcal{L}(t) = -\log P(t_{t+1} \mid t_1, \ldots, t_t)
-\]</span></p>
-<p>That’s it. Negative log of the probability assigned to the <em>true</em> next token.</p>
-</section>
-<section id="why-negative-log" class="level3" data-number="11.3.2">
-<h3 data-number="11.3.2" class="anchored" data-anchor-id="why-negative-log"><span class="header-section-number">11.3.2</span> Why Negative Log?</h3>
-<p>The model outputs a probability <span class="math inline">\(p \in (0, 1]\)</span>. We want a loss that is zero when the prediction is perfect (<span class="math inline">\(p = 1\)</span>), large when the model is wrong (<span class="math inline">\(p \to 0\)</span>), and differentiable everywhere.</p>
-<p><span class="math inline">\(-\log(p)\)</span> delivers all three:</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Predicted probability <span class="math inline">\(p\)</span></th>
-<th><span class="math inline">\(-\log(p)\)</span></th>
-<th>Interpretation</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>1.00</td>
-<td>0.00</td>
-<td>Perfect</td>
-</tr>
-<tr class="even">
-<td>0.80</td>
-<td>0.22</td>
-<td>Pretty good</td>
-</tr>
-<tr class="odd">
-<td>0.50</td>
-<td>0.69</td>
-<td>Random guess</td>
-</tr>
-<tr class="even">
-<td>0.10</td>
-<td>2.30</td>
-<td>Mostly wrong</td>
-</tr>
-<tr class="odd">
-<td>0.01</td>
-<td>4.61</td>
-<td>Very wrong</td>
-</tr>
-<tr class="even">
-<td>0.001</td>
-<td>6.91</td>
-<td>Catastrophically wrong</td>
-</tr>
-</tbody>
-</table>
-<p>Suppose the vocabulary has four tokens and the model assigns probabilities <span class="math inline">\([0.1, 0.6, 0.2, 0.1]\)</span>. If the correct token index is <span class="math inline">\(1\)</span>, then the probability of the correct answer is <span class="math inline">\(0.6\)</span>. The loss is:</p>
-<p><span class="math display">\[
-\mathcal{L} = -\log(0.6) \approx 0.511
-\]</span></p>
-<p>If the model assigned probability <span class="math inline">\(1.0\)</span> to the correct token, the loss would be <span class="math inline">\(0.0\)</span>. If it assigned <span class="math inline">\(0.01\)</span>, the loss would jump to <span class="math inline">\(4.605\)</span>. Low confidence in the correct answer is expensive, as <a href="#fig-ch11-cross-entropy" class="quarto-xref">Figure&nbsp;<span>11.1</span></a> shows.</p>
-<div id="cell-fig-ch11-cross-entropy" class="cell" data-execution_count="1">
-<div class="cell-output cell-output-display">
-<div id="fig-ch11-cross-entropy" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ch11-cross-entropy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="ch11-loss_files/figure-html/fig-ch11-cross-entropy-output-1.png" width="951" height="374" class="figure-img">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch11-cross-entropy-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;11.1: Cross-entropy loss grows steeply as the model assigns less probability to the correct token
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
-<div class="callout callout-style-simple callout-note">
-<div class="callout-body d-flex">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-body-container">
-<p><em>Math Minute — Logarithms</em></p>
-<p><span class="math inline">\(\log(p)\)</span> for <span class="math inline">\(p \in (0,1]\)</span> is always <span class="math inline">\(\leq 0\)</span>. It passes through <span class="math inline">\((1, 0)\)</span> and tends to <span class="math inline">\(-\infty\)</span> as <span class="math inline">\(p \to 0\)</span>. Because we negate it, <span class="math inline">\(-\log(p) \geq 0\)</span>: zero means perfect, large means wrong. All modern ML uses natural log (base <span class="math inline">\(e\)</span>), so loss is measured in <em>nats</em>. Using base 2 gives <em>bits</em>.</p>
-</div>
-</div>
-</div>
-</section>
-<section id="the-full-training-loss" class="level3" data-number="11.3.3">
-<h3 data-number="11.3.3" class="anchored" data-anchor-id="the-full-training-loss"><span class="header-section-number">11.3.3</span> The Full Training Loss</h3>
-<p>A single document of length <span class="math inline">\(T\)</span> contributes:</p>
-<p><span class="math display">\[
-\mathcal{L}_{\text{doc}} = \frac{1}{T} \sum_{t=1}^{T} -\log P(t_{t+1} \mid t_1, \ldots, t_t)
-\]</span></p>
-</section>
-<section id="perplexity" class="level3" data-number="11.3.4">
-<h3 data-number="11.3.4" class="anchored" data-anchor-id="perplexity"><span class="header-section-number">11.3.4</span> Perplexity</h3>
-<p>Loss as nats is hard to interpret intuitively. <em>Perplexity</em> converts it to something more concrete:</p>
-<p><span class="math display">\[
-\text{PPL} = e^{\mathcal{L}}
-\]</span></p>
-<p>Perplexity is the <em>effective branching factor</em>: on average, how many equally likely choices does the model think there are at each step?</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Loss <span class="math inline">\(\mathcal{L}\)</span></th>
-<th>Perplexity</th>
-<th>Interpretation</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>0.00</td>
-<td>1.0</td>
-<td>Perfect — only one plausible token</td>
-</tr>
-<tr class="even">
-<td>0.69</td>
-<td>2.0</td>
-<td>Two equally likely tokens</td>
-</tr>
-<tr class="odd">
-<td>2.30</td>
-<td>10.0</td>
-<td>Ten equally likely tokens</td>
-</tr>
-<tr class="even">
-<td>4.61</td>
-<td>100</td>
-<td>Random guess over 100 tokens</td>
-</tr>
-<tr class="odd">
-<td>6.91</td>
-<td>1000</td>
-<td>Very confused</td>
-</tr>
-</tbody>
-</table>
-<p>GPT-2 (1.5B) reached ~18 perplexity on WikiText-103. GPT-4 is estimated well below 5 on standard benchmarks. Early training starts around 100–1000; loss curves falling to perplexity ~10–20 signals the model has learned real language structure.</p>
-<div class="callout callout-style-simple callout-note">
-<div class="callout-body d-flex">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-body-container">
-<p><em>Math Minute — Why Exponential?</em></p>
-<p>If a model assigns uniform probability <span class="math inline">\(1/k\)</span> to each of <span class="math inline">\(k\)</span> options, the cross-entropy is <span class="math inline">\(-\log(1/k) = \log k\)</span>. Exponentiating: <span class="math inline">\(e^{\log k} = k\)</span>. So perplexity of <span class="math inline">\(k\)</span> means the model behaves like a uniform distribution over <span class="math inline">\(k\)</span> choices. Perplexity 1 = model is certain. Perplexity <span class="math inline">\(|V|\)</span> ≈ 50,000 = model knows nothing.</p>
-</div>
-</div>
-</div>
-</section>
-<section id="teacher-forcing" class="level3" data-number="11.3.5">
-<h3 data-number="11.3.5" class="anchored" data-anchor-id="teacher-forcing"><span class="header-section-number">11.3.5</span> Teacher Forcing</h3>
-<p>Notice the formula conditions on <em>true</em> past tokens, not the model’s <em>own predictions</em>. This is called <em>teacher forcing</em>: during training, we always feed the ground-truth context.</p>
-<p>This makes training stable, parallelizable, and simple. The causal mask from Chapter 4 is what enables this — position <span class="math inline">\(t\)</span> can only attend to positions <span class="math inline">\(1 \ldots t\)</span>, so the model’s prediction at position <span class="math inline">\(t\)</span> is causally correct even when processing all positions in parallel.</p>
-</section>
-<section id="cross-entropy-as-information-theory" class="level3" data-number="11.3.6">
-<h3 data-number="11.3.6" class="anchored" data-anchor-id="cross-entropy-as-information-theory"><span class="header-section-number">11.3.6</span> Cross-Entropy as Information Theory</h3>
-<p>Cross-entropy has deep roots. The <em>cross-entropy</em> between true <span class="math inline">\(q\)</span> and predicted <span class="math inline">\(p\)</span> is:</p>
-<p><span class="math display">\[
-H(q, p) = -\sum_j q_j \log p_j
-\]</span></p>
-<p>When <span class="math inline">\(q\)</span> is one-hot, only the true token’s term survives: <span class="math inline">\(H(q, p) = -\log p_{t_{t+1}}\)</span>. Exactly our loss.</p>
-<p><em>Minimizing cross-entropy is equivalent to minimizing the KL divergence between the model’s predictions and the true data distribution.</em> This is why cross-entropy is the natural loss for language models.</p>
-</section>
-</section>
-<section id="the-matrix-worked-example" class="level2" data-number="11.4">
-<h2 data-number="11.4" class="anchored" data-anchor-id="the-matrix-worked-example"><span class="header-section-number">11.4</span> The Matrix: Worked Example</h2>
-<p>Let’s trace the loss for a 4-token sequence <code>["The", "cat", "sat", "on"]</code> with <span class="math inline">\(|V| = 5\)</span> (toy vocabulary).</p>
-<section id="forward-pass-outputs" class="level3" data-number="11.4.1">
-<h3 data-number="11.4.1" class="anchored" data-anchor-id="forward-pass-outputs"><span class="header-section-number">11.4.1</span> Forward Pass Outputs</h3>
-<p>The model produces logits at each position. After softmax:</p>
-<pre class="text"><code>Position 0 (predicting token after "The"):
-  P = [0.05, 0.10, 0.60, 0.20, 0.05]   ← true next = token 3
-  P(true) = 0.20,  loss = -log(0.20) = 1.609
-
-Position 1 (predicting after "The cat"):
-  P = [0.10, 0.05, 0.15, 0.10, 0.60]   ← true next = token 4
-  P(true) = 0.60,  loss = -log(0.60) = 0.511
-
-Position 2 (predicting after "The cat sat"):
-  P = [0.40, 0.20, 0.15, 0.15, 0.10]   ← true next = token 0
-  P(true) = 0.40,  loss = -log(0.40) = 0.916
-
-Position 3 (predicting after "The cat sat on"):
-  P = [0.05, 0.05, 0.80, 0.05, 0.05]   ← true next = token 2
-  P(true) = 0.80,  loss = -log(0.80) = 0.223</code></pre>
-</section>
-<section id="total-loss" class="level3" data-number="11.4.2">
-<h3 data-number="11.4.2" class="anchored" data-anchor-id="total-loss"><span class="header-section-number">11.4.2</span> Total Loss</h3>
-<p><span class="math display">\[
-\mathcal{L} = \frac{1}{4}(1.609 + 0.511 + 0.916 + 0.223) = 0.815
-\]</span></p>
-<p><span class="math display">\[
-\text{PPL} = e^{0.815} \approx 2.26
-\]</span></p>
-<p>The model is effectively choosing between about 2.3 equally likely tokens on average.</p>
-<p>Figure <a href="#fig-ch11-matrix-loss" class="quarto-xref">Figure&nbsp;<span>11.2</span></a> shows cross-entropy loss as softmax probability followed by the negative log of the true-token probability.</p>
-<div id="fig-ch11-matrix-loss" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Cross-entropy loss: logits → softmax → negative log of true-token probability">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ch11-matrix-loss-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="images/ch09_loss.png" class="img-fluid figure-img" alt="Cross-entropy loss: logits → softmax → negative log of true-token probability">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch11-matrix-loss-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;11.2: Cross-entropy loss
-</figcaption>
-</figure>
-</div>
-</section>
-</section>
-<section id="python-implementation" class="level2" data-number="11.5">
-<h2 data-number="11.5" class="anchored" data-anchor-id="python-implementation"><span class="header-section-number">11.5</span> Python Implementation</h2>
-<p><code>cross_entropy_loss</code> computes <span class="math inline">\(-\log P(\text{true token})\)</span> for a single position.</p>
-<!-- snippet: src/python/train.py#cross_entropy_loss -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> cross_entropy_loss(logits: Sequence[<span class="bu">float</span>], true_id: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    probabilities <span class="op">=</span> softmax(logits)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">-</span>math.log(<span class="bu">max</span>(probabilities[true_id], <span class="fl">1.0e-12</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
-<p><code>sequence_loss</code> averages the per-position losses into one scalar — the training signal for a complete sequence. <code>perplexity</code> converts the mean loss back to an interpretable scale.</p>
-<!-- snippet: src/python/train.py#sequence_loss -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sequence_loss(logits_list: Sequence[Sequence[<span class="bu">float</span>]], true_ids: Sequence[<span class="bu">int</span>]) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    losses <span class="op">=</span> [cross_entropy_loss(logits, true_id) <span class="cf">for</span> logits, true_id <span class="kw">in</span> <span class="bu">zip</span>(logits_list, true_ids)]</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">sum</span>(losses) <span class="op">/</span> <span class="bu">len</span>(losses)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># tag::perplexity[]</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> perplexity(loss: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> math.exp(loss)</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># end::perplexity[]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
-<p>The softmax-cross-entropy gradient has a famously clean closed form: <span class="math inline">\(\partial \mathcal{L} / \partial z_j = P(j) - \mathbf{1}[j = \text{true}]\)</span>.</p>
-<!-- snippet: src/python/train.py#loss_grad -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> softmax_cross_entropy_grad(logits: Sequence[<span class="bu">float</span>], true_id: <span class="bu">int</span>) <span class="op">-&gt;</span> Vector:</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    grad <span class="op">=</span> softmax(logits)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    grad[true_id] <span class="op">-=</span> <span class="fl">1.0</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> grad</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
-<p>Run with <code>python3 src/python/chapter_demos.py</code>. Expected output:</p>
-<pre class="text"><code>Per-position losses:
-  pos 0 (true=3): loss=1.609  P(true)=0.200
-  pos 1 (true=4): loss=0.511  P(true)=0.600
-  pos 2 (true=0): loss=0.916  P(true)=0.400
-  pos 3 (true=2): loss=0.223  P(true)=0.800
-
-Mean loss: 0.815
-Perplexity: 2.26</code></pre>
-</section>
-<section id="key-takeaways" class="level2" data-number="11.6">
-<h2 data-number="11.6" class="anchored" data-anchor-id="key-takeaways"><span class="header-section-number">11.6</span> Key Takeaways</h2>
+<p>where <span class="math inline">\(R_\theta\)</span> is a block-diagonal rotation matrix. The dot product depends only on the <em>relative</em> position <span class="math inline">\(n - m\)</span>, not the absolute positions. This gives the model a natural sense of distance between tokens.</p>
+<p>Key advantages of RoPE:</p>
 <ul>
-<li><em>Cross-entropy loss</em> is <span class="math inline">\(-\log P(\text{true next token})\)</span>. Zero when perfect, unbounded when wrong.</li>
-<li><em>Teacher forcing</em> feeds ground-truth context at training time, enabling full parallelism via causal masking.</li>
-<li><em>Perplexity</em> <span class="math inline">\(= e^{\mathcal{L}}\)</span> is the effective branching factor — more intuitive than raw nats.</li>
-<li><em>The softmax-CE gradient</em> is <span class="math inline">\(P(j) - \mathbf{1}[j = t_{t+1}]\)</span>: a closed-form, numerically stable backprop step.</li>
-<li><em>Cross-entropy = KL divergence</em> (since labels are one-hot), so training minimizes the KL from model predictions to the true data distribution.</li>
-<li>The loss is the <em>single</em> signal that shapes every weight: embeddings, attention projections, FFN weights, layer norms — all updated from this one number per token.</li>
+<li>Generalises to sequences longer than those seen during training.</li>
+<li>No extra parameters — the rotation is deterministic.</li>
+<li>Compatible with linear attention variants.</li>
+<li>Used in LLaMA, Mistral, Qwen, and most open-weight models.</li>
 </ul>
+<p>In 2D, a rotation by <span class="math inline">\(\theta\)</span> looks like:</p>
+<p><span class="math display">\[
+R_\theta = \begin{bmatrix} \cos\theta &amp; -\sin\theta \\ \sin\theta &amp; \cos\theta \end{bmatrix}
+\]</span></p>
+<p>For a <span class="math inline">\(d\)</span>-dimensional vector, <span class="math inline">\(d/2\)</span> independent 2D rotations are applied to pairs of dimensions.</p>
+<div id="fig-ch14-rope" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Two vectors rotating by different angles, with the relative angle between them labelled as the positional signal.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ch14-rope-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/ch14_rope.png" class="img-fluid figure-img" alt="Two vectors rotating by different angles, with the relative angle between them labelled as the positional signal.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch14-rope-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;14.1: RoPE rotates query and key vectors by position — their dot product captures relative distance
+</figcaption>
+</figure>
+</div>
+</section>
+<section id="multi-query-and-grouped-query-attention" class="level2" data-number="14.2">
+<h2 data-number="14.2" class="anchored" data-anchor-id="multi-query-and-grouped-query-attention"><span class="header-section-number">14.2</span> Multi-Query and Grouped-Query Attention</h2>
+<p>Standard multi-head attention (<a href="ch08-multi-head-attention.html" class="quarto-xref"><span>Chapter 8</span></a>) creates separate <span class="math inline">\(Q, K, V\)</span> projections for every head. The key and value matrices dominate GPU memory during inference.</p>
+<p><em>Multi-Query Attention (MQA)</em> (Shazeer, 2019) uses a single <span class="math inline">\(K\)</span> and <span class="math inline">\(V\)</span> shared across all heads, reducing the KV cache by a factor of <span class="math inline">\(H\)</span> (number of heads).</p>
+<p><em>Grouped-Query Attention (GQA)</em> (Ainslie et al., 2023) is a middle ground: <span class="math inline">\(G\)</span> groups of heads share a single <span class="math inline">\(K, V\)</span>, where <span class="math inline">\(1 \leq G \leq H\)</span>. Setting <span class="math inline">\(G=1\)</span> recovers MQA; setting <span class="math inline">\(G=H\)</span> recovers standard MHA.</p>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Method</th>
+<th>KV heads</th>
+<th>Memory</th>
+<th>Quality</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>MHA</td>
+<td>H</td>
+<td>1x</td>
+<td>Baseline</td>
+</tr>
+<tr class="even">
+<td>GQA</td>
+<td>H/G</td>
+<td>1/G x</td>
+<td>Near-MHA</td>
+</tr>
+<tr class="odd">
+<td>MQA</td>
+<td>1</td>
+<td>1/H x</td>
+<td>Slight drop</td>
+</tr>
+</tbody>
+</table>
+<p>GQA is used in LLaMA 3, Mistral, and Gemma. It allows inference to fit in less memory without significant quality degradation.</p>
+</section>
+<section id="flash-attention" class="level2" data-number="14.3">
+<h2 data-number="14.3" class="anchored" data-anchor-id="flash-attention"><span class="header-section-number">14.3</span> Flash Attention</h2>
+<p>Standard self-attention computes the full <span class="math inline">\(n \times n\)</span> attention matrix explicitly:</p>
+<p><span class="math display">\[
+\text{Attn} = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right)V
+\]</span></p>
+<p>For a sequence of length <span class="math inline">\(n\)</span>, this requires <span class="math inline">\(O(n^2)\)</span> memory — prohibitive for long contexts.</p>
+<p><em>Flash Attention</em> (Dao et al., 2022) reorders the computation using <em>tiling</em>: it processes blocks of the sequence in GPU SRAM (fast on-chip memory) and never materialises the full <span class="math inline">\(n \times n\)</span> matrix in HBM (slow off-chip memory).</p>
+<p>The result is mathematically identical to standard attention, but:</p>
+<ul>
+<li>Memory: <span class="math inline">\(O(n)\)</span> instead of <span class="math inline">\(O(n^2)\)</span>.</li>
+<li>Speed: 2–4× faster than PyTorch’s built-in attention in practice.</li>
+<li>Enables context windows of 32k–128k tokens at practical batch sizes.</li>
+</ul>
+<p>Flash Attention 2 and 3 added further improvements (better parallelism, support for GQA). It is now the default in all major frameworks.</p>
 <div class="callout callout-style-simple callout-note">
 <div class="callout-body d-flex">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-body-container">
-<p><em>What’s next?</em> Chapter 9 gave us a loss: a single number measuring how wrong the model is. But knowing <em>how wrong</em> we are is only half the battle. We also need to know <em>which weights</em> are responsible for the error, and <em>by how much to change each one</em>. That is the job of <em>training</em> — Chapter 10.</p>
+<p>Flash Attention is a hardware-aware algorithm, not a new mathematical operation. The inputs and outputs are identical to standard attention.</p>
 </div>
 </div>
 </div>
+</section>
+<section id="alternative-architectures" class="level2" data-number="14.4">
+<h2 data-number="14.4" class="anchored" data-anchor-id="alternative-architectures"><span class="header-section-number">14.4</span> Alternative Architectures</h2>
+<p>The transformer is not the only architecture for sequence modelling. Several alternatives challenge or complement it.</p>
+<section id="mamba-state-space-models" class="level3" data-number="14.4.1">
+<h3 data-number="14.4.1" class="anchored" data-anchor-id="mamba-state-space-models"><span class="header-section-number">14.4.1</span> Mamba (State Space Models)</h3>
+<p><em>Mamba</em> (Gu &amp; Dao, 2023) is based on <em>selective state space models</em> (SSMs). Instead of attending to all past tokens, it maintains a compressed hidden state that is updated recurrently (like an RNN), but with a selective mechanism that decides what to remember.</p>
+<p>Key properties:</p>
+<ul>
+<li>Linear time in sequence length (<span class="math inline">\(O(n)\)</span> vs <span class="math inline">\(O(n^2)\)</span> for attention).</li>
+<li>No attention matrix — the context is compressed into a fixed-size state.</li>
+<li>Competitive with transformers on language modelling benchmarks.</li>
+<li>Less effective at in-context retrieval tasks (where attention excels).</li>
+</ul>
+</section>
+<section id="diffusion-language-models-diffusiongemma" class="level3" data-number="14.4.2">
+<h3 data-number="14.4.2" class="anchored" data-anchor-id="diffusion-language-models-diffusiongemma"><span class="header-section-number">14.4.2</span> Diffusion Language Models (DiffusionGemma)</h3>
+<p>Autoregressive models like GPT generate text <em>left-to-right</em>, one token at a time. <em>Diffusion language models</em> (DLMs) generate all tokens in parallel by iterative denoising.</p>
+<p><em>MDLM</em> and <em>Gemma-based diffusion models</em> start from a fully masked sequence and refine it over <span class="math inline">\(T\)</span> denoising steps. Each step predicts a cleaner version of the entire sequence.</p>
+<p>Advantages: - Can revise earlier tokens after seeing later context. - Faster generation at inference time (fewer sequential steps than token length). - Quality still trails autoregressive models as of 2025.</p>
+</section>
+<section id="mixture-of-experts-moe" class="level3" data-number="14.4.3">
+<h3 data-number="14.4.3" class="anchored" data-anchor-id="mixture-of-experts-moe"><span class="header-section-number">14.4.3</span> Mixture of Experts (MoE)</h3>
+<p><em>Mixture of Experts</em> replaces the single feed-forward network in each transformer block with <span class="math inline">\(E\)</span> expert networks and a <em>router</em> that activates only <span class="math inline">\(K\)</span> of them per token.</p>
+<ul>
+<li>Mistral 8x7B and GPT-4 are believed to use MoE.</li>
+<li>Total parameters can be large while compute per token stays small.</li>
+<li>Trade-off: routing instability, expert load imbalance.</li>
+</ul>
+</section>
+</section>
+<section id="key-takeaways" class="level2" data-number="14.5">
+<h2 data-number="14.5" class="anchored" data-anchor-id="key-takeaways"><span class="header-section-number">14.5</span> Key Takeaways</h2>
+<table class="caption-top table">
+<thead>
+<tr class="header">
+<th>Innovation</th>
+<th>Benefit</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>RoPE</td>
+<td>Relative position encoding, better length generalisation</td>
+</tr>
+<tr class="even">
+<td>GQA / MQA</td>
+<td>Smaller KV cache, faster and cheaper inference</td>
+</tr>
+<tr class="odd">
+<td>Flash Attention</td>
+<td>Linear memory, 2-4x faster attention, long context</td>
+</tr>
+<tr class="even">
+<td>Mamba (SSM)</td>
+<td>Linear-time sequence modelling, no attention matrix</td>
+</tr>
+<tr class="odd">
+<td>Diffusion LMs</td>
+<td>Parallel generation, bidirectional revision</td>
+</tr>
+<tr class="even">
+<td>MoE</td>
+<td>Larger model capacity without proportional compute cost</td>
+</tr>
+</tbody>
+</table>
+<p>The field moves fast. Each of these innovations addresses a concrete bottleneck — memory, speed, context length, or capability — that became critical as models scaled. Understanding the baseline GPT from <a href="ch03-tokens.html" class="quarto-xref"><span>Chapter 3</span></a> through <a href="ch13-training.html" class="quarto-xref"><span>Chapter 13</span></a> makes every one of these extensions legible.</p>
 
 
 </section>
@@ -1111,13 +960,13 @@ Perplexity: 2.26</code></pre>
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./ch10-vocab-projection.html" class="pagination-link" aria-label="Vocabulary Projection — From Vectors to Words">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span>
+      <a href="./parts/modern-gpt.html" class="pagination-link" aria-label="Modern Extensions">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Modern Extensions</span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./ch12-training.html" class="pagination-link" aria-label="Training — Teaching the Model">
-        <span class="nav-page-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./A-microgpt.html" class="pagination-link" aria-label="microGPT in Python — Complete Runnable Code">
+        <span class="nav-page-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">microGPT in Python — Complete Runnable Code</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -1129,7 +978,7 @@ Perplexity: 2.26</code></pre>
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch11-loss.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch14-modern-gpt.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
 <p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
 </div>

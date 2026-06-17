@@ -9,7 +9,7 @@
 <meta name="author" content="Ju Lin">
 <meta name="description" content="A practical guide to GPT-style transformer architecture, from tokens to text generation, with math, matrices, Python, and diagrams.">
 
-<title>9&nbsp; The Transformer Block — Putting It Together – GPT Explained</title>
+<title>8&nbsp; Multi-Head Attention — Many Conversations at Once – GPT Explained</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -70,8 +70,8 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./parts/prediction-and-learning.html" rel="next">
-<link href="./ch08-feed-forward.html" rel="prev">
+<link href="./ch09-feed-forward.html" rel="next">
+<link href="./ch07-rope.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -81,7 +81,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-5c6455a84bcea5f5637e4293716dd56f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-6a3bbeb4c3e7118f5bb1e8593622cb1d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -151,7 +151,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./parts/transformer-core.html">Transformer Core</a></li><li class="breadcrumb-item"><a href="./ch09-transformer-block.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./parts/transformer-core.html">Transformer Core</a></li><li class="breadcrumb-item"><a href="./ch08-multi-head-attention.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -294,20 +294,26 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch07-multi-head-attention.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span></a>
+  <a href="./ch07-rope.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">RoPE: Position Inside Attention</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch08-feed-forward.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span></a>
+  <a href="./ch08-multi-head-attention.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch09-transformer-block.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span></a>
+  <a href="./ch09-feed-forward.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch10-transformer-block.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span></a>
   </div>
 </li>
       </ul>
@@ -323,20 +329,20 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch10-vocab-projection.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span></a>
+  <a href="./ch11-vocab-projection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch11-loss.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span></a>
+  <a href="./ch12-loss.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch12-training.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></a>
+  <a href="./ch13-training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></a>
   </div>
 </li>
       </ul>
@@ -352,8 +358,8 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch13-modern-gpt.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Modern GPT</span></span></a>
+  <a href="./ch14-modern-gpt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Modern GPT</span></span></a>
   </div>
 </li>
       </ul>
@@ -385,22 +391,21 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul class="collapse">
-  <li><a href="#the-idea" id="toc-the-idea" class="nav-link active" data-scroll-target="#the-idea"><span class="header-section-number">9.1</span> The Idea</a></li>
-  <li><a href="#the-math" id="toc-the-math" class="nav-link" data-scroll-target="#the-math"><span class="header-section-number">9.2</span> The Math</a></li>
-  <li><a href="#the-residual-stream" id="toc-the-residual-stream" class="nav-link" data-scroll-target="#the-residual-stream"><span class="header-section-number">9.3</span> The Residual Stream</a></li>
-  <li><a href="#the-matrix-worked-example" id="toc-the-matrix-worked-example" class="nav-link" data-scroll-target="#the-matrix-worked-example"><span class="header-section-number">9.4</span> The Matrix: Worked Example</a></li>
-  <li><a href="#the-code-transformer-block-in-python" id="toc-the-code-transformer-block-in-python" class="nav-link" data-scroll-target="#the-code-transformer-block-in-python"><span class="header-section-number">9.5</span> The Code: Transformer Block in Python</a></li>
-  <li><a href="#why-n-blocks" id="toc-why-n-blocks" class="nav-link" data-scroll-target="#why-n-blocks"><span class="header-section-number">9.6</span> Why N Blocks?</a></li>
-  <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways"><span class="header-section-number">9.7</span> Key Takeaways</a></li>
+  <li><a href="#the-idea" id="toc-the-idea" class="nav-link active" data-scroll-target="#the-idea"><span class="header-section-number">8.1</span> The Idea</a></li>
+  <li><a href="#the-math" id="toc-the-math" class="nav-link" data-scroll-target="#the-math"><span class="header-section-number">8.2</span> The Math</a></li>
+  <li><a href="#the-matrix-worked-example" id="toc-the-matrix-worked-example" class="nav-link" data-scroll-target="#the-matrix-worked-example"><span class="header-section-number">8.3</span> The Matrix: Worked Example</a></li>
+  <li><a href="#the-code-multi-head-attention-in-python" id="toc-the-code-multi-head-attention-in-python" class="nav-link" data-scroll-target="#the-code-multi-head-attention-in-python"><span class="header-section-number">8.4</span> The Code: Multi-Head Attention in Python</a></li>
+  <li><a href="#why-multi-head-attention-works" id="toc-why-multi-head-attention-works" class="nav-link" data-scroll-target="#why-multi-head-attention-works"><span class="header-section-number">8.5</span> Why Multi-Head Attention Works</a></li>
+  <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways"><span class="header-section-number">8.6</span> Key Takeaways</a></li>
   </ul>
-<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch09-transformer-block.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch08-multi-head-attention.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./parts/transformer-core.html">Transformer Core</a></li><li class="breadcrumb-item"><a href="./ch09-transformer-block.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./parts/transformer-core.html">Transformer Core</a></li><li class="breadcrumb-item"><a href="./ch08-multi-head-attention.html"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="sec-ch09-transformer-block" class="quarto-section-identifier"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span></h1>
+<h1 class="title"><span id="sec-ch08-multi-head-attention" class="quarto-section-identifier"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span></h1>
 </div>
 
 
@@ -417,198 +422,181 @@ window.Quarto = {
 </header>
 
 
-<p>A transformer block combines multi-head attention and the feed-forward network with two crucial wiring techniques: <em>residual connections</em> and <em>layer normalization</em>. Without these, deep stacks of transformer blocks would fail to train — gradients would vanish or explode.</p>
-<p>A GPT model is simply a stack of <code>N</code> identical transformer blocks. GPT-2 small: 12 blocks. GPT-3 175B: 96 blocks.</p>
-<section id="the-idea" class="level2" data-number="9.1">
-<h2 data-number="9.1" class="anchored" data-anchor-id="the-idea"><span class="header-section-number">9.1</span> The Idea</h2>
-<p>A GPT model is a stack of identical blocks — GPT-2 small has 12, GPT-3 has 96. Stacking many layers should make the model more powerful, but in practice it causes two problems: information gets distorted as it passes through many transformations, and very deep networks are notoriously hard to train.</p>
-<p>A transformer block solves both problems with two simple ideas.</p>
-<p><em>Residual connections</em> (also called skip connections): instead of replacing a vector entirely, each sub-layer only adds its output to the original. The input is preserved and combined with the new information. Think of it as writing notes in the margin rather than rewriting the whole page. Each layer only needs to learn <em>what to change</em>, not what the whole answer should be. This keeps information flowing cleanly all the way through, even in very deep stacks.</p>
-<p><em>Layer normalization</em>: the numbers inside a vector can grow or shrink unpredictably as the model trains. If they drift too far, the training process becomes unstable. Layer normalization resets them to a consistent scale before each sub-layer processes them. It is a housekeeping step: it does not change which direction the vector points, just how large the numbers are.</p>
-<p>Together, these two techniques make it possible to stack dozens of transformer blocks without losing control of training.</p>
+<p>A single attention head is expressive, but limited. It produces one set of attention weights — one pattern of “who attends to whom.” In natural language, multiple distinct relationships coexist in the same sentence. Consider:</p>
+<pre class="text"><code>"The animal didn't cross the street because it was too tired."</code></pre>
+<ul>
+<li>One pattern might link “it” → “animal” (coreference)</li>
+<li>Another might link “cross” → “street” (verb-object)</li>
+<li>Another might track the causal structure “because”</li>
+</ul>
+<p>Multi-head attention runs <code>H</code> independent attention heads in parallel, each free to specialize on a different relationship type. Their outputs are concatenated and projected back to the model dimension.</p>
+<section id="the-idea" class="level2" data-number="8.1">
+<h2 data-number="8.1" class="anchored" data-anchor-id="the-idea"><span class="header-section-number">8.1</span> The Idea</h2>
+<p>A single attention operation produces one pattern of “who attends to whom.” But a sentence carries many different kinds of relationships at the same time.</p>
+<p>In “The animal didn’t cross the street because it was too tired”:</p>
+<ul>
+<li><em>it</em> refers back to <em>animal</em> — that is a <em>coreference</em> relationship.</li>
+<li><em>cross</em> links to <em>street</em> — that is a <em>verb-object</em> relationship.</li>
+<li><em>because</em> connects a cause to an effect — that is a <em>logical</em> relationship.</li>
+</ul>
+<p>One attention head can only focus on one of these at a time. Multi-head attention runs several independent attention operations <em>in parallel</em> — each one free to specialize on a different pattern. Each head sees the same input but learns to ask a different question of it.</p>
+<p>At the end, the results from all heads are stitched back together and projected into a single vector, the same size as before. The model learns entirely from data which head should track grammar, which should track meaning, which should track proximity — no one programs this in explicitly.</p>
+<p>The result is a richer representation than any single head could produce: each token’s final vector carries signals from multiple independent attention patterns at once.</p>
 </section>
-<section id="the-math" class="level2" data-number="9.2">
-<h2 data-number="9.2" class="anchored" data-anchor-id="the-math"><span class="header-section-number">9.2</span> The Math</h2>
-<p>A single transformer block (Pre-LN variant, used by most modern GPTs):</p>
+<section id="the-math" class="level2" data-number="8.2">
+<h2 data-number="8.2" class="anchored" data-anchor-id="the-math"><span class="header-section-number">8.2</span> The Math</h2>
+<p><em>Step 1 — Compute each head independently.</em></p>
+<p>Each head <span class="math inline">\(h \in \{1, \ldots, H\}\)</span> projects the input into its own query, key, and value spaces, then runs a standard attention:</p>
 <p><span class="math display">\[
 \begin{aligned}
-x_1 &amp;= x + \text{MHA}(\text{LayerNorm}(x)) &amp;&amp; \text{(attention sub-layer)} \\
-x_2 &amp;= x_1 + \text{FFN}(\text{LayerNorm}(x_1)) &amp;&amp; \text{(FFN sub-layer)}
+Q^{h} &amp;= X W_q^{h} \in \mathbb{R}^{T\times d_k} \\
+K^{h} &amp;= X W_k^{h} \in \mathbb{R}^{T\times d_k} \\
+V^{h} &amp;= X W_v^{h} \in \mathbb{R}^{T\times d_v} \\
+\text{head}^{h} &amp;= \operatorname{softmax}\!\left(\frac{Q^{h}{K^{h}}^{\top}}{\sqrt{d_k}} + M\right) V^{h}
 \end{aligned}
 \]</span></p>
-<p>This is the <em>Pre-Layer-Norm</em> architecture. The original “Attention Is All You Need” paper used Post-LN, but Pre-LN is more stable to train and is used in GPT-2 onwards.</p>
-<section id="layer-normalization" class="level3" data-number="9.2.1">
-<h3 data-number="9.2.1" class="anchored" data-anchor-id="layer-normalization"><span class="header-section-number">9.2.1</span> Layer Normalization</h3>
-<p>For a vector <span class="math inline">\(x \in \mathbb{R}^d\)</span>:</p>
+<p><em>Step 2 — Concatenate.</em></p>
+<p>The <span class="math inline">\(H\)</span> outputs are placed side by side:</p>
 <p><span class="math display">\[
-\operatorname{LayerNorm}(x) = \gamma \odot \frac{x - \mu}{\sigma} + \beta
+\operatorname{MultiHead} = \operatorname{concat}(\text{head}^1, \text{head}^2, \ldots, \text{head}^{H})   \in \mathbb{R}^{T \times (H\cdot d_v)}
 \]</span></p>
-<p>where <span class="math inline">\(\mu = \tfrac{1}{d}\sum_i x_i\)</span>, <span class="math inline">\(\sigma = \sqrt{\tfrac{1}{d}\sum_i (x_i - \mu)^2}\)</span>, <span class="math inline">\(\gamma, \beta \in \mathbb{R}^d\)</span> are learned scale and shift, and <span class="math inline">\(\odot\)</span> is element-wise multiplication.</p>
-<div class="callout callout-style-simple callout-note">
-<div class="callout-body d-flex">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-body-container">
-<p><em>Math Minute — Variance and Standard Deviation</em></p>
-<p>The variance of a set of numbers <span class="math inline">\(\{x_1, \ldots, x_n\}\)</span> measures how spread out they are: <span class="math inline">\(Var = (1/n) \sum_i (x_i - \mu)^2\)</span> where <span class="math inline">\(\mu\)</span> is the mean. The standard deviation <span class="math inline">\(\sigma = \sqrt{Var}\)</span> is in the same units as the original values. Dividing by <span class="math inline">\(\sigma\)</span> makes the spread equal to 1 — “standardizing.”</p>
-</div>
-</div>
-</div>
+<p>Because <span class="math inline">\(d_v = d/H\)</span>, the result has shape <span class="math inline">\([T \times d]\)</span> — the same as the input.</p>
+<p><em>Step 3 — Output projection.</em></p>
+<p>A learned matrix <span class="math inline">\(W_o \in \mathbb{R}^{d\times d}\)</span> mixes information across heads:</p>
+<p><span class="math display">\[
+\text{Output} = \operatorname{MultiHead} \cdot W_o \in \mathbb{R}^{T\times d}
+\]</span></p>
+<p>Putting it all together:</p>
+<p><span class="math display">\[
+\text{MHA}(X) = [\text{head}^1 \| \text{head}^2 \| \ldots \| \text{head}^{H}]\, W_o
+\]</span></p>
+<p>where <span class="math inline">\(\text{head}^{h} = \operatorname{Attention}(X W_q^{h}, X W_k^{h}, X W_v^{h})\)</span>.</p>
 </section>
-</section>
-<section id="the-residual-stream" class="level2" data-number="9.3">
-<h2 data-number="9.3" class="anchored" data-anchor-id="the-residual-stream"><span class="header-section-number">9.3</span> The Residual Stream</h2>
-<p>A powerful way to understand the GPT architecture is through the lens of the <em>residual stream</em> (Elhage et al., Anthropic 2021):</p>
-<p>The input embedding is injected into a “stream” — a vector of dimension <code>d</code> per token. Each transformer block <em>reads from</em> this stream (via attention and FFN) and <em>adds back to</em> it (via residual connections). The stream carries information across all blocks.</p>
-<pre class="text"><code>stream⁰ = token_embeddings + positional_encodings    [T × d]
-stream¹ = stream⁰ + MHA(LN(stream⁰))
-stream¹ = stream¹ + FFN(LN(stream¹))
-stream² = stream¹ + MHA(LN(stream¹))
-stream² = stream² + FFN(LN(stream²))
-  ⋮
-streamᴺ = final output</code></pre>
-<p>This view clarifies that attention heads and FFN neurons are all writing to the same shared workspace.</p>
-</section>
-<section id="the-matrix-worked-example" class="level2" data-number="9.4">
-<h2 data-number="9.4" class="anchored" data-anchor-id="the-matrix-worked-example"><span class="header-section-number">9.4</span> The Matrix: Worked Example</h2>
-<p>Let <code>T = 2</code>, <code>d = 4</code>.</p>
-<p>Input embedding (position-encoded):</p>
-<pre class="text"><code>x = stream⁰[0] = [1.0, -0.5, 0.8, -0.2]</code></pre>
-<p><em>LayerNorm step:</em></p>
-<pre class="text"><code>μ = (1.0 - 0.5 + 0.8 - 0.2) / 4 = 0.275
-σ² = [(1.0-0.275)² + (-0.5-0.275)² + (0.8-0.275)² + (-0.2-0.275)²] / 4
-   = 0.407
-σ  = √0.407 ≈ 0.638
+<section id="the-matrix-worked-example" class="level2" data-number="8.3">
+<h2 data-number="8.3" class="anchored" data-anchor-id="the-matrix-worked-example"><span class="header-section-number">8.3</span> The Matrix: Worked Example</h2>
+<p>Let <code>T = 3</code>, <code>d = 4</code>, <code>H = 2</code> heads, so <span class="math inline">\(d_k = d_v = 2\)</span>.</p>
+<p>Input:</p>
+<pre class="text"><code>X = [[1, 0, 1, 0],
+     [0, 1, 0, 1],
+     [1, 1, 0, 0]]   (3×4)</code></pre>
+<p><em>Head 1</em> uses the first 2 dimensions primarily.</p>
+<pre class="text"><code>Wq¹ = Wk¹ = Wv¹ = [[1,0],[0,1],[0,0],[0,0]]   (4×2)
 
-x_norm = [1.136, -1.215, 0.823, -0.745]
-(With γ=1, β=0 for simplicity)</code></pre>
-<p><em>MHA produces</em> (let’s say): <code>mha_out = [0.3, 0.7, -0.1, 0.5]</code></p>
-<p><em>Residual connection:</em></p>
-<pre class="text"><code>x₁ = x + mha_out = [1.0+0.3, -0.5+0.7, 0.8-0.1, -0.2+0.5]
-   = [1.3, 0.2, 0.7, 0.3]</code></pre>
-<p><em>Second LayerNorm + FFN + residual</em> (analogously) → <span class="math inline">\(x_2\)</span>.</p>
-<p>The key insight: <span class="math inline">\(x_1\)</span> contains <em>both</em> the original information (from <code>x</code>) and the new information (from <code>mha_out</code>). Nothing is overwritten — the residual stream accumulates.</p>
-<p>Figure <a href="#fig-ch09-matrix-block" class="quarto-xref">Figure&nbsp;<span>9.1</span></a> shows the full Pre-LN transformer block with LayerNorm before each sub-layer and residual connections around both.</p>
-<div id="fig-ch09-matrix-block" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Full transformer block (Pre-LN) — LayerNorm before each sub-layer, residual connections around both.">
+Q¹ = X Wq¹ = [[1,0],[0,1],[1,1]]   (3×2)</code></pre>
+<p>Scores: <span class="math inline">\(S^1 = Q^1{K^1}^{\top} / \sqrt{2}\)</span>:</p>
+<pre class="text"><code>Q¹K¹ᵀ = [[1,0,1],[0,1,1],[1,1,2]]
+S¹    = [[0.71, 0.00, 0.71],
+         [0.00, 0.71, 0.71],
+         [0.71, 0.71, 1.41]]</code></pre>
+<p>After causal mask and softmax:</p>
+<pre class="text"><code>A¹ = [[1.000, 0.000, 0.000],
+      [0.414, 0.586, 0.000],
+      [0.221, 0.221, 0.558]]
+
+head¹ = A¹ V¹ = [[1.000, 0.000],
+                 [0.586, 0.414],
+                 [0.779, 0.779]]    (3×2)</code></pre>
+<p><em>Head 2</em> focuses on last 2 dimensions, producing similarly shaped output. After concatenating both heads and applying the output projection <span class="math inline">\(W_o \in \mathbb{R}^{4\times 4}\)</span>:</p>
+<pre class="text"><code>MultiHead = [head¹ ‖ head²] =
+  [[1.000, 0.000, 1.000, 0.000],
+   [0.586, 0.414, 0.500, 0.500],
+   [0.779, 0.779, 0.421, 0.211]]   (3×4)</code></pre>
+<p>Figure <a href="#fig-ch08-matrix-mha" class="quarto-xref">Figure&nbsp;<span>8.1</span></a> shows parallel attention heads whose outputs are concatenated and projected back to model width.</p>
+<div id="fig-ch08-matrix-mha" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Multi-head attention — H parallel heads each attend independently, then concat + project.">
 <figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ch09-matrix-block-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="images/ch07_block.png" class="img-fluid figure-img" alt="Full transformer block (Pre-LN) — LayerNorm before each sub-layer, residual connections around both.">
+<div aria-describedby="fig-ch08-matrix-mha-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/ch08_mha.png" class="img-fluid figure-img" alt="Multi-head attention — H parallel heads each attend independently, then concat + project.">
 </div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch09-matrix-block-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;9.1: Pre-LN transformer block
-</figcaption>
-</figure>
-</div>
-<p>Figure <a href="#fig-ch09-matrix-residual" class="quarto-xref">Figure&nbsp;<span>9.2</span></a> shows the residual stream carrying information forward while gradients flow backward through additions.</p>
-<div id="fig-ch09-matrix-residual" class="quarto-float quarto-figure quarto-figure-center anchored" alt="The residual stream — information flows unimpeded through addition, gradients flow backward.">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ch09-matrix-residual-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="images/ch07_residual.png" class="img-fluid figure-img" alt="The residual stream — information flows unimpeded through addition, gradients flow backward.">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch09-matrix-residual-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;9.2: Residual stream
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch08-matrix-mha-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;8.1: Multi-head attention
 </figcaption>
 </figure>
 </div>
 </section>
-<section id="the-code-transformer-block-in-python" class="level2" data-number="9.5">
-<h2 data-number="9.5" class="anchored" data-anchor-id="the-code-transformer-block-in-python"><span class="header-section-number">9.5</span> The Code: Transformer Block in Python</h2>
-<p>Layer normalization shifts a single vector to mean 0, variance 1, then applies learned scale and shift. <code>LayerNorm</code> holds the learned parameters <span class="math inline">\(\gamma\)</span> and <span class="math inline">\(\beta\)</span>; <code>make_layer_norm</code> initializes them to identity.</p>
-<!-- snippet: src/python/common.py#layer_norm_vec -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> LayerNorm:</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    gamma: Vector</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    beta: Vector</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    epsilon: <span class="bu">float</span> <span class="op">=</span> <span class="fl">1.0e-5</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_layer_norm(d_model: <span class="bu">int</span>) <span class="op">-&gt;</span> LayerNorm:</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> LayerNorm(gamma<span class="op">=</span>[<span class="fl">1.0</span>] <span class="op">*</span> d_model, beta<span class="op">=</span>[<span class="fl">0.0</span>] <span class="op">*</span> d_model)</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> layer_norm_vector(vector: Vector, params: LayerNorm) <span class="op">-&gt;</span> Vector:</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    avg <span class="op">=</span> mean(vector)</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    std <span class="op">=</span> math.sqrt(variance(vector) <span class="op">+</span> params.epsilon)</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>        params.gamma[i] <span class="op">*</span> ((value <span class="op">-</span> avg) <span class="op">/</span> std) <span class="op">+</span> params.beta[i]</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i, value <span class="kw">in</span> <span class="bu">enumerate</span>(vector)</span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    ]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
-<p><code>layer_norm_matrix</code> applies <code>layer_norm_vector</code> independently to each row of a <span class="math inline">\([T \times d]\)</span> matrix.</p>
-<!-- snippet: src/python/common.py#layer_norm_matrix -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> layer_norm_matrix(matrix: Matrix, params: LayerNorm) <span class="op">-&gt;</span> Matrix:</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [layer_norm_vector(row, params) <span class="cf">for</span> row <span class="kw">in</span> matrix]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
-<p><code>TransformerBlock</code> groups the four sub-layers; <code>make_transformer_block</code> allocates their parameters.</p>
-<!-- snippet: src/python/common.py#transformer_block_params -->
+<section id="the-code-multi-head-attention-in-python" class="level2" data-number="8.4">
+<h2 data-number="8.4" class="anchored" data-anchor-id="the-code-multi-head-attention-in-python"><span class="header-section-number">8.4</span> The Code: Multi-Head Attention in Python</h2>
+<p>Each attention head is a triple of weight matrices <span class="math inline">\((W_q, W_k, W_v)\)</span>, each of shape <span class="math inline">\([d \times d_k]\)</span>. <code>MultiHeadAttention</code> groups the heads with the output projection <span class="math inline">\(W_o\)</span>; <code>make_multi_head_attention</code> allocates them.</p>
+<!-- snippet: src/python/common.py#mha_params -->
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> TransformerBlock:</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    attention: MultiHeadAttention</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    feed_forward: FeedForward</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    ln1: LayerNorm</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    ln2: LayerNorm</span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> AttentionHead:</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    wq: Matrix</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    wk: Matrix</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    wv: Matrix</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_transformer_block(d_model: <span class="bu">int</span>, num_heads: <span class="bu">int</span>, rng: random.Random) <span class="op">-&gt;</span> TransformerBlock:</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> TransformerBlock(</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>        attention<span class="op">=</span>make_multi_head_attention(d_model, num_heads, rng),</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        feed_forward<span class="op">=</span>make_feed_forward(d_model, rng),</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        ln1<span class="op">=</span>make_layer_norm(d_model),</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        ln2<span class="op">=</span>make_layer_norm(d_model),</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> MultiHeadAttention:</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    heads: <span class="bu">list</span>[AttentionHead]</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    wo: Matrix</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_multi_head_attention(d_model: <span class="bu">int</span>, num_heads: <span class="bu">int</span>, rng: random.Random) <span class="op">-&gt;</span> MultiHeadAttention:</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> d_model <span class="op">%</span> num_heads <span class="op">!=</span> <span class="dv">0</span>:</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"d_model must be divisible by num_heads"</span>)</span>
+<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    d_key <span class="op">=</span> d_model <span class="op">//</span> num_heads</span>
+<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    heads <span class="op">=</span> [</span>
+<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>        AttentionHead(</span>
+<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>            random_matrix(d_model, d_key, rng),</span>
+<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>            random_matrix(d_model, d_key, rng),</span>
+<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>            random_matrix(d_model, d_key, rng),</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(num_heads)</span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> MultiHeadAttention(heads<span class="op">=</span>heads, wo<span class="op">=</span>random_matrix(d_model, d_model, rng))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <!-- /snippet -->
-<p><code>transformer_block</code> is the Pre-LN residual block; <code>forward_stack</code> threads input through <span class="math inline">\(N\)</span> blocks.</p>
-<!-- snippet: src/python/common.py#transformer_block_forward -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> transformer_block(x: Matrix, params: TransformerBlock) <span class="op">-&gt;</span> Matrix:</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    attn_out, _weights <span class="op">=</span> multi_head_attention(layer_norm_matrix(x, params.ln1), params.attention)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    x1 <span class="op">=</span> matrix_add(x, attn_out)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    ffn_out <span class="op">=</span> feed_forward(layer_norm_matrix(x1, params.ln2), params.feed_forward)</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> matrix_add(x1, ffn_out)</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> forward_stack(x: Matrix, blocks: Iterable[TransformerBlock]) <span class="op">-&gt;</span> Matrix:</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> block <span class="kw">in</span> blocks:</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> transformer_block(x, block)</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> x</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>multi_head_attention</code> runs each head’s SDPA independently, concatenates the per-head outputs column-wise, and applies the output projection.</p>
+<!-- snippet: src/python/common.py#mha_forward -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> multi_head_attention(x: Matrix, params: MultiHeadAttention) <span class="op">-&gt;</span> <span class="bu">tuple</span>[Matrix, <span class="bu">list</span>[Matrix]]:</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> [</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>        self_attention(x, head.wq, head.wk, head.wv)</span>
+<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> head <span class="kw">in</span> params.heads</span>
+<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    concatenated <span class="op">=</span> hstack([output <span class="cf">for</span> output, _weights <span class="kw">in</span> results])</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> matrix_multiply(concatenated, params.wo), [weights <span class="cf">for</span> _output, weights <span class="kw">in</span> results]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <!-- /snippet -->
 <p><em>Demo.</em> Run with <code>python3 src/python/chapter_demos.py</code>:</p>
-<!-- snippet: src/python/chapter_demos.py#chapter_09 -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> chapter_09(seed: <span class="bu">int</span> <span class="op">=</span> <span class="dv">9</span>) <span class="op">-&gt;</span> <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">object</span>]:</span>
+<!-- snippet: src/python/chapter_demos.py#chapter_08 -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> chapter_08(seed: <span class="bu">int</span> <span class="op">=</span> <span class="dv">7</span>) <span class="op">-&gt;</span> <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">object</span>]:</span>
 <span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> random.Random(seed)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> random_matrix(<span class="dv">3</span>, <span class="dv">8</span>, rng)</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    block <span class="op">=</span> make_transformer_block(<span class="dv">8</span>, <span class="dv">2</span>, rng)</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    normed <span class="op">=</span> layer_norm_matrix(x, make_layer_norm(<span class="dv">8</span>))</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    output <span class="op">=</span> transformer_block(x, block)</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"normed_shape"</span>: (<span class="bu">len</span>(normed), <span class="bu">len</span>(normed[<span class="dv">0</span>])),</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"output_shape"</span>: (<span class="bu">len</span>(output), <span class="bu">len</span>(output[<span class="dv">0</span>])),</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> random_matrix(<span class="dv">4</span>, <span class="dv">8</span>, rng)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    params <span class="op">=</span> make_multi_head_attention(<span class="dv">8</span>, <span class="dv">2</span>, rng)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    output, weights <span class="op">=</span> multi_head_attention(x, params)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"output_shape"</span>: (<span class="bu">len</span>(output), <span class="bu">len</span>(output[<span class="dv">0</span>])),</span>
+<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"num_heads"</span>: <span class="bu">len</span>(weights),</span>
+<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <!-- /snippet -->
 </section>
-<section id="why-n-blocks" class="level2" data-number="9.6">
-<h2 data-number="9.6" class="anchored" data-anchor-id="why-n-blocks"><span class="header-section-number">9.6</span> Why N Blocks?</h2>
-<p>A single transformer block has limited capacity. Each block:</p>
+<section id="why-multi-head-attention-works" class="level2" data-number="8.5">
+<h2 data-number="8.5" class="anchored" data-anchor-id="why-multi-head-attention-works"><span class="header-section-number">8.5</span> Why Multi-Head Attention Works</h2>
+<p>Each head learns to specialize. Research has identified heads that:</p>
 <ul>
-<li>Runs one round of attention (all heads) — <em>mixes information globally</em></li>
-<li>Runs one FFN per position — <em>processes each token’s updated representation</em></li>
+<li>Track <em>syntactic structure</em> (subject-verb agreement)</li>
+<li>Resolve <em>coreference</em> (“it” → “the cat”)</li>
+<li>Handle <em>positional offsets</em> (“look 2 tokens back”)</li>
+<li>Track <em>rare-word semantics</em></li>
 </ul>
-<p>But complex language tasks require many rounds of computation. By stacking <code>N</code> blocks, the model builds increasingly abstract representations:</p>
-<ul>
-<li>Early blocks: local patterns, syntax, common phrases</li>
-<li>Middle blocks: semantic roles, entity tracking</li>
-<li>Late blocks: task-specific reasoning, pragmatics</li>
-</ul>
-<p>The residual stream carries information across all blocks. Later blocks can read from and write to everything earlier blocks computed.</p>
+<p>These specializations emerge from training, not from explicit design.</p>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p><em>Math Minute — Expressivity</em></p>
+<p>H heads of dimension d/H can represent attention patterns that a single head of dimension d cannot easily learn. This is analogous to having H different “lenses” looking at the same sequence; each lens focuses on different features. The output projection <code>Wo</code> then combines the views.</p>
+</div>
+</div>
+</div>
 </section>
-<section id="key-takeaways" class="level2" data-number="9.7">
-<h2 data-number="9.7" class="anchored" data-anchor-id="key-takeaways"><span class="header-section-number">9.7</span> Key Takeaways</h2>
+<section id="key-takeaways" class="level2" data-number="8.6">
+<h2 data-number="8.6" class="anchored" data-anchor-id="key-takeaways"><span class="header-section-number">8.6</span> Key Takeaways</h2>
 <ul>
-<li>A transformer block = <code>MHA → residual → LN → FFN → residual → LN</code> (Pre-LN ordering).</li>
-<li><em>Residual connections</em> let gradients flow directly and prevent vanishing gradients.</li>
-<li><em>Layer normalization</em> keeps activations at mean 0, std 1 within each sub-layer.</li>
-<li>The <em>residual stream</em> is the shared workspace that all blocks read from and write to.</li>
-<li>GPT stacks <code>N</code> identical blocks; capacity scales with <code>N</code> and <code>d</code>.</li>
+<li>Multi-head attention runs <code>H</code> attention heads <em>in parallel</em>, each in a lower-dimensional subspace <span class="math inline">\(d_k = d/H\)</span>.</li>
+<li>Each head has independent <span class="math inline">\(W_q, W_k, W_v\)</span> matrices — each learns a different “question to ask.”</li>
+<li>Outputs are <em>concatenated</em> (not averaged), then projected back to <code>d</code> with <span class="math inline">\(W_o\)</span>.</li>
+<li>The total parameter count is <span class="math inline">\(3Hd\cdot d_k + d^2 = 3d^2 + d^2\)</span> — same as one large head.</li>
+<li>Different heads specialize in different linguistic relationships.</li>
 </ul>
 <div class="callout callout-style-simple callout-note">
 <div class="callout-body d-flex">
@@ -616,7 +604,7 @@ Figure&nbsp;9.2: Residual stream
 <i class="callout-icon"></i>
 </div>
 <div class="callout-body-container">
-<p><em>What’s next?</em> After <code>N</code> blocks, we have a final matrix <span class="math inline">\(X_{\text{final}} \in \mathbb{R}^{T\times d}\)</span>. Each row is a rich representation of the corresponding token in context. The last step: turn the final vector for position <code>T</code> into a probability distribution over the vocabulary — that’s <em>vocabulary projection</em> in Chapter 8.</p>
+<p><em>What’s next?</em> After attention mixes information across tokens, each token’s vector goes through a small <em>feed-forward network</em> — a two-layer MLP applied identically to every position. This is where most of the model’s stored “knowledge” lives. See <a href="ch09-feed-forward.html" class="quarto-xref"><span>Chapter 9</span></a>.</p>
 </div>
 </div>
 </div>
@@ -1032,13 +1020,13 @@ Figure&nbsp;9.2: Residual stream
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./ch08-feed-forward.html" class="pagination-link" aria-label="Feed-Forward Network — The Model's Memory">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span>
+      <a href="./ch07-rope.html" class="pagination-link" aria-label="RoPE: Position Inside Attention">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">RoPE: Position Inside Attention</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./parts/prediction-and-learning.html" class="pagination-link" aria-label="Prediction and Learning">
-        <span class="nav-page-text">Prediction and Learning</span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./ch09-feed-forward.html" class="pagination-link" aria-label="Feed-Forward Network — The Model's Memory">
+        <span class="nav-page-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -1050,7 +1038,7 @@ Figure&nbsp;9.2: Residual stream
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch09-transformer-block.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch08-multi-head-attention.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
 <p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
 </div>

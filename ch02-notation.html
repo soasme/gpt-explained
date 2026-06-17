@@ -81,7 +81,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-5c6455a84bcea5f5637e4293716dd56f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-6a3bbeb4c3e7118f5bb1e8593622cb1d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -294,20 +294,26 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch07-multi-head-attention.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span></a>
+  <a href="./ch07-rope.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">RoPE: Position Inside Attention</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch08-feed-forward.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span></a>
+  <a href="./ch08-multi-head-attention.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch09-transformer-block.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span></a>
+  <a href="./ch09-feed-forward.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch10-transformer-block.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span></a>
   </div>
 </li>
       </ul>
@@ -323,20 +329,20 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch10-vocab-projection.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span></a>
+  <a href="./ch11-vocab-projection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch11-loss.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span></a>
+  <a href="./ch12-loss.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch12-training.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></a>
+  <a href="./ch13-training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></a>
   </div>
 </li>
       </ul>
@@ -352,8 +358,8 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch13-modern-gpt.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Modern GPT</span></span></a>
+  <a href="./ch14-modern-gpt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Modern GPT</span></span></a>
   </div>
 </li>
       </ul>
@@ -467,17 +473,6 @@ Figure&nbsp;2.1: Scalar operations combine individual numbers
 <section id="capital-sigma-and-capital-pi" class="level2" data-number="2.2">
 <h2 data-number="2.2" class="anchored" data-anchor-id="capital-sigma-and-capital-pi"><span class="header-section-number">2.2</span> Capital Sigma and Capital Pi</h2>
 <p>Capital sigma <span class="math inline">\(\sum\)</span> means “add a sequence of terms.” Capital pi <span class="math inline">\(\prod\)</span> means “multiply a sequence of terms.”</p>
-<div class="callout callout-style-simple callout-note">
-<div class="callout-body d-flex">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-body-container">
-<p><em>Math Minute – Index Variable</em></p>
-<p>An index variable counts through positions in a sequence. In <span class="math inline">\(\sum_{i=1}^{4} x_i\)</span>, the index variable is <span class="math inline">\(i\)</span>. It starts at <span class="math inline">\(1\)</span>, then takes the values <span class="math inline">\(2\)</span>, <span class="math inline">\(3\)</span>, and <span class="math inline">\(4\)</span>.</p>
-</div>
-</div>
-</div>
 <section id="capital-sigma-sum" class="level3" data-number="2.2.1">
 <h3 data-number="2.2.1" class="anchored" data-anchor-id="capital-sigma-sum"><span class="header-section-number">2.2.1</span> Capital Sigma: Sum</h3>
 <p>The expression:</p>
@@ -559,36 +554,11 @@ Figure&nbsp;2.2: Capital sigma adds terms; capital pi multiplies terms
 </div>
 </div>
 </div>
-<div class="callout callout-style-simple callout-note">
-<div class="callout-body d-flex">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-body-container">
-<p><em>Math Minute – Vector Shape and Indexing</em></p>
-<p>The shape of a vector is its length. If <span class="math inline">\(v \in \mathbb{R}^n\)</span>, then <span class="math inline">\(v\)</span> has shape <span class="math inline">\(n\)</span>. The notation <span class="math inline">\(v_i\)</span> means “entry <span class="math inline">\(i\)</span> of vector <span class="math inline">\(v\)</span>.” The notation <span class="math inline">\(v_n\)</span> means “the last entry when the vector has length <span class="math inline">\(n\)</span>.”</p>
-</div>
-</div>
-</div>
 <p>In Python, the book represents a vector as a list of floating-point numbers:</p>
 <!-- snippet: src/python/common.py#vector_type -->
 <div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Vector <span class="op">=</span> <span class="bu">list</span>[<span class="bu">float</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <!-- /snippet -->
 <p>This simple representation is enough for the small implementations in the book. Packages like NumPy provide their own vector type, usually as an <code>ndarray</code>, with faster arithmetic, compact memory layout, and many built-in operations. For larger numerical programs, you would usually use NumPy, PyTorch, JAX, or another tensor library instead.</p>
-<div id="cell-fig-ch02-vector-indexing" class="cell" data-fig-height="2.4" data-fig-width="5" data-execution_count="3">
-<div class="cell-output cell-output-display">
-<div id="fig-ch02-vector-indexing" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ch02-vector-indexing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="ch02-notation_files/figure-html/fig-ch02-vector-indexing-output-1.png" width="470" height="221" class="figure-img">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch02-vector-indexing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.3: Vector shape and indexing
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
 <section id="vector-addition" class="level3" data-number="2.3.1">
 <h3 data-number="2.3.1" class="anchored" data-anchor-id="vector-addition"><span class="header-section-number">2.3.1</span> Vector Addition</h3>
 <p>When two vectors have the same length, we can add them by adding matching positions. The first component adds to the first component, the second to the second, and so on:</p>
@@ -604,6 +574,21 @@ u + v = [u_1+v_1, u_2+v_2, \ldots]
 <p><span class="math display">\[
 u + v = [3.0+1.0, 4.0+(-2.0)] = [4.0, 2.0]
 \]</span></p>
+<p><a href="#fig-ch02-vector-addition" class="quarto-xref">Figure&nbsp;<span>2.3</span></a> shows the same addition geometrically. Dashed connectors show how <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span> meet at <span class="math inline">\(u+v\)</span>.</p>
+<div id="cell-fig-ch02-vector-addition" class="cell" data-fig-height="4" data-fig-width="5" data-execution_count="3">
+<div class="cell-output cell-output-display">
+<div id="fig-ch02-vector-addition" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ch02-vector-addition-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="ch02-notation_files/figure-html/fig-ch02-vector-addition-output-1.png" width="467" height="374" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch02-vector-addition-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.3: Vector addition in 2D
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
 </section>
 <section id="scalar-multiplication" class="level3" data-number="2.3.2">
 <h3 data-number="2.3.2" class="anchored" data-anchor-id="scalar-multiplication"><span class="header-section-number">2.3.2</span> Scalar Multiplication</h3>
@@ -636,6 +621,21 @@ c\cdot v = [cv_1, cv_2, \ldots]
 <p><span class="math display">\[
 \|u\| = \sqrt{3.0^2 + 4.0^2} = \sqrt{9.0+16.0} = 5.0
 \]</span></p>
+<p><a href="#fig-ch02-l2-norm" class="quarto-xref">Figure&nbsp;<span>2.4</span></a> shows the vector <span class="math inline">\([3,4]\)</span> as a right triangle with length <span class="math inline">\(5\)</span>.</p>
+<div id="cell-fig-ch02-l2-norm" class="cell" data-fig-height="4" data-fig-width="5" data-execution_count="4">
+<div class="cell-output cell-output-display">
+<div id="fig-ch02-l2-norm" class="quarto-float quarto-figure quarto-figure-center anchored">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ch02-l2-norm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="ch02-notation_files/figure-html/fig-ch02-l2-norm-output-1.png" width="470" height="374" class="figure-img">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch02-l2-norm-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;2.4: The vector [3, 4] has L2 norm 5
+</figcaption>
+</figure>
+</div>
+</div>
+</div>
 </section>
 <section id="unit-vector" class="level3" data-number="2.3.4">
 <h3 data-number="2.3.4" class="anchored" data-anchor-id="unit-vector"><span class="header-section-number">2.3.4</span> Unit Vector</h3>
@@ -652,21 +652,6 @@ c\cdot v = [cv_1, cv_2, \ldots]
 <p><span class="math display">\[
 [3.0/5.0, 4.0/5.0] = [0.6, 0.8]
 \]</span></p>
-<p><a href="#fig-ch02-vectors" class="quarto-xref">Figure&nbsp;<span>2.4</span></a> shows vector addition and the L2 norm in 2D.</p>
-<div id="cell-fig-ch02-vectors" class="cell" data-fig-height="5" data-fig-width="5" data-execution_count="4">
-<div class="cell-output cell-output-display">
-<div id="fig-ch02-vectors" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ch02-vectors-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="ch02-notation_files/figure-html/fig-ch02-vectors-output-1.png" width="456" height="470" class="figure-img">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch02-vectors-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.4: Vector addition and norms in 2D
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
 </section>
 </section>
 <section id="dot-product" class="level2" data-number="2.4">
@@ -743,27 +728,22 @@ Figure&nbsp;2.5: Dot product as scalar projection in 2D
 </div>
 </div>
 </div>
-<div id="cell-fig-ch02-matrix-indexing" class="cell" data-fig-height="3.6" data-fig-width="5" data-execution_count="6">
-<div class="cell-output cell-output-display">
-<div id="fig-ch02-matrix-indexing" class="quarto-float quarto-figure quarto-figure-center anchored">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ch02-matrix-indexing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="ch02-notation_files/figure-html/fig-ch02-matrix-indexing-output-1.png" width="470" height="336" class="figure-img">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch02-matrix-indexing-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.6: Matrix shape and indexing
-</figcaption>
-</figure>
-</div>
-</div>
-</div>
+<p>For example, this matrix:</p>
+<p><span class="math display">\[
+A = \begin{bmatrix} 1.0 &amp; 2.0 &amp; 3.0 \\ 4.0 &amp; 5.0 &amp; 6.0 \end{bmatrix}
+\]</span></p>
+<p>has shape <span class="math inline">\(2 \times 3\)</span>: two rows and three columns. In code, the same matrix is represented as a list of rows:</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a>A <span class="op">=</span> [</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">1.0</span>, <span class="fl">2.0</span>, <span class="fl">3.0</span>],</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    [<span class="fl">4.0</span>, <span class="fl">5.0</span>, <span class="fl">6.0</span>],</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <section id="transpose" class="level3" data-number="2.5.1">
 <h3 data-number="2.5.1" class="anchored" data-anchor-id="transpose"><span class="header-section-number">2.5.1</span> Transpose</h3>
 <p>Transposing a matrix swaps rows and columns. The first row becomes the first column, the second row becomes the second column, and so on. If <span class="math inline">\(A \in \mathbb{R}^{m \times n}\)</span>, then <span class="math inline">\(A^T \in \mathbb{R}^{n \times m}\)</span>.</p>
 <p>In Python, <code>zip(*matrix)</code> groups together the first item from every row, then the second item from every row, and so on. Converting each group back to a list gives the transposed rows.</p>
 <!-- snippet: src/python/common.py#transpose -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> transpose(matrix: Matrix) <span class="op">-&gt;</span> Matrix:</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [<span class="bu">list</span>(col) <span class="cf">for</span> col <span class="kw">in</span> <span class="bu">zip</span>(<span class="op">*</span>matrix)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> transpose(matrix: Matrix) <span class="op">-&gt;</span> Matrix:</span>
+<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [<span class="bu">list</span>(col) <span class="cf">for</span> col <span class="kw">in</span> <span class="bu">zip</span>(<span class="op">*</span>matrix)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <!-- /snippet -->
 <p>For:</p>
 <p><span class="math display">\[
@@ -782,9 +762,9 @@ C_{ij} = \sum_{r=1}^{k} A_{ir} B_{rj}
 \]</span></p>
 <p>That equation says: take row <span class="math inline">\(i\)</span> from <span class="math inline">\(A\)</span>, take column <span class="math inline">\(j\)</span> from <span class="math inline">\(B\)</span>, and compute their dot product. The implementation transposes the right matrix first so its columns become easy to iterate over as rows.</p>
 <!-- snippet: src/python/common.py#matrix_multiply -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> matrix_multiply(left: Matrix, right: Matrix) <span class="op">-&gt;</span> Matrix:</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    right_t <span class="op">=</span> transpose(right)</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [[dot(row, col) <span class="cf">for</span> col <span class="kw">in</span> right_t] <span class="cf">for</span> row <span class="kw">in</span> left]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> matrix_multiply(left: Matrix, right: Matrix) <span class="op">-&gt;</span> Matrix:</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    right_t <span class="op">=</span> transpose(right)</span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [[dot(row, col) <span class="cf">for</span> col <span class="kw">in</span> right_t] <span class="cf">for</span> row <span class="kw">in</span> left]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <!-- /snippet -->
 <p>For:</p>
 <p><span class="math display">\[
@@ -811,8 +791,7 @@ C_{11} = 3.0 \cdot 6.0 + 4.0 \cdot 8.0 = 50.0
 <p><span class="math display">\[
 AB = \begin{bmatrix} 19.0 &amp; 22.0 \\ 43.0 &amp; 50.0 \end{bmatrix}
 \]</span></p>
-<p><a href="#fig-ch02-matrix-multiply" class="quarto-xref">Figure&nbsp;<span>2.7</span></a> illustrates how each output cell is a dot product of a row with a column.</p>
-<div id="cell-fig-ch02-matrix-multiply" class="cell" data-fig-height="4" data-fig-width="5.5" data-execution_count="7">
+<div id="cell-fig-ch02-matrix-multiply" class="cell" data-fig-height="4" data-fig-width="5.5" data-execution_count="6">
 <div class="cell-output cell-output-display">
 <div id="fig-ch02-matrix-multiply" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -820,12 +799,13 @@ AB = \begin{bmatrix} 19.0 &amp; 22.0 \\ 43.0 &amp; 50.0 \end{bmatrix}
 <img src="ch02-notation_files/figure-html/fig-ch02-matrix-multiply-output-1.png" width="518" height="374" class="figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch02-matrix-multiply-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.7: Matrix multiplication: each output cell is a dot product of a row with a column
+Figure&nbsp;2.6: Matrix multiplication: each output cell is a dot product of a row with a column
 </figcaption>
 </figure>
 </div>
 </div>
 </div>
+<p><a href="#fig-ch02-matrix-multiply" class="quarto-xref">Figure&nbsp;<span>2.6</span></a> illustrates how each output cell is a dot product of a row with a column.</p>
 </section>
 </section>
 <section id="softmax" class="level2" data-number="2.6">
@@ -842,11 +822,11 @@ Figure&nbsp;2.7: Matrix multiplication: each output cell is a dot product of a r
 \text{softmax}(z)_i = \frac{e^{z_i - \max(z)}}{\sum_{j} e^{z_j - \max(z)}}
 \]</span></p>
 <!-- snippet: src/python/common.py#softmax_vector -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> softmax(logits: Sequence[<span class="bu">float</span>]) <span class="op">-&gt;</span> Vector:</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    max_logit <span class="op">=</span> <span class="bu">max</span>(logits)</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    exp_values <span class="op">=</span> [math.exp(value <span class="op">-</span> max_logit) <span class="cf">for</span> value <span class="kw">in</span> logits]</span>
-<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a>    total <span class="op">=</span> <span class="bu">sum</span>(exp_values)</span>
-<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [value <span class="op">/</span> total <span class="cf">for</span> value <span class="kw">in</span> exp_values]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> softmax(logits: Sequence[<span class="bu">float</span>]) <span class="op">-&gt;</span> Vector:</span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    max_logit <span class="op">=</span> <span class="bu">max</span>(logits)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    exp_values <span class="op">=</span> [math.exp(value <span class="op">-</span> max_logit) <span class="cf">for</span> value <span class="kw">in</span> logits]</span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    total <span class="op">=</span> <span class="bu">sum</span>(exp_values)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [value <span class="op">/</span> total <span class="cf">for</span> value <span class="kw">in</span> exp_values]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <!-- /snippet -->
 <p>For <span class="math inline">\(z = [2.0, 1.0, 0.1]\)</span>, the maximum is <span class="math inline">\(2.0\)</span>, so the shifted values are <span class="math inline">\([0.0, -1.0, -1.9]\)</span>. After exponentiating, we get approximately <span class="math inline">\([1.000, 0.368, 0.150]\)</span>, whose sum is <span class="math inline">\(1.518\)</span>. Dividing each value by that sum gives:</p>
 <p><span class="math display">\[
@@ -858,12 +838,12 @@ Figure&nbsp;2.7: Matrix multiplication: each output cell is a dot product of a r
 <h3 data-number="2.6.2" class="anchored" data-anchor-id="row-wise-softmax"><span class="header-section-number">2.6.2</span> Row-wise Softmax</h3>
 <p>Sometimes the input is a matrix of scores. Each row can be normalized into its own probability distribution. Row-wise softmax applies the vector softmax independently to every row.</p>
 <!-- snippet: src/python/common.py#softmax_rows -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> softmax_rows(matrix: Matrix) <span class="op">-&gt;</span> Matrix:</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [softmax(row) <span class="cf">for</span> row <span class="kw">in</span> matrix]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> softmax_rows(matrix: Matrix) <span class="op">-&gt;</span> Matrix:</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [softmax(row) <span class="cf">for</span> row <span class="kw">in</span> matrix]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <!-- /snippet -->
 <p>After this step, each row sums to 1.</p>
-<p><a href="#fig-ch02-softmax" class="quarto-xref">Figure&nbsp;<span>2.8</span></a> shows how softmax maps raw logits to a probability distribution.</p>
-<div id="cell-fig-ch02-softmax" class="cell" data-fig-height="5" data-fig-width="5" data-execution_count="8">
+<p><a href="#fig-ch02-softmax" class="quarto-xref">Figure&nbsp;<span>2.7</span></a> shows how softmax maps raw logits to a probability distribution.</p>
+<div id="cell-fig-ch02-softmax" class="cell" data-fig-height="5" data-fig-width="5" data-execution_count="7">
 <div class="cell-output cell-output-display">
 <div id="fig-ch02-softmax" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -871,7 +851,7 @@ Figure&nbsp;2.7: Matrix multiplication: each output cell is a dot product of a r
 <img src="ch02-notation_files/figure-html/fig-ch02-softmax-output-1.png" width="471" height="471" class="figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch02-softmax-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.8: Softmax turns logits into probabilities — higher values dominate, none reach zero
+Figure&nbsp;2.7: Softmax turns logits into probabilities — higher values dominate, none reach zero
 </figcaption>
 </figure>
 </div>
@@ -894,10 +874,10 @@ e^{\ln x} = x \quad \text{and} \quad \ln(e^x) = x
 \]</span></p>
 <p>In Python, this is <code>math.exp</code>.</p>
 <!-- snippet: src/python/common.py#natural_exp -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> natural_exp(value: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> math.exp(value)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> natural_exp(value: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> math.exp(value)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <!-- /snippet -->
-<p>Two anchor values are worth remembering. If the exponent is <span class="math inline">\(0.0\)</span>, the result is <span class="math inline">\(1.0\)</span>. If the exponent is <span class="math inline">\(1.0\)</span>, the result is <span class="math inline">\(e\)</span>:</p>
+<p>Two anchor values appear often enough to keep in mind. If the exponent is <span class="math inline">\(0.0\)</span>, the result is <span class="math inline">\(1.0\)</span>. If the exponent is <span class="math inline">\(1.0\)</span>, the result is <span class="math inline">\(e\)</span>:</p>
 <p><span class="math display">\[
 e^{0.0} = 1.0
 \]</span></p>
@@ -913,8 +893,8 @@ e^{1.0} \approx 2.718
 \]</span></p>
 <p>In Python, this is <code>math.log</code>.</p>
 <!-- snippet: src/python/common.py#natural_log -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> natural_log(value: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> math.log(value)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> natural_log(value: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> math.log(value)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <!-- /snippet -->
 <p>Some useful values:</p>
 <p><span class="math display">\[
@@ -929,11 +909,11 @@ e^{1.0} \approx 2.718
 <p><span class="math display">\[
 \ln(0.1) \approx -2.303
 \]</span></p>
-<p>For inputs between <span class="math inline">\(0\)</span> and <span class="math inline">\(1\)</span>, the natural logarithm is negative. Negating it gives a positive value that grows as the input moves closer to zero, as shown in <a href="#fig-ch02-negative-log" class="quarto-xref">Figure&nbsp;<span>2.9</span></a>. For example:</p>
+<p>For inputs between <span class="math inline">\(0\)</span> and <span class="math inline">\(1\)</span>, the natural logarithm is negative. Negating it gives a positive value that grows as the input moves closer to zero, as shown in <a href="#fig-ch02-negative-log" class="quarto-xref">Figure&nbsp;<span>2.8</span></a>. For example:</p>
 <p><span class="math display">\[
 -\ln(0.01) = 4.605
 \]</span></p>
-<div id="cell-fig-ch02-negative-log" class="cell" data-fig-height="5" data-fig-width="5" data-execution_count="9">
+<div id="cell-fig-ch02-negative-log" class="cell" data-fig-height="5" data-fig-width="5" data-execution_count="8">
 <div class="cell-output cell-output-display">
 <div id="fig-ch02-negative-log" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -941,7 +921,7 @@ e^{1.0} \approx 2.718
 <img src="ch02-notation_files/figure-html/fig-ch02-negative-log-output-1.png" width="471" height="470" class="figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch02-negative-log-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.9: The natural log and its negative over inputs between 0 and 1
+Figure&nbsp;2.8: The natural log and its negative over inputs between 0 and 1
 </figcaption>
 </figure>
 </div>
@@ -967,8 +947,8 @@ Figure&nbsp;2.9: The natural log and its negative over inputs between 0 and 1
 \]</span></p>
 <p>The implementation is just that calculation.</p>
 <!-- snippet: src/python/common.py#mean -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> mean(values: Sequence[<span class="bu">float</span>]) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">sum</span>(values) <span class="op">/</span> <span class="bu">len</span>(values)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> mean(values: Sequence[<span class="bu">float</span>]) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">sum</span>(values) <span class="op">/</span> <span class="bu">len</span>(values)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <!-- /snippet -->
 <p>For <span class="math inline">\(x = [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]\)</span>, the sum is <span class="math inline">\(40.0\)</span> and there are <span class="math inline">\(8\)</span> values. So:</p>
 <p><span class="math display">\[
@@ -983,9 +963,9 @@ Figure&nbsp;2.9: The natural log and its negative over inputs between 0 and 1
 \]</span></p>
 <p>The Python helper computes the mean first, then follows the formula.</p>
 <!-- snippet: src/python/common.py#variance -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> variance(values: Sequence[<span class="bu">float</span>]) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    avg <span class="op">=</span> mean(values)</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">sum</span>((value <span class="op">-</span> avg) <span class="op">**</span> <span class="dv">2</span> <span class="cf">for</span> value <span class="kw">in</span> values) <span class="op">/</span> <span class="bu">len</span>(values)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> variance(values: Sequence[<span class="bu">float</span>]) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    avg <span class="op">=</span> mean(values)</span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">sum</span>((value <span class="op">-</span> avg) <span class="op">**</span> <span class="dv">2</span> <span class="cf">for</span> value <span class="kw">in</span> values) <span class="op">/</span> <span class="bu">len</span>(values)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <!-- /snippet -->
 <p>Continuing with <span class="math inline">\(x = [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]\)</span>, the mean is <span class="math inline">\(5.0\)</span>. The squared deviations are:</p>
 <p><span class="math display">\[
@@ -1003,15 +983,15 @@ Figure&nbsp;2.9: The natural log and its negative over inputs between 0 and 1
 \sigma = \sqrt{\sigma^2}
 \]</span></p>
 <!-- snippet: src/python/common.py#standard_deviation -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> standard_deviation(values: Sequence[<span class="bu">float</span>]) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> math.sqrt(variance(values))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> standard_deviation(values: Sequence[<span class="bu">float</span>]) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> math.sqrt(variance(values))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <!-- /snippet -->
 <p>In this example, the variance is <span class="math inline">\(4.0\)</span>, so the standard deviation is:</p>
 <p><span class="math display">\[
 \sigma = \sqrt{4.0} = 2.0
 \]</span></p>
-<p><a href="#fig-ch02-mean-variance" class="quarto-xref">Figure&nbsp;<span>2.10</span></a> illustrates the example data with mean and standard deviation marked.</p>
-<div id="cell-fig-ch02-mean-variance" class="cell" data-fig-height="3.2" data-fig-width="5" data-execution_count="10">
+<p><a href="#fig-ch02-mean-variance" class="quarto-xref">Figure&nbsp;<span>2.9</span></a> illustrates the example data with mean and standard deviation marked.</p>
+<div id="cell-fig-ch02-mean-variance" class="cell" data-fig-height="3.2" data-fig-width="5" data-execution_count="9">
 <div class="cell-output cell-output-display">
 <div id="fig-ch02-mean-variance" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -1019,7 +999,7 @@ Figure&nbsp;2.9: The natural log and its negative over inputs between 0 and 1
 <img src="ch02-notation_files/figure-html/fig-ch02-mean-variance-output-1.png" width="470" height="298" class="figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch02-mean-variance-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.10: Data points with mean and standard deviation
+Figure&nbsp;2.9: Data points with mean and standard deviation
 </figcaption>
 </figure>
 </div>
@@ -1072,7 +1052,17 @@ f(x) = x^2
 <p><span class="math display">\[
 2x = 2 \cdot 3 = 6
 \]</span></p>
-<div id="cell-fig-ch02-derivative" class="cell" data-fig-height="3.5" data-fig-width="5" data-execution_count="11">
+<p>Some useful derivative facts:</p>
+<p>|=== | Operation | Mathematical form | Derivative</p>
+<div class="line-block"><code>a + b</code> | <span class="math inline">\(a + b\)</span> | <span class="math inline">\(\frac{\partial}{\partial a} = 1,\quad \frac{\partial}{\partial b} = 1\)</span><br>
+<code>a * b</code> | <span class="math inline">\(a \cdot b\)</span> | <span class="math inline">\(\frac{\partial}{\partial a} = b,\quad \frac{\partial}{\partial b} = a\)</span><br>
+<code>a ** n</code> | <span class="math inline">\(a^n\)</span> | <span class="math inline">\(\frac{\partial}{\partial a} = n \cdot a^{n-1}\)</span><br>
+<code>log(a)</code> | <span class="math inline">\(\ln(a)\)</span> | <span class="math inline">\(\frac{\partial}{\partial a} = \frac{1}{a}\)</span><br>
+<code>exp(a)</code> | <span class="math inline">\(e^a\)</span> | <span class="math inline">\(\frac{\partial}{\partial a} = e^a\)</span><br>
+<code>relu(a)</code> | <span class="math inline">\(\max(0, a)\)</span> | <span class="math inline">\(\frac{\partial}{\partial a} = \mathbf{1}_{a &gt; 0}\)</span></div>
+<p>|===</p>
+<p>For ReLU, the derivative at exactly <span class="math inline">\(a = 0\)</span> is undefined; implementations usually choose a fixed convention.</p>
+<div id="cell-fig-ch02-derivative" class="cell" data-fig-height="3.5" data-fig-width="5" data-execution_count="10">
 <div class="cell-output cell-output-display">
 <div id="fig-ch02-derivative" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -1080,7 +1070,7 @@ f(x) = x^2
 <img src="ch02-notation_files/figure-html/fig-ch02-derivative-output-1.png" width="472" height="326" class="figure-img">
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch02-derivative-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;2.11: A derivative is the local slope of a function
+Figure&nbsp;2.10: A derivative is the local slope of a function
 </figcaption>
 </figure>
 </div>

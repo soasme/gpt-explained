@@ -46,7 +46,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-5c6455a84bcea5f5637e4293716dd56f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-6a3bbeb4c3e7118f5bb1e8593622cb1d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -259,20 +259,26 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch07-multi-head-attention.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span></a>
+  <a href="./ch07-rope.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">RoPE: Position Inside Attention</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch08-feed-forward.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span></a>
+  <a href="./ch08-multi-head-attention.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch09-transformer-block.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span></a>
+  <a href="./ch09-feed-forward.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch10-transformer-block.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span></a>
   </div>
 </li>
       </ul>
@@ -288,20 +294,20 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch10-vocab-projection.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span></a>
+  <a href="./ch11-vocab-projection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch11-loss.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span></a>
+  <a href="./ch12-loss.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch12-training.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></a>
+  <a href="./ch13-training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></a>
   </div>
 </li>
       </ul>
@@ -317,8 +323,8 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch13-modern-gpt.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Modern GPT</span></span></a>
+  <a href="./ch14-modern-gpt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Modern GPT</span></span></a>
   </div>
 </li>
       </ul>
@@ -385,7 +391,7 @@ window.Quarto = {
 <p><em>Generative</em> — it produces new text, one token at a time, rather than classifying or retrieving.</p>
 <p><em>Pre-trained</em> — before you ever use it, the model was trained on a vast corpus of text from the internet, books, and code. It learned the statistical patterns of language from billions of examples.</p>
 <p><em>Transformer</em> — the underlying neural network architecture. The transformer replaced recurrent networks in 2017 and became the backbone of every large language model since.</p>
-<p>At its core, a GPT model is a function:</p>
+<p>A GPT model is a function:</p>
 <p><span class="math display">\[
 P(\text{next token} \mid \text{context tokens}) = f_\theta(\text{context})
 \]</span></p>
@@ -396,14 +402,14 @@ P(\text{next token} \mid \text{context tokens}) = f_\theta(\text{context})
 <i class="callout-icon"></i>
 </div>
 <div class="callout-body-container">
-<p><em>What is a token?</em> A token is the smallest unit of text the model processes. It is not always a whole word — “unbelievable” might be two tokens: “unbel” and “ievable”. Chapter 3 explains exactly how text is split into tokens.</p>
+<p><em>What is a token?</em> A token is the smallest unit of text the model processes. It is not always a whole word — “unbelievable” might be two tokens: “unbel” and “ievable”. <a href="ch03-tokens.html" class="quarto-xref"><span>Chapter 3</span></a> explains exactly how text is split into tokens.</p>
 </div>
 </div>
 </div>
 </section>
 <section id="how-gpt-works" class="level2" data-number="1.2">
 <h2 data-number="1.2" class="anchored" data-anchor-id="how-gpt-works"><span class="header-section-number">1.2</span> How GPT Works</h2>
-<p>Imagine texting with a really smart friend who has read every book, article, and website ever written. You send a message, they think for a split second, and they reply with exactly the right words. GPT works like that friend — except instead of a brain, it uses a chain of math operations called a <em>pipeline</em>.</p>
+<p>Imagine texting with a really smart friend who has read every book, article, and website ever written. You send a message, they think for a split second, and they reply with exactly the right words. GPT works like that friend, except instead of a brain, it uses a chain of math operations called a <em>pipeline</em>.</p>
 <p>Every word GPT produces goes through these seven steps, in order:</p>
 <div id="fig-ch01-gpt-pipeline" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
@@ -415,23 +421,23 @@ Figure&nbsp;1.1: The GPT pipeline: from input text to predicted next word, in se
 </figcaption>
 </figure>
 </div>
-<p><em>Step 1 — Tokenization (Chapter 3).</em> Before GPT can think about your text, it has to chop it into small pieces called <em>tokens</em>. Think of tokens like LEGO bricks: you break a sentence apart, and GPT works with the individual bricks. The phrase <code>"the cat"</code> might become three bricks with serial numbers like <code>[1, 428, 3797]</code>.</p>
-<p><em>Step 2 — Embedding (Chapter 4).</em> A number like <code>428</code> is just an ID — it has no meaning by itself. So GPT looks each ID up in a giant table and swaps it for a list of hundreds of numbers called a <em>vector</em>. Picture a map where every word has its own location. Similar words end up close together: “cat” and “kitten” are neighbors, while “cat” and “spaceship” are far apart.</p>
-<p><em>Step 3 — Positional Encoding (Chapter 5).</em> Here is a puzzle: does “dog bites man” mean the same thing as “man bites dog”? Obviously not — but if GPT only sees individual words and ignores their order, it cannot tell the difference. Positional encoding adds a tiny “position tag” to each word’s vector so GPT knows which word came first, second, and so on.</p>
-<p><em>Step 4 — Transformer Blocks (Chapters 6–9).</em> This is where the real thinking happens. GPT passes the vectors through a stack of identical layers called <em>transformer blocks</em>. Inside each block, two things happen back-to-back:</p>
+<p><em>Step 1 — Tokenization (<a href="ch03-tokens.html" class="quarto-xref"><span>Chapter 3</span></a>).</em> Before GPT can think about your text, it has to chop it into small pieces called <em>tokens</em>. Think of tokens like LEGO bricks: you break a sentence apart, and GPT works with the individual bricks. The phrase <code>"the cat"</code> might become three bricks with serial numbers like <code>[1, 428, 3797]</code>.</p>
+<p><em>Step 2 — Embedding (<a href="ch04-embeddings.html" class="quarto-xref"><span>Chapter 4</span></a>).</em> A number like <code>428</code> is just an ID — it has no meaning by itself. So GPT looks each ID up in a giant table and swaps it for a list of hundreds of numbers called a <em>vector</em>. Picture a map where every word has its own location. Similar words end up close together: “cat” and “kitten” are neighbors, while “cat” and “spaceship” are far apart.</p>
+<p><em>Step 3 — Positional Encoding (<a href="ch05-positional-encoding.html" class="quarto-xref"><span>Chapter 5</span></a>).</em> Here is a puzzle: does “dog bites man” mean the same thing as “man bites dog”? Obviously not — but if GPT only sees individual words and ignores their order, it cannot tell the difference. Positional encoding adds a tiny “position tag” to each word’s vector so GPT knows which word came first, second, and so on.</p>
+<p><em>Step 4 — Transformer Blocks (<a href="ch06-attention.html" class="quarto-xref"><span>Chapter 6</span></a> through <a href="ch10-transformer-block.html" class="quarto-xref"><span>Chapter 10</span></a>).</em> This is where the real thinking happens. GPT passes the vectors through a stack of identical layers called <em>transformer blocks</em>. Inside each block, two things happen back-to-back:</p>
 <ul>
 <li><em>Attention</em> — every word looks at every other word and asks “which of you matters most to me right now?” For example, the word “it” in “I kicked the ball and it bounced” needs to figure out that “it” refers to “ball”.</li>
 <li><em>Feed-forward</em> — each word’s vector gets processed through a small math circuit that stores facts from training.</li>
 </ul>
 <p>There can be dozens of these blocks stacked on top of each other. Each layer builds a slightly deeper understanding of the text.</p>
-<p><em>Step 5 — Vocab Projection (Chapter 10).</em> After passing through all the blocks, GPT has a rich, updated vector for the last word in your prompt. Now it needs to turn that into a real prediction: “what word should come next?” It does this by scoring every word in its vocabulary — all 50,000-plus of them. These raw scores are called <em>logits</em>.</p>
-<p><em>Step 6 — Softmax (Chapter 10).</em> Raw scores are hard to work with, so GPT converts them into proper probabilities that add up to 100%. The highest-probability word is the model’s best guess. It samples from the top options to avoid always giving the same robotic answer.</p>
-<p><em>Step 7 — Loss and Training (Chapters 11–12).</em> GPT did not start out smart. During training, it read billions of sentences and kept trying to predict the next word — getting it wrong most of the time at first. Each mistake triggered a feedback signal called <em>backpropagation</em> that nudged millions of internal numbers a tiny bit in the right direction. After trillions of these small nudges, the model got very good at the guessing game.</p>
+<p><em>Step 5 — Vocab Projection (<a href="ch11-vocab-projection.html" class="quarto-xref"><span>Chapter 11</span></a>).</em> After passing through all the blocks, GPT has a rich, updated vector for the last word in your prompt. Now it needs to turn that into a real prediction: “what word should come next?” It does this by scoring every word in its vocabulary — all 50,000-plus of them. These raw scores are called <em>logits</em>.</p>
+<p><em>Step 6 — Softmax (<a href="ch11-vocab-projection.html" class="quarto-xref"><span>Chapter 11</span></a>).</em> Raw scores are hard to work with, so GPT converts them into proper probabilities that add up to 100%. The highest-probability word is the model’s best guess. It samples from the top options to avoid always giving the same robotic answer.</p>
+<p><em>Step 7 — Loss and Training (<a href="ch12-loss.html" class="quarto-xref"><span>Chapter 12</span></a> and <a href="ch13-training.html" class="quarto-xref"><span>Chapter 13</span></a>).</em> GPT did not start out smart. During training, it read billions of sentences and kept trying to predict the next word — getting it wrong most of the time at first. Each mistake triggered a feedback signal called <em>backpropagation</em> that nudged millions of internal numbers a tiny bit in the right direction. After trillions of these small nudges, the model got very good at the guessing game.</p>
 <p>That’s GPT from start to finish. The rest of this book builds each step from scratch — in math, in Python code, and in step-by-step diagrams.</p>
 </section>
 <section id="a-brief-history-of-gpt" class="level2" data-number="1.3">
 <h2 data-number="1.3" class="anchored" data-anchor-id="a-brief-history-of-gpt"><span class="header-section-number">1.3</span> A Brief History of GPT</h2>
-<p>GPT did not appear out of nowhere. It is the result of more than sixty years of research — a long chain of ideas, failures, and breakthroughs. Here is the story, told simply.</p>
+<p>GPT did not appear out of nowhere. It is the result of more than sixty years of research: a long chain of ideas, failures, and breakthroughs. Here is the story, told simply.</p>
 <p><em>1950s–1980s — The Birth of Machine Learning</em></p>
 <p>Early computers followed strict rules written by programmers. If you wanted a computer to recognise a cat, you had to describe a cat in code: “four legs, pointy ears, fur…” That worked for simple things but fell apart for anything complicated.</p>
 <p>Researchers started asking a different question: what if the computer could <em>learn the rules itself</em> by looking at lots of examples? That idea became <em>machine learning</em>. Instead of coding rules by hand, you feed the machine thousands of cat photos, label them “cat”, and let it figure out the pattern.</p>
@@ -445,7 +451,7 @@ Figure&nbsp;1.1: The GPT pipeline: from input text to predicted next word, in se
 <p>A team at Google figured out how to teach a neural network to read text. They trained it to predict which words tend to appear near each other. The surprising result: the network assigned each word a list of numbers (a <em>vector</em>), and similar words ended up with similar numbers. You could even do word arithmetic: “king” − “man” + “woman” ≈ “queen”. Language had become math.</p>
 <p><em>2014–2015 — Sequence Models and Attention</em></p>
 <p>To translate a sentence — say, from English to French — models needed to process words in order. Researchers used networks called <em>RNNs</em> (Recurrent Neural Networks) and <em>LSTMs</em> for this. But they had a problem: long sentences broke them. By the time the model reached the end of a paragraph, it had mostly forgotten the beginning.</p>
-<p>In 2015, researchers introduced <em>attention</em>. Instead of forcing the model to squeeze everything into one memory slot, attention let it look back at any earlier word at any time — like being allowed to flip back to any page of your notes during an exam. This made translation much better.</p>
+<p>In 2015, researchers introduced <em>attention</em>. Instead of forcing the model to squeeze everything into one memory slot, attention let it look back at any earlier word at any time, like being allowed to flip back to any page of your notes during an exam. This made translation much better.</p>
 <p><em>2017 — “Attention Is All You Need”</em></p>
 <p>A team at Google published a paper with that bold title. They asked: what if we got rid of the old word-by-word processing entirely and used <em>only</em> attention? The result was the <em>transformer</em> — the architecture that GPT is built on. The transformer could look at all the words in a sentence at the same time, in parallel, which made it dramatically faster to train and better at long-range reasoning.</p>
 <p><em>2018 — GPT-1 and BERT</em></p>

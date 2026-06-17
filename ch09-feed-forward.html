@@ -9,7 +9,7 @@
 <meta name="author" content="Ju Lin">
 <meta name="description" content="A practical guide to GPT-style transformer architecture, from tokens to text generation, with math, matrices, Python, and diagrams.">
 
-<title>13&nbsp; Modern GPT – GPT Explained</title>
+<title>9&nbsp; Feed-Forward Network — The Model’s Memory – GPT Explained</title>
 <style>
 /* Default styles provided by pandoc.
 ** See https://pandoc.org/MANUAL.html#variables-for-html for config info.
@@ -25,6 +25,41 @@ ul.task-list li input[type="checkbox"] {
   margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
   vertical-align: middle;
 }
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
 </style>
 
 
@@ -35,8 +70,8 @@ ul.task-list li input[type="checkbox"] {
 <script src="site_libs/quarto-search/fuse.min.js"></script>
 <script src="site_libs/quarto-search/quarto-search.js"></script>
 <meta name="quarto:offset" content="./">
-<link href="./A-microgpt.html" rel="next">
-<link href="./parts/modern-gpt.html" rel="prev">
+<link href="./ch10-transformer-block.html" rel="next">
+<link href="./ch08-multi-head-attention.html" rel="prev">
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
 <script src="site_libs/quarto-html/popper.min.js"></script>
@@ -46,7 +81,7 @@ ul.task-list li input[type="checkbox"] {
 <link href="site_libs/quarto-html/quarto-syntax-highlighting-15634bcf2e68342d4ad2dfa704d543f6.css" rel="stylesheet" id="quarto-text-highlighting-styles">
 <script src="site_libs/bootstrap/bootstrap.min.js"></script>
 <link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
-<link href="site_libs/bootstrap/bootstrap-5c6455a84bcea5f5637e4293716dd56f.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<link href="site_libs/bootstrap/bootstrap-6a3bbeb4c3e7118f5bb1e8593622cb1d.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
 <script id="quarto-search-options" type="application/json">{
   "location": "sidebar",
   "copy-button": false,
@@ -116,7 +151,7 @@ window.Quarto = {
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" role="button" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./parts/modern-gpt.html">Modern Extensions</a></li><li class="breadcrumb-item"><a href="./ch13-modern-gpt.html"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Modern GPT</span></a></li></ol></nav>
+        <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./parts/transformer-core.html">Transformer Core</a></li><li class="breadcrumb-item"><a href="./ch09-feed-forward.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></a></li></ol></nav>
         <a class="flex-grow-1" role="navigation" data-bs-toggle="collapse" data-bs-target=".quarto-sidebar-collapse-item" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
         </a>
       <button type="button" class="btn quarto-search-button" aria-label="Search" onclick="window.quartoOpenSearch();">
@@ -259,20 +294,26 @@ window.Quarto = {
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch07-multi-head-attention.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span></a>
+  <a href="./ch07-rope.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">7</span>&nbsp; <span class="chapter-title">RoPE: Position Inside Attention</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch08-feed-forward.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span></a>
+  <a href="./ch08-multi-head-attention.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch09-transformer-block.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span></a>
+  <a href="./ch09-feed-forward.html" class="sidebar-item-text sidebar-link active">
+ <span class="menu-text"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span></a>
+  </div>
+</li>
+          <li class="sidebar-item">
+  <div class="sidebar-item-container"> 
+  <a href="./ch10-transformer-block.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span></a>
   </div>
 </li>
       </ul>
@@ -288,20 +329,20 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-4" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch10-vocab-projection.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span></a>
+  <a href="./ch11-vocab-projection.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Vocabulary Projection — From Vectors to Words</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch11-loss.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">11</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span></a>
+  <a href="./ch12-loss.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Loss — How the Model Learns</span></span></a>
   </div>
 </li>
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch12-training.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text"><span class="chapter-number">12</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></a>
+  <a href="./ch13-training.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Training — Teaching the Model</span></span></a>
   </div>
 </li>
       </ul>
@@ -317,8 +358,8 @@ window.Quarto = {
       <ul id="quarto-sidebar-section-5" class="collapse list-unstyled sidebar-section depth1 show">  
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
-  <a href="./ch13-modern-gpt.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Modern GPT</span></span></a>
+  <a href="./ch14-modern-gpt.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text"><span class="chapter-number">14</span>&nbsp; <span class="chapter-title">Modern GPT</span></span></a>
   </div>
 </li>
       </ul>
@@ -350,20 +391,22 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul class="collapse">
-  <li><a href="#rotary-positional-encoding-rope" id="toc-rotary-positional-encoding-rope" class="nav-link active" data-scroll-target="#rotary-positional-encoding-rope"><span class="header-section-number">13.1</span> Rotary Positional Encoding (RoPE)</a></li>
-  <li><a href="#multi-query-and-grouped-query-attention" id="toc-multi-query-and-grouped-query-attention" class="nav-link" data-scroll-target="#multi-query-and-grouped-query-attention"><span class="header-section-number">13.2</span> Multi-Query and Grouped-Query Attention</a></li>
-  <li><a href="#flash-attention" id="toc-flash-attention" class="nav-link" data-scroll-target="#flash-attention"><span class="header-section-number">13.3</span> Flash Attention</a></li>
-  <li><a href="#alternative-architectures" id="toc-alternative-architectures" class="nav-link" data-scroll-target="#alternative-architectures"><span class="header-section-number">13.4</span> Alternative Architectures</a></li>
-  <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways"><span class="header-section-number">13.5</span> Key Takeaways</a></li>
+  <li><a href="#the-idea" id="toc-the-idea" class="nav-link active" data-scroll-target="#the-idea"><span class="header-section-number">9.1</span> The Idea</a></li>
+  <li><a href="#the-math" id="toc-the-math" class="nav-link" data-scroll-target="#the-math"><span class="header-section-number">9.2</span> The Math</a></li>
+  <li><a href="#gelu-deep-dive" id="toc-gelu-deep-dive" class="nav-link" data-scroll-target="#gelu-deep-dive"><span class="header-section-number">9.3</span> GELU Deep Dive</a></li>
+  <li><a href="#the-matrix-worked-example" id="toc-the-matrix-worked-example" class="nav-link" data-scroll-target="#the-matrix-worked-example"><span class="header-section-number">9.4</span> The Matrix: Worked Example</a></li>
+  <li><a href="#the-code-ffn-in-python" id="toc-the-code-ffn-in-python" class="nav-link" data-scroll-target="#the-code-ffn-in-python"><span class="header-section-number">9.5</span> The Code: FFN in Python</a></li>
+  <li><a href="#the-ffn-as-a-key-value-memory" id="toc-the-ffn-as-a-key-value-memory" class="nav-link" data-scroll-target="#the-ffn-as-a-key-value-memory"><span class="header-section-number">9.6</span> The FFN as a Key-Value Memory</a></li>
+  <li><a href="#key-takeaways" id="toc-key-takeaways" class="nav-link" data-scroll-target="#key-takeaways"><span class="header-section-number">9.7</span> Key Takeaways</a></li>
   </ul>
-<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch13-modern-gpt.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
+<div class="toc-actions"><ul class="collapse"><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch09-feed-forward.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></nav>
     </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
-<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./parts/modern-gpt.html">Modern Extensions</a></li><li class="breadcrumb-item"><a href="./ch13-modern-gpt.html"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Modern GPT</span></a></li></ol></nav>
+<header id="title-block-header" class="quarto-title-block default"><nav class="quarto-page-breadcrumbs quarto-title-breadcrumbs d-none d-lg-block" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="./parts/transformer-core.html">Transformer Core</a></li><li class="breadcrumb-item"><a href="./ch09-feed-forward.html"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></a></li></ol></nav>
 <div class="quarto-title">
-<h1 class="title"><span id="sec-ch13-modern-gpt" class="quarto-section-identifier"><span class="chapter-number">13</span>&nbsp; <span class="chapter-title">Modern GPT</span></span></h1>
+<h1 class="title"><span id="sec-ch09-feed-forward" class="quarto-section-identifier"><span class="chapter-number">9</span>&nbsp; <span class="chapter-title">Feed-Forward Network — The Model’s Memory</span></span></h1>
 </div>
 
 
@@ -380,168 +423,209 @@ window.Quarto = {
 </header>
 
 
-<p>The previous chapters built a complete GPT from scratch. Real production models add several refinements that improve efficiency, context length, and capability. This chapter surveys the most important innovations beyond the baseline transformer.</p>
-<section id="rotary-positional-encoding-rope" class="level2" data-number="13.1">
-<h2 data-number="13.1" class="anchored" data-anchor-id="rotary-positional-encoding-rope"><span class="header-section-number">13.1</span> Rotary Positional Encoding (RoPE)</h2>
-<p>The sinusoidal positional encoding in Chapter 5 adds a fixed signal to each embedding <em>before</em> the attention layers. <em>RoPE</em> (Su et al., 2021) takes a different approach: it encodes position directly into the query and key vectors inside each attention layer by rotating them.</p>
-<p>For a query vector <span class="math inline">\(q\)</span> at position <span class="math inline">\(m\)</span> and key vector <span class="math inline">\(k\)</span> at position <span class="math inline">\(n\)</span>:</p>
-<p><span class="math display">\[
-\langle R_m q,\; R_n k \rangle = \langle q, R_{n-m} k \rangle
-\]</span></p>
-<p>where <span class="math inline">\(R_\theta\)</span> is a block-diagonal rotation matrix. The dot product depends only on the <em>relative</em> position <span class="math inline">\(n - m\)</span>, not the absolute positions. This gives the model a natural sense of distance between tokens.</p>
-<p><em>Key advantages of RoPE:</em></p>
-<ul>
-<li>Generalises to sequences longer than those seen during training.</li>
-<li>No extra parameters — the rotation is deterministic.</li>
-<li>Compatible with linear attention variants.</li>
-<li>Used in LLaMA, Mistral, Qwen, and most open-weight models.</li>
-</ul>
-<p>In 2D, a rotation by <span class="math inline">\(\theta\)</span> looks like:</p>
-<p><span class="math display">\[
-R_\theta = \begin{bmatrix} \cos\theta &amp; -\sin\theta \\ \sin\theta &amp; \cos\theta \end{bmatrix}
-\]</span></p>
-<p>For a <span class="math inline">\(d\)</span>-dimensional vector, <span class="math inline">\(d/2\)</span> independent 2D rotations are applied to pairs of dimensions.</p>
-<div id="fig-ch13-rope" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Two vectors rotating by different angles, with the relative angle between them labelled as the positional signal.">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ch13-rope-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="images/ch13_rope.png" class="img-fluid figure-img" alt="Two vectors rotating by different angles, with the relative angle between them labelled as the positional signal.">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch13-rope-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;13.1: RoPE rotates query and key vectors by position — their dot product captures relative distance
-</figcaption>
-</figure>
-</div>
+<p>After multi-head attention has blended information across positions, each token’s vector passes through a <em>feed-forward network (FFN)</em>. This is a simple two-layer MLP — the same network, applied independently to every position.</p>
+<p>While attention does the <em>routing</em> (mixing information across tokens), the FFN does the <em>processing</em> (transforming each token’s representation). Experiments by Geva et al.&nbsp;(2021) showed that the FFN layers act as “key-value memories” — the first layer’s neurons trigger on specific input patterns, and the second layer retrieves associated information.</p>
+<section id="the-idea" class="level2" data-number="9.1">
+<h2 data-number="9.1" class="anchored" data-anchor-id="the-idea"><span class="header-section-number">9.1</span> The Idea</h2>
+<p>Attention is about <em>communication</em> — each token collects information from other tokens. The feed-forward network is about <em>computation</em> — each token processes what it just collected, entirely on its own.</p>
+<p>After attention, every token’s vector has been updated with context from the surrounding words. The FFN now takes each updated vector and runs it through a private transformation: expand it into a much larger space, filter it through a non-linearity that decides which features are “active,” then compress it back to the original size. No information crosses between tokens here — every position is handled independently with the same set of weights.</p>
+<p>Why expand and then compress? The expansion gives the model room to express a large number of potential features at once. The non-linearity then selects which combinations matter and switches the rest off. The compression packages the result back into the model’s standard vector size.</p>
+<p>This expand-filter-compress pipeline is where most of the model’s factual knowledge lives. Geva et al.&nbsp;(2021) found that individual neurons in the FFN’s expanded space correlate with specific concepts (“Paris,” “past tense,” “chemical element”).</p>
+<p>The same FFN weights are applied to every token position in the sequence: position 1 and position 100 go through identical transformations. Only attention sees position.</p>
 </section>
-<section id="multi-query-and-grouped-query-attention" class="level2" data-number="13.2">
-<h2 data-number="13.2" class="anchored" data-anchor-id="multi-query-and-grouped-query-attention"><span class="header-section-number">13.2</span> Multi-Query and Grouped-Query Attention</h2>
-<p>Standard multi-head attention (Chapter 7) creates separate <span class="math inline">\(Q, K, V\)</span> projections for every head. The key and value matrices dominate GPU memory during inference.</p>
-<p><em>Multi-Query Attention (MQA)</em> (Shazeer, 2019) uses a single <span class="math inline">\(K\)</span> and <span class="math inline">\(V\)</span> shared across all heads, reducing the KV cache by a factor of <span class="math inline">\(H\)</span> (number of heads).</p>
-<p><em>Grouped-Query Attention (GQA)</em> (Ainslie et al., 2023) is a middle ground: <span class="math inline">\(G\)</span> groups of heads share a single <span class="math inline">\(K, V\)</span>, where <span class="math inline">\(1 \leq G \leq H\)</span>. Setting <span class="math inline">\(G=1\)</span> recovers MQA; setting <span class="math inline">\(G=H\)</span> recovers standard MHA.</p>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Method</th>
-<th>KV heads</th>
-<th>Memory</th>
-<th>Quality</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>MHA</td>
-<td>H</td>
-<td>1x</td>
-<td>Baseline</td>
-</tr>
-<tr class="even">
-<td>GQA</td>
-<td>H/G</td>
-<td>1/G x</td>
-<td>Near-MHA</td>
-</tr>
-<tr class="odd">
-<td>MQA</td>
-<td>1</td>
-<td>1/H x</td>
-<td>Slight drop</td>
-</tr>
-</tbody>
-</table>
-<p>GQA is used in LLaMA 3, Mistral, and Gemma. It allows inference to fit in less memory without significant quality degradation.</p>
-</section>
-<section id="flash-attention" class="level2" data-number="13.3">
-<h2 data-number="13.3" class="anchored" data-anchor-id="flash-attention"><span class="header-section-number">13.3</span> Flash Attention</h2>
-<p>Standard self-attention computes the full <span class="math inline">\(n \times n\)</span> attention matrix explicitly:</p>
-<p><span class="math display">\[
-\text{Attn} = \text{softmax}\!\left(\frac{QK^\top}{\sqrt{d_k}}\right)V
-\]</span></p>
-<p>For a sequence of length <span class="math inline">\(n\)</span>, this requires <span class="math inline">\(O(n^2)\)</span> memory — prohibitive for long contexts.</p>
-<p><em>Flash Attention</em> (Dao et al., 2022) reorders the computation using <em>tiling</em>: it processes blocks of the sequence in GPU SRAM (fast on-chip memory) and never materialises the full <span class="math inline">\(n \times n\)</span> matrix in HBM (slow off-chip memory).</p>
-<p>The result is mathematically identical to standard attention, but:</p>
-<ul>
-<li>Memory: <span class="math inline">\(O(n)\)</span> instead of <span class="math inline">\(O(n^2)\)</span>.</li>
-<li>Speed: 2–4× faster than PyTorch’s built-in attention in practice.</li>
-<li>Enables context windows of 32k–128k tokens at practical batch sizes.</li>
-</ul>
-<p>Flash Attention 2 and 3 added further improvements (better parallelism, support for GQA). It is now the default in all major frameworks.</p>
+<section id="the-math" class="level2" data-number="9.2">
+<h2 data-number="9.2" class="anchored" data-anchor-id="the-math"><span class="header-section-number">9.2</span> The Math</h2>
 <div class="callout callout-style-simple callout-note">
 <div class="callout-body d-flex">
 <div class="callout-icon-container">
 <i class="callout-icon"></i>
 </div>
 <div class="callout-body-container">
-<p>Flash Attention is a hardware-aware algorithm, not a new mathematical operation. The inputs and outputs are identical to standard attention.</p>
+<p><em>Math Minute — ReLU and GELU</em></p>
+<p>A <em>non-linearity</em> is a function that makes the network capable of learning complex patterns beyond linear mappings.</p>
+<p><code>ReLU(x) = max(0, x)</code> — simple: negative values → 0, positive values unchanged.</p>
+<p><span class="math inline">\(\operatorname{GELU}(x) = x \cdot \Phi(x)\)</span> where <span class="math inline">\(\Phi\)</span> is the standard normal CDF. GELU is smooth and probabilistic. GPT uses GELU. LLaMA and most modern models use <code>SwiGLU</code>, a gated variant.</p>
+<p><code>Sigmoid(x) = 1/(1+e⁻ˣ)</code> squashes any real number to (0,1). Used in gates.</p>
 </div>
 </div>
 </div>
-</section>
-<section id="alternative-architectures" class="level2" data-number="13.4">
-<h2 data-number="13.4" class="anchored" data-anchor-id="alternative-architectures"><span class="header-section-number">13.4</span> Alternative Architectures</h2>
-<p>The transformer is not the only architecture for sequence modelling. Several alternatives challenge or complement it.</p>
-<section id="mamba-state-space-models" class="level3" data-number="13.4.1">
-<h3 data-number="13.4.1" class="anchored" data-anchor-id="mamba-state-space-models"><span class="header-section-number">13.4.1</span> Mamba (State Space Models)</h3>
-<p><em>Mamba</em> (Gu &amp; Dao, 2023) is based on <em>selective state space models</em> (SSMs). Instead of attending to all past tokens, it maintains a compressed hidden state that is updated recurrently — like an RNN, but with a selective mechanism that decides what to remember.</p>
-<p>Key properties:</p>
+<p>For a sequence input <span class="math inline">\(X \in \mathbb{R}^{T\times d}\)</span>, the FFN applies identically to each row:</p>
+<p><span class="math display">\[
+FFN(X) = \operatorname{GELU}(X W_1 + \mathbf{1}\cdot b_1^{\top}) W_2 + \mathbf{1}\cdot b_2^{\top}
+\]</span></p>
+<p>Breaking it down:</p>
+<p><span class="math display">\[
+\begin{aligned}
+H  &amp;= X W_1 + \mathbf{1} b_1^{\top} \in \mathbb{R}^{T \times d_{\text{ff}}} &amp;&amp; \text{(expand)} \\
+H' &amp;= \operatorname{GELU}(H)          \in \mathbb{R}^{T \times d_{\text{ff}}} &amp;&amp; \text{(activate)} \\
+Y  &amp;= H' W_2 + \mathbf{1} b_2^{\top} \in \mathbb{R}^{T \times d}            &amp;&amp; \text{(contract)}
+\end{aligned}
+\]</span></p>
+<p><em>Parameter count:</em></p>
 <ul>
-<li>Linear time in sequence length (<span class="math inline">\(O(n)\)</span> vs <span class="math inline">\(O(n^2)\)</span> for attention).</li>
-<li>No attention matrix — the context is compressed into a fixed-size state.</li>
-<li>Competitive with transformers on language modelling benchmarks.</li>
-<li>Less effective at in-context retrieval tasks (where attention excels).</li>
+<li><span class="math inline">\(W_1\)</span>: <span class="math inline">\(d \times d_{\text{ff}} = d \times 4d = 4d^2\)</span></li>
+<li><span class="math inline">\(W_2\)</span>: <span class="math inline">\(d_{\text{ff}} \times d = 4d^2\)</span></li>
+<li>Total: <span class="math inline">\(\approx 8d^2\)</span> — <em>twice</em> the parameter count of all attention weight matrices combined!</li>
 </ul>
 </section>
-<section id="diffusion-language-models-diffusiongemma" class="level3" data-number="13.4.2">
-<h3 data-number="13.4.2" class="anchored" data-anchor-id="diffusion-language-models-diffusiongemma"><span class="header-section-number">13.4.2</span> Diffusion Language Models (DiffusionGemma)</h3>
-<p>Autoregressive models like GPT generate text <em>left-to-right</em>, one token at a time. <em>Diffusion language models</em> (DLMs) generate all tokens in parallel by iterative denoising.</p>
-<p><em>MDLM</em> and <em>Gemma-based diffusion models</em> start from a fully masked sequence and refine it over <span class="math inline">\(T\)</span> denoising steps. Each step predicts a cleaner version of the entire sequence.</p>
-<p>Advantages: - Can revise earlier tokens after seeing later context. - Faster generation at inference time (fewer sequential steps than token length). - Emerging area — quality trails autoregressive models as of 2025.</p>
-</section>
-<section id="mixture-of-experts-moe" class="level3" data-number="13.4.3">
-<h3 data-number="13.4.3" class="anchored" data-anchor-id="mixture-of-experts-moe"><span class="header-section-number">13.4.3</span> Mixture of Experts (MoE)</h3>
-<p><em>Mixture of Experts</em> replaces the single feed-forward network in each transformer block with <span class="math inline">\(E\)</span> expert networks and a <em>router</em> that activates only <span class="math inline">\(K\)</span> of them per token.</p>
+<section id="gelu-deep-dive" class="level2" data-number="9.3">
+<h2 data-number="9.3" class="anchored" data-anchor-id="gelu-deep-dive"><span class="header-section-number">9.3</span> GELU Deep Dive</h2>
+<p>The exact GELU formula is:</p>
+<p><span class="math display">\[
+\operatorname{GELU}(x) = x \cdot \frac{1}{2} \cdot \left[1 + \operatorname{erf}\!\left(\frac{x}{\sqrt{2}}\right)\right]
+\]</span></p>
+<p>A fast approximation (used in practice):</p>
+<p><span class="math display">\[
+\operatorname{GELU}(x) \approx 0.5 \cdot x \cdot (1 + \tanh(\sqrt{2/\pi} \cdot (x + 0.044715 \cdot x^3)))
+\]</span></p>
+<p>Key behaviors:</p>
 <ul>
-<li>Mistral 8x7B and GPT-4 are believed to use MoE.</li>
-<li>Total parameters can be large while compute per token stays small.</li>
-<li>Trade-off: routing instability, expert load imbalance.</li>
+<li><code>GELU(0) = 0</code></li>
+<li>For large positive <code>x</code>: <span class="math inline">\(\operatorname{GELU}(x) \approx x\)</span> (passes through)</li>
+<li>For large negative <code>x</code>: <span class="math inline">\(\operatorname{GELU}(x) \approx 0\)</span> (suppressed)</li>
+<li>Smooth everywhere — gradient flows through during training</li>
 </ul>
 </section>
+<section id="the-matrix-worked-example" class="level2" data-number="9.4">
+<h2 data-number="9.4" class="anchored" data-anchor-id="the-matrix-worked-example"><span class="header-section-number">9.4</span> The Matrix: Worked Example</h2>
+<p>Let <code>T = 2</code>, <code>d = 4</code>, <span class="math inline">\(d_{\text{ff}} = 8\)</span>.</p>
+<p>Input (after attention):</p>
+<pre class="text"><code>X = [[ 0.5,  1.2, -0.3,  0.8],
+     [-0.1,  0.7,  0.9, -0.4]]    (2×4)</code></pre>
+<p>Tracing row 0 of X: <code>x = [0.5, 1.2, -0.3, 0.8]</code></p>
+<p><em>Step 1 — Expand:</em> <span class="math inline">\(h = x W_1\)</span></p>
+<pre class="text"><code>h = [1.1, -0.4, 0.8, 2.1, -0.3, 0.6, 1.5, -0.8]</code></pre>
+<p><em>Step 2 — GELU:</em></p>
+<pre class="text"><code>GELU(1.1)  ≈ 0.95
+GELU(-0.4) ≈ -0.12
+GELU(0.8)  ≈ 0.64
+GELU(2.1)  ≈ 2.06
+GELU(-0.3) ≈ -0.11
+GELU(0.6)  ≈ 0.44
+GELU(1.5)  ≈ 1.40
+GELU(-0.8) ≈ -0.17
+
+h' = [0.95, -0.12, 0.64, 2.06, -0.11, 0.44, 1.40, -0.17]</code></pre>
+<p><em>Step 3 — Contract:</em> <span class="math inline">\(y = h' W_2\)</span></p>
+<pre class="text"><code>y ≈ [0.7, 1.1, -0.2, 0.9]</code></pre>
+<p>The output <code>y</code> is a transformed version of the input vector — same dimensionality, different values. The transformation was learned to improve next-token prediction.</p>
+<p>Figure <a href="#fig-ch09-matrix-ffn" class="quarto-xref">Figure&nbsp;<span>9.1</span></a> shows the feed-forward network expanding the hidden dimension, applying GELU, and contracting back to model width.</p>
+<div id="fig-ch09-matrix-ffn" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Feed-forward network — expand → GELU → contract.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ch09-matrix-ffn-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/ch09_ffn.png" class="img-fluid figure-img" alt="Feed-forward network — expand → GELU → contract.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch09-matrix-ffn-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.1: Feed-forward network
+</figcaption>
+</figure>
+</div>
+<p>Figure <a href="#fig-ch09-matrix-memory" class="quarto-xref">Figure&nbsp;<span>9.2</span></a> shows the FFN interpretation as associative memory, with keys and values stored in its weight matrices.</p>
+<div id="fig-ch09-matrix-memory" class="quarto-float quarto-figure quarto-figure-center anchored" alt="The FFN as associative memory — keys and values stored in the weight matrices.">
+<figure class="quarto-float quarto-float-fig figure">
+<div aria-describedby="fig-ch09-matrix-memory-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+<img src="images/ch09_memory.png" class="img-fluid figure-img" alt="The FFN as associative memory — keys and values stored in the weight matrices.">
+</div>
+<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch09-matrix-memory-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
+Figure&nbsp;9.2: Feed-forward network as associative memory
+</figcaption>
+</figure>
+</div>
 </section>
-<section id="key-takeaways" class="level2" data-number="13.5">
-<h2 data-number="13.5" class="anchored" data-anchor-id="key-takeaways"><span class="header-section-number">13.5</span> Key Takeaways</h2>
-<table class="caption-top table">
-<thead>
-<tr class="header">
-<th>Innovation</th>
-<th>Benefit</th>
-</tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td>RoPE</td>
-<td>Relative position encoding, better length generalisation</td>
-</tr>
-<tr class="even">
-<td>GQA / MQA</td>
-<td>Smaller KV cache, faster and cheaper inference</td>
-</tr>
-<tr class="odd">
-<td>Flash Attention</td>
-<td>Linear memory, 2-4x faster attention, long context</td>
-</tr>
-<tr class="even">
-<td>Mamba (SSM)</td>
-<td>Linear-time sequence modelling, no attention matrix</td>
-</tr>
-<tr class="odd">
-<td>Diffusion LMs</td>
-<td>Parallel generation, bidirectional revision</td>
-</tr>
-<tr class="even">
-<td>MoE</td>
-<td>Larger model capacity without proportional compute cost</td>
-</tr>
-</tbody>
-</table>
-<p>The field moves fast. Each of these innovations addresses a concrete bottleneck — memory, speed, context length, or capability — that became critical as models scaled. Understanding the baseline GPT from Chapters 3–12 makes every one of these extensions legible.</p>
+<section id="the-code-ffn-in-python" class="level2" data-number="9.5">
+<h2 data-number="9.5" class="anchored" data-anchor-id="the-code-ffn-in-python"><span class="header-section-number">9.5</span> The Code: FFN in Python</h2>
+<p>GELU is the activation function used in GPT-2. For large positive <span class="math inline">\(x\)</span>, GELU approaches <span class="math inline">\(x\)</span> — the value passes through. For large negative <span class="math inline">\(x\)</span>, it approaches 0 — the value is suppressed. <code>gelu_matrix</code> applies the scalar GELU to every element of a matrix.</p>
+<!-- snippet: src/python/common.py#activations -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sigmoid(x: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="fl">1.0</span> <span class="op">/</span> (<span class="fl">1.0</span> <span class="op">+</span> math.exp(<span class="op">-</span>x))</span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> relu(x: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">max</span>(<span class="fl">0.0</span>, x)</span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> gelu(x: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    scale <span class="op">=</span> math.sqrt(<span class="fl">2.0</span> <span class="op">/</span> math.pi)</span>
+<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="fl">0.5</span> <span class="op">*</span> x <span class="op">*</span> (<span class="fl">1.0</span> <span class="op">+</span> math.tanh(scale <span class="op">*</span> (x <span class="op">+</span> <span class="fl">0.044715</span> <span class="op">*</span> x<span class="op">**</span><span class="dv">3</span>)))</span>
+<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> gelu_matrix(matrix: Matrix) <span class="op">-&gt;</span> Matrix:</span>
+<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [[gelu(value) <span class="cf">for</span> value <span class="kw">in</span> row] <span class="cf">for</span> row <span class="kw">in</span> matrix]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<!-- /snippet -->
+<p><code>add_bias</code> broadcasts a bias vector <span class="math inline">\(b\)</span> across all rows of a matrix <span class="math inline">\(M\)</span>.</p>
+<!-- snippet: src/python/common.py#add_bias -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> add_bias(matrix: Matrix, bias: Vector) <span class="op">-&gt;</span> Matrix:</span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [[value <span class="op">+</span> bias[j] <span class="cf">for</span> j, value <span class="kw">in</span> <span class="bu">enumerate</span>(row)] <span class="cf">for</span> row <span class="kw">in</span> matrix]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<!-- /snippet -->
+<p><code>FeedForward</code> holds the four parameters; <code>make_feed_forward</code> allocates them — <span class="math inline">\(W_1\)</span> expands the model dimension <span class="math inline">\(d\)</span> to <span class="math inline">\(4d\)</span>; <span class="math inline">\(W_2\)</span> contracts it back.</p>
+<!-- snippet: src/python/common.py#make_feed_forward -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> FeedForward:</span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    w1: Matrix</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    b1: Vector</span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    w2: Matrix</span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    b2: Vector</span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_feed_forward(d_model: <span class="bu">int</span>, rng: random.Random) <span class="op">-&gt;</span> FeedForward:</span>
+<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    d_hidden <span class="op">=</span> <span class="dv">4</span> <span class="op">*</span> d_model</span>
+<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> FeedForward(</span>
+<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        w1<span class="op">=</span>random_matrix(d_model, d_hidden, rng),</span>
+<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        b1<span class="op">=</span>[<span class="fl">0.0</span>] <span class="op">*</span> d_hidden,</span>
+<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        w2<span class="op">=</span>random_matrix(d_hidden, d_model, rng),</span>
+<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        b2<span class="op">=</span>[<span class="fl">0.0</span>] <span class="op">*</span> d_model,</span>
+<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<!-- /snippet -->
+<p><code>feed_forward</code> composes the two linear layers with GELU: expand → activate → contract.</p>
+<!-- snippet: src/python/common.py#feed_forward -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> feed_forward(x: Matrix, params: FeedForward) <span class="op">-&gt;</span> Matrix:</span>
+<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    hidden <span class="op">=</span> gelu_matrix(add_bias(matrix_multiply(x, params.w1), params.b1))</span>
+<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> add_bias(matrix_multiply(hidden, params.w2), params.b2)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<!-- /snippet -->
+<p><em>Demo.</em> Run with <code>python3 src/python/chapter_demos.py</code>:</p>
+<!-- snippet: src/python/chapter_demos.py#chapter_09 -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> chapter_09(seed: <span class="bu">int</span> <span class="op">=</span> <span class="dv">8</span>) <span class="op">-&gt;</span> <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">object</span>]:</span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> random.Random(seed)</span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> random_matrix(<span class="dv">3</span>, <span class="dv">8</span>, rng)</span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    params <span class="op">=</span> make_feed_forward(<span class="dv">8</span>, rng)</span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    output <span class="op">=</span> feed_forward(x, params)</span>
+<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {<span class="st">"output_shape"</span>: (<span class="bu">len</span>(output), <span class="bu">len</span>(output[<span class="dv">0</span>]))}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<!-- /snippet -->
+</section>
+<section id="the-ffn-as-a-key-value-memory" class="level2" data-number="9.6">
+<h2 data-number="9.6" class="anchored" data-anchor-id="the-ffn-as-a-key-value-memory"><span class="header-section-number">9.6</span> The FFN as a Key-Value Memory</h2>
+<p>A striking insight from Geva et al.&nbsp;(2021): the FFN layers act like <em>associative memories</em>.</p>
+<p>The first layer <span class="math inline">\(W_1\)</span> stores “keys” — each column of <span class="math inline">\(W_1\)</span> is a pattern to match against the input. GELU fires when the input matches. The second layer <span class="math inline">\(W_2\)</span> stores “values” — the corresponding information to retrieve.</p>
+<p>Concretely:</p>
+<p><span class="math display">\[
+h = \operatorname{GELU}(x W_1)
+\]</span></p>
+<p>where each component <span class="math inline">\(h_k \approx x \cdot W_1[:,k]\)</span> — a dot-product “match score” for pattern <span class="math inline">\(k\)</span>. High <span class="math inline">\(h_k\)</span> means “input matches pattern <span class="math inline">\(k\)</span>.”</p>
+<p><span class="math display">\[
+y = h W_2
+\]</span></p>
+<p>Pull out value <span class="math inline">\(W_2[k,:]\)</span> weighted by <span class="math inline">\(h_k\)</span>.</p>
+<p>This means the model can learn: “if the input contains patterns related to France, activate neuron 47, which retrieves ‘Paris’ associations.”</p>
+</section>
+<section id="key-takeaways" class="level2" data-number="9.7">
+<h2 data-number="9.7" class="anchored" data-anchor-id="key-takeaways"><span class="header-section-number">9.7</span> Key Takeaways</h2>
+<ul>
+<li>The FFN is a two-layer MLP applied <em>identically to every position</em>: <span class="math inline">\(FFN(x) = \operatorname{GELU}(xW_1 + b_1) W_2 + b_2\)</span>.</li>
+<li>The inner dimension <span class="math inline">\(d_{\text{ff}} = 4d\)</span> means the FFN has <em>more parameters than the attention layers</em>.</li>
+<li>GELU is a smooth activation function that “softly gates” negative values.</li>
+<li>The FFN acts as an <em>associative memory</em>: first layer matches patterns, second layer retrieves associated information.</li>
+<li>No cross-position communication happens here — that’s attention’s job.</li>
+</ul>
+<div class="callout callout-style-simple callout-note">
+<div class="callout-body d-flex">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-body-container">
+<p><em>What’s next?</em> We now have all the pieces: attention that mixes information, and an FFN that processes each token’s vector. How are they wired together? With <em>residual connections</em> and <em>layer normalization</em> to form the <em>transformer block</em> — <a href="ch10-transformer-block.html" class="quarto-xref"><span>Chapter 10</span></a>.</p>
+</div>
+</div>
+</div>
 
 
 </section>
@@ -954,13 +1038,13 @@ Figure&nbsp;13.1: RoPE rotates query and key vectors by position — their dot p
   </script>
 <nav class="page-navigation">
   <div class="nav-page nav-page-previous">
-      <a href="./parts/modern-gpt.html" class="pagination-link" aria-label="Modern Extensions">
-        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text">Modern Extensions</span>
+      <a href="./ch08-multi-head-attention.html" class="pagination-link" aria-label="Multi-Head Attention — Many Conversations at Once">
+        <i class="bi bi-arrow-left-short"></i> <span class="nav-page-text"><span class="chapter-number">8</span>&nbsp; <span class="chapter-title">Multi-Head Attention — Many Conversations at Once</span></span>
       </a>          
   </div>
   <div class="nav-page nav-page-next">
-      <a href="./A-microgpt.html" class="pagination-link" aria-label="microGPT in Python — Complete Runnable Code">
-        <span class="nav-page-text"><span class="chapter-number">A</span>&nbsp; <span class="chapter-title">microGPT in Python — Complete Runnable Code</span></span> <i class="bi bi-arrow-right-short"></i>
+      <a href="./ch10-transformer-block.html" class="pagination-link" aria-label="The Transformer Block — Putting It Together">
+        <span class="nav-page-text"><span class="chapter-number">10</span>&nbsp; <span class="chapter-title">The Transformer Block — Putting It Together</span></span> <i class="bi bi-arrow-right-short"></i>
       </a>
   </div>
 </nav>
@@ -972,7 +1056,7 @@ Figure&nbsp;13.1: RoPE rotates query and key vectors by position — their dot p
 </div>   
     <div class="nav-footer-center">
       &nbsp;
-    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch13-modern-gpt.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
+    <div class="toc-actions d-sm-block d-md-none"><ul><li><a href="https://github.com/soasme/gpt-explained/edit/main/ch09-feed-forward.qmd" class="toc-action"><i class="bi bi-github"></i>Edit this page</a></li><li><a href="https://github.com/soasme/gpt-explained/issues/new" class="toc-action"><i class="bi empty"></i>Report an issue</a></li></ul></div></div>
     <div class="nav-footer-right">
 <p>This book was built with <a href="https://quarto.org/">Quarto</a>.</p>
 </div>
