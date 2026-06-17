@@ -1,7 +1,7 @@
 ## A Brief History of GPT
 
 GPT did not appear out of nowhere.
-It is the result of more than sixty years of research — a long chain of ideas, failures, and breakthroughs.
+It is the result of more than sixty years of research: a long chain of ideas, failures, and breakthroughs.
 Here is the story, told simply.
 
 *1950s–1980s — The Birth of Machine Learning*
@@ -48,7 +48,7 @@ But they had a problem: long sentences broke them.
 By the time the model reached the end of a paragraph, it had mostly forgotten the beginning.
 
 In 2015, researchers introduced *attention*.
-Instead of forcing the model to squeeze everything into one memory slot, attention let it look back at any earlier word at any time — like being allowed to flip back to any page of your notes during an exam.
+Instead of forcing the model to squeeze everything into one memory slot, attention let it look back at any earlier word at any time, like being allowed to flip back to any page of your notes during an exam.
 This made translation much better.
 
 *2017 — "Attention Is All You Need"*

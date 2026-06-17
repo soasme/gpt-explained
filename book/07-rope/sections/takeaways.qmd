@@ -1,0 +1,14 @@
+## Takeaways
+
+- Earlier positional encodings add position to the token representation before attention.
+- RoPE puts position inside attention by rotating $Q$ and $K$.
+- Values are not rotated; they are still blended by the attention weights.
+- The query-key dot product depends on relative distance between positions.
+- Modern GPT-style models often prefer RoPE because it gives attention a strong relative-position signal without adding learned position parameters.
+
+::: {.callout-note}
+*What's next?*
+RoPE changes how one attention head sees position.
+The next chapter asks how a model can track several kinds of relationships at once: *multi-head attention*.
+See @sec-ch08-multi-head-attention.
+:::

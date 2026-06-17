@@ -1,0 +1,60 @@
+## The Chain Rule
+
+Backpropagation is the chain rule from calculus, applied to a computation graph.
+
+Suppose the loss depends on weight $w$ through a chain of intermediate values:
+
+$$
+w \xrightarrow{f} z \xrightarrow{g} \mathcal{L}
+$$
+
+The chain rule says:
+
+$$
+\frac{d\mathcal{L}}{dw} = \frac{d\mathcal{L}}{dz} \cdot \frac{dz}{dw}
+$$
+
+*If we know how $\mathcal{L}$ varies with $z$, and how $z$ varies with $w$, we multiply to get how $\mathcal{L}$ varies with $w$.*
+
+In a transformer, the chain has hundreds of layers.
+Backprop starts at the loss and works backward, multiplying local derivatives as it goes.
+Each layer only needs two things: the gradient arriving from the layer above (called $\delta$, "delta"), and its own local derivative.
+
+### Step 1: A gradient update for one weight
+
+<!-- snippet: src/python/train.py#sgd_update_scalar -->
+```python
+def sgd_update_scalar(weight: float, gradient: float, learning_rate: float) -> float:
+    return weight - learning_rate * gradient
+```
+<!-- /snippet -->
+
+If the gradient is positive (loss rises when $w$ increases), we subtract — decreasing $w$.
+If negative, we add.
+The learning rate $\eta$ scales how large the step is.
+
+This is the entire idea.
+Everything that follows is this rule, applied to millions of weights simultaneously.
+
+## Backprop Through Softmax and Cross-Entropy
+
+@sec-ch12-loss stated the softmax-CE gradient without proof:
+
+$$
+\frac{\partial \mathcal{L}}{\partial z_j} = P(j) - \mathbb{1}[j = t]
+$$
+
+where $z_j$ are the logits and $t$ is the true token.
+
+For the true token $j = t$: gradient is $P_t - 1$ (negative, so we push $z_t$ up).
+For every other token: gradient is $P_j$ (positive, so we push those logits down).
+The model is nudged to be more confident about the correct answer.
+
+<!-- snippet: src/python/train.py#loss_grad -->
+```python
+def softmax_cross_entropy_grad(logits: Sequence[float], true_id: int) -> Vector:
+    grad = softmax(logits)
+    grad[true_id] -= 1.0
+    return grad
+```
+<!-- /snippet -->

@@ -14,21 +14,24 @@ Without it, the model cannot tell the difference between "dog bites man" and "ma
 In @sec-ch06-attention, we introduce attention — the engine of the transformer.
 Each token learns to look at all other tokens and decide which ones are relevant.
 
-In @sec-ch07-multi-head-attention, we run multiple attention heads in parallel — each free to specialize on a different kind of relationship in the text.
+In @sec-ch07-rope, we put position directly into the attention score using rotary positional encoding.
+This is the position method used by many modern GPT-style models.
 
-In @sec-ch08-feed-forward, we add the feed-forward network: a two-layer MLP applied identically to every token position.
+In @sec-ch08-multi-head-attention, we run multiple attention heads in parallel — each free to specialize on a different kind of relationship in the text.
+
+In @sec-ch09-feed-forward, we add the feed-forward network: a two-layer MLP applied identically to every token position.
 This is where most of the model's factual knowledge is stored.
 
-In @sec-ch09-transformer-block, we assemble the complete transformer block from attention, the feed-forward network, residual connections, and layer normalization — and stack `N` of them.
+In @sec-ch10-transformer-block, we assemble the complete transformer block from attention, the feed-forward network, residual connections, and layer normalization — and stack `N` of them.
 
-In @sec-ch10-vocab-projection, we complete the forward pass by projecting the final hidden state back into a probability distribution over the vocabulary.
+In @sec-ch11-vocab-projection, we complete the forward pass by projecting the final hidden state back into a probability distribution over the vocabulary.
 
-In @sec-ch11-loss, we measure the model's predictions using cross-entropy loss, the single number that drives all of learning.
+In @sec-ch12-loss, we measure the model's predictions using cross-entropy loss, the single number that drives all of learning.
 
-In @sec-ch12-training, we train the model — computing gradients via backpropagation and updating every weight with gradient descent.
+In @sec-ch13-training, we train the model — computing gradients via backpropagation and updating every weight with gradient descent.
 
 *Appendix A* assembles the complete microGPT Python implementation in one runnable file.
 
 *Appendix B* is a math primer covering every prerequisite — vectors, matrices, softmax, logarithms, and more.
 
-Let's start at the very beginning.
+Chapter 1 is next.

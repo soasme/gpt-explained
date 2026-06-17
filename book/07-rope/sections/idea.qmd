@@ -1,0 +1,28 @@
+## The Idea
+
+Standard positional encoding changes the input stream:
+
+$$
+\tilde{X} = X + PE
+$$
+
+Attention then projects $\tilde{X}$ into $Q$, $K$, and $V$.
+
+RoPE changes a different point in the pipeline.
+It first computes the usual query, key, and value vectors:
+
+$$
+Q = XW_q,\quad K = XW_k,\quad V = XW_v
+$$
+
+Then it rotates each query and key according to that token's position.
+Values are not rotated.
+
+The attention score is still a dot product, but now it compares rotated vectors:
+
+$$
+S[i,j] = \frac{(R_i q_i) \cdot (R_j k_j)}{\sqrt{d_k}}
+$$
+
+This lets position affect *which tokens attend to which other tokens*.
+Instead of saying "position is another feature in the token vector," RoPE says "position changes the geometry of query-key matching."

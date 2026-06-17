@@ -1,0 +1,51 @@
+## The Gradient Descent Step
+
+With gradients accumulated for every parameter, the update rule is:
+
+$$
+W \leftarrow W - \eta \cdot \frac{\partial \mathcal{L}}{\partial W}
+$$
+
+### Step 5: Updating a weight matrix in place
+
+<!-- snippet: src/python/train.py#sgd_update_matrix -->
+```python
+def sgd_update_matrix(weights: Matrix, gradient: Matrix, learning_rate: float) -> None:
+    for i, row in enumerate(weights):
+        for j, value in enumerate(row):
+            row[j] = value - learning_rate * gradient[i][j]
+```
+<!-- /snippet -->
+
+Every entry $W_{ij}$ moves a small step in the direction that reduces the loss.
+
+## One Training Step
+
+Now we can assemble the full cycle: forward pass to get predictions and loss, backward pass to get gradients, update pass to improve every weight.
+
+## Watching the Loss Fall
+
+Running thousands of training steps, the loss curve looks roughly like this:
+
+| Step | Loss | Perplexity | Interpretation |
+| --- | --- | --- | --- |
+| 0 | 10.82 | 50,000 | Random — model knows nothing |
+| 100 | 6.91 | 1,000 | Ruling out most tokens |
+| 1,000 | 4.61 | 100 | Learned basic frequency |
+| 10,000 | 2.30 | 10 | Has rough grammar |
+| 100,000 | 0.92 | 2.5 | Strong language model |
+
+The curve drops steeply at first (obvious mistakes are easy to fix) then more slowly and noisily (subtle patterns are harder and data points disagree).
+
+::: {.callout-note}
+*Why does loss get noisy later?*
+
+Early on, large gradients correct glaring errors.
+Later, gradients are smaller and point in slightly different directions for different training examples.
+The noise is not a bug: random variation in gradient direction helps the model escape poor local minima.
+This is the _stochastic_ in *stochastic gradient descent* (SGD).
+:::
+
+Figure @fig-ch13-update-training shows gradients flowing backward from the loss through each layer while weights are updated.
+
+![Backpropagation and weight updates](images/ch13_training.png){#fig-ch13-update-training fig-alt="Backpropagation: gradient flowing from loss backward through each layer, updating weights"}

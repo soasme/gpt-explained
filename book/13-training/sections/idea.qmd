@@ -1,0 +1,43 @@
+## The Idea
+
+The loss tells us _how wrong_ the model was at its last prediction.
+Training uses that wrongness to _improve_ the model, so it does better next time.
+
+Here is the core loop, in plain terms:
+
+1. *Forward pass*: feed a sentence into the model, let it predict the next word at every position, measure how wrong those predictions were (the loss).
+2. *Backward pass*: trace back through every calculation the model just made and figure out, for each weight, whether increasing it would have made the loss higher or lower, and by how much.
+This produces a _gradient_ for every weight.
+3. *Update*: nudge each weight slightly in the direction that reduces the loss.
+Weights that caused big errors get bigger nudges; weights that barely mattered get smaller nudges.
+4. *Repeat*: billions of times, across trillions of words.
+
+That is the entire training algorithm.
+
+## The Goal: Move the Loss Down
+
+The model has millions of parameters.
+Call them collectively $\theta$.
+The loss $\mathcal{L}(\theta)$ is a function of all of them.
+We want to find $\theta$ that minimizes the loss.
+
+The strategy is *gradient descent*: repeatedly take a small step downhill on the loss surface.
+
+$$
+\theta \leftarrow \theta - \eta \cdot \nabla_\theta \mathcal{L}
+$$
+
+$\eta > 0$ is the *learning rate*: how big a step to take.
+$\nabla_\theta \mathcal{L}$ is the *gradient*: a collection of partial derivatives, one per parameter.
+
+::: {.callout-note}
+*Math Minute — Partial Derivatives*
+
+A partial derivative $\frac{\partial \mathcal{L}}{\partial w}$ answers: _if we increase $w$ by a tiny $\epsilon$ while holding every other weight fixed, by how much does $\mathcal{L}$ change?_
+
+A large positive value means $w$ is pushing loss up; decrease it.
+A negative value means the opposite.
+Zero means $w$ is momentarily irrelevant to the loss.
+
+Notation: $\partial$ (curly d) instead of $d$ signals "partial"; other variables are held constant.
+:::

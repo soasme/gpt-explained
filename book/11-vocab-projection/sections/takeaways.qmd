@@ -1,0 +1,46 @@
+## Weight Tying in Detail
+
+Why does weight tying work so well?
+
+- The embedding `E[i]` is learned to represent token `i` such that tokens that appear in similar contexts have similar embeddings.
+- The unembedding $\text{logits}[i] = h \cdot E[i]$ measures the alignment between the model's prediction vector `h` and token `i`'s embedding.
+- If `h` is pointing in the direction of "tokens that follow this context," and `E[i]` represents token `i`'s meaning, then tokens that are semantically appropriate will naturally score higher.
+
+Weight tying forces the model to use a single geometric space for both "what a token means" and "how to predict a token," a constraint that also regularizes learning.
+
+## Key Takeaways
+
+- The *unembedding* projects the final hidden state to logits: $\text{logits} = h W_u \in \mathbb{R}^{|V|}$.
+- *Weight tying* ($W_u = E^{\top}$) reuses the embedding matrix and reduces parameters.
+- *Softmax* converts logits to a probability distribution.
+- *Temperature* controls sampling sharpness; *top-K* restricts the candidate set.
+- *Autoregressive generation*: sample one token at a time, feeding each back as input.
+
+## The Complete Picture
+
+You have now seen every piece:
+
+```text
+Input text
+   ↓ tokenizer
+Token IDs: [3, 7, 12, 5, …]
+   ↓ embedding matrix E
+Token embeddings: [T × d]
+   ↓ + positional encoding
+X̃ = X + PE: [T × d]
+   ↓ transformer block × N
+   │   LayerNorm
+   │   Multi-Head Attention (Q, K, V projections + causal mask + softmax + weighted sum)
+   │   Residual
+   │   LayerNorm
+   │   Feed-Forward Network (expand → GELU → contract)
+   │   Residual
+   ↓
+X_final: [T × d]
+   ↓ final LayerNorm + unembedding
+Logits: [|V|]
+   ↓ softmax (+ temperature + top-K)
+P(next token): [|V|]  →  sample  →  next token ID
+```
+
+Every box in that diagram corresponds to one chapter of this book.

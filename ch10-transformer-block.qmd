@@ -1,0 +1,18 @@
+# The Transformer Block — Putting It Together {#sec-ch10-transformer-block}
+
+A transformer block combines multi-head attention and the feed-forward network with two crucial wiring techniques: *residual connections* and *layer normalization*.
+Without these, deep stacks of transformer blocks would fail to train — gradients would vanish or explode.
+
+A GPT model is simply a stack of `N` identical transformer blocks.
+GPT-2 small: 12 blocks.
+GPT-3 175B: 96 blocks.
+
+{{< include book/10-transformer-block/sections/idea.qmd >}}
+
+{{< include book/10-transformer-block/sections/math.qmd >}}
+
+{{< include book/10-transformer-block/sections/matrix.qmd >}}
+
+{{< include book/10-transformer-block/sections/code.qmd >}}
+
+{{< include book/10-transformer-block/sections/takeaways.qmd >}}

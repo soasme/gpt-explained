@@ -1,0 +1,17 @@
+# RoPE: Position Inside Attention {#sec-ch07-rope}
+
+So far, position has been added to the token representation.
+Sinusoidal and learned positional embeddings both create a position vector and add it to the token embedding before attention begins.
+
+Modern GPT-style models often do something more subtle: they put position into attention itself.
+That idea is called *Rotary Positional Encoding*, or *RoPE*.
+
+{{< include book/07-rope/sections/idea.qmd >}}
+
+{{< include book/07-rope/sections/math.qmd >}}
+
+{{< include book/07-rope/sections/example.qmd >}}
+
+{{< include book/07-rope/sections/code.qmd >}}
+
+{{< include book/07-rope/sections/takeaways.qmd >}}

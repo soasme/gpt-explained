@@ -26,7 +26,7 @@ def natural_exp(value: float) -> float:
 ```
 <!-- /snippet -->
 
-Two anchor values are worth remembering.
+Two anchor values appear often enough to keep in mind.
 If the exponent is $0.0$, the result is $1.0$.
 If the exponent is $1.0$, the result is $e$:
 

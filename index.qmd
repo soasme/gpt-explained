@@ -7,7 +7,7 @@
 **This book will teach you** how transformers are built and trained.
 Not at a high level — at the level where you can read the code, follow the math, and trace a single token all the way through a real model.
 
-**You will learn** tokenization, embeddings, positional encoding, attention, multi-head attention, feed-forward networks, transformer blocks, vocabulary projection, cross-entropy loss, and backpropagation.
+**You will learn** tokenization, embeddings, positional encoding, attention, RoPE, multi-head attention, feed-forward networks, transformer blocks, vocabulary projection, cross-entropy loss, and backpropagation.
 Each concept arrives as a focused chapter: a plain-language explanation, the math in full, a Python implementation you can run, and diagrams generated from code.
 
 In this book, you will build a small but complete GPT from scratch.

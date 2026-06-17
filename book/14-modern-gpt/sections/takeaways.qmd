@@ -1,0 +1,14 @@
+## Key Takeaways
+
+| Innovation | Benefit |
+| --- | --- |
+| RoPE | Relative position encoding, better length generalisation |
+| GQA / MQA | Smaller KV cache, faster and cheaper inference |
+| Flash Attention | Linear memory, 2-4x faster attention, long context |
+| Mamba (SSM) | Linear-time sequence modelling, no attention matrix |
+| Diffusion LMs | Parallel generation, bidirectional revision |
+| MoE | Larger model capacity without proportional compute cost |
+
+The field moves fast.
+Each of these innovations addresses a concrete bottleneck — memory, speed, context length, or capability — that became critical as models scaled.
+Understanding the baseline GPT from @sec-ch03-tokens through @sec-ch13-training makes every one of these extensions legible.

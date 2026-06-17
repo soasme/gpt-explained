@@ -1,0 +1,33 @@
+## A Small Example
+
+Take a two-dimensional query and key:
+
+$$
+q = [1, 0], \quad k = [1, 0]
+$$
+
+Before rotation, their dot product is:
+
+$$
+q \cdot k = 1
+$$
+
+Now place the query at position 1 and the key at position 3.
+In two dimensions the frequency is 1, so the rotations use angles 1 and 3 radians:
+
+$$
+R_1 q = [\cos 1, \sin 1]
+$$
+
+$$
+R_3 k = [\cos 3, \sin 3]
+$$
+
+Their dot product is:
+
+$$
+\cos 1 \cos 3 + \sin 1 \sin 3 = \cos(3 - 1)
+$$
+
+The result depends on the distance between positions, not just on the original vector contents.
+For real model dimensions, many dimension pairs rotate at many frequencies, so attention gets a detailed relative-position signal.

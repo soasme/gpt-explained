@@ -10,7 +10,7 @@ It learned the statistical patterns of language from billions of examples.
 *Transformer* — the underlying neural network architecture.
 The transformer replaced recurrent networks in 2017 and became the backbone of every large language model since.
 
-At its core, a GPT model is a function:
+A GPT model is a function:
 
 $$
 P(\text{next token} \mid \text{context tokens}) = f_\theta(\text{context})

@@ -19,6 +19,6 @@ The denominator `10000^(2i/d)` controls the frequency — it grows exponentially
 3. *Smooth:* Nearby positions have similar encodings, so the model can learn "close in position → related in meaning."
 4. *Extrapolatable:* The formula works for any `t`, even positions not seen during training.
 
-*A key property:*
-The encoding for position `t+k` can be expressed as a *linear transformation* of the encoding for position `t`.
-This means the model can learn to attend to "the token 3 positions back" using a simple linear operation — no memorization of absolute positions required.
+*Relative position:*
+The encoding for position `t+k` can be expressed as a linear transformation of the encoding for position `t`.
+The model can therefore attend to "the token 3 positions back" with a simple linear operation, without memorizing absolute positions.

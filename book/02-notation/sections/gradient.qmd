@@ -16,7 +16,7 @@ $$
 
 where $\eta > 0$ is the *learning rate*.
 
-In GPT training (@sec-ch12-training), $L$ is the cross-entropy loss over a batch, and $\theta$ contains all model weights.
+In GPT training (@sec-ch13-training), $L$ is the cross-entropy loss over a batch, and $\theta$ contains all model weights.
 The gradient is computed via backpropagation and applied by an optimiser (Adam).
 
 ### Python Implementation

@@ -14,13 +14,14 @@
 | 4 | **Embeddings** — Numbers to Meaning |
 | 5 | **Positional Encoding** — Giving Order to Meaning |
 | 6 | **Attention** — Tokens Talking to Each Other |
-| 7 | **Multi-Head Attention** — Many Conversations at Once |
-| 8 | **Feed-Forward Network** — The Model's Memory |
-| 9 | **The Transformer Block** — Putting It Together |
-| 10 | **Vocabulary Projection** — From Vectors to Words |
-| 11 | **Loss** — How the Model Learns |
-| 12 | **Training** — Teaching the Model |
-| 13 | **Modern GPT** |
+| 7 | **RoPE** — Position Inside Attention |
+| 8 | **Multi-Head Attention** — Many Conversations at Once |
+| 9 | **Feed-Forward Network** — The Model's Memory |
+| 10 | **The Transformer Block** — Putting It Together |
+| 11 | **Vocabulary Projection** — From Vectors to Words |
+| 12 | **Loss** — How the Model Learns |
+| 13 | **Training** — Teaching the Model |
+| 14 | **Modern GPT** |
 | A | **microGPT in Python** — Complete Runnable Code |
 
 ## Building Locally

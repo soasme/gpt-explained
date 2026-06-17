@@ -3,4 +3,4 @@
 This part connects the baseline transformer to modern GPT implementations.
 It keeps the simple model from earlier chapters as the reference point, then shows which production refinements change speed, memory use, context length, or architecture.
 
-- In @sec-ch13-modern-gpt, you will see rotary position embeddings, grouped-query attention, FlashAttention, and major architectural variants.
+- In @sec-ch14-modern-gpt, you will see rotary position embeddings, grouped-query attention, FlashAttention, and major architectural variants.

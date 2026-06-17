@@ -1,0 +1,83 @@
+## The Code Structure
+
+```python
+def rope_angle(position: int, pair_index: int, d_model: int) -> float:
+    return position / (10000.0 ** (2.0 * pair_index / d_model))
+```
+
+`rope_angle` computes the rotation angle for one position and one pair of dimensions.
+The formula matches the sinusoidal frequency schedule: early dimension pairs rotate faster, later pairs rotate more slowly.
+
+```python
+def rotate_pair(x: float, y: float, angle: float) -> tuple[float, float]:
+    cos_theta = math.cos(angle)
+    sin_theta = math.sin(angle)
+    return x * cos_theta - y * sin_theta, x * sin_theta + y * cos_theta
+```
+
+`rotate_pair` is the 2D rotation from the math section.
+It takes two neighboring vector components and returns the rotated pair.
+
+```python
+def apply_rope_to_vector(vector: Vector, position: int) -> Vector:
+    if len(vector) % 2 != 0:
+        raise ValueError("RoPE requires an even vector dimension")
+
+    rotated: Vector = []
+    d_model = len(vector)
+    for i in range(0, d_model, 2):
+        angle = rope_angle(position, i // 2, d_model)
+        x, y = rotate_pair(vector[i], vector[i + 1], angle)
+        rotated.extend([x, y])
+    return rotated
+```
+
+`apply_rope_to_vector` walks through a query or key vector two dimensions at a time.
+Each pair gets its own angle, determined by the token position and the pair index.
+RoPE requires an even vector dimension because every dimension must belong to a pair.
+
+```python
+def apply_rope(matrix: Matrix) -> Matrix:
+    return [
+        apply_rope_to_vector(row, position)
+        for position, row in enumerate(matrix)
+    ]
+```
+
+`apply_rope` applies that vector rotation to every row in a matrix.
+The row index is the token position, so row `0` gets position `0`, row `1` gets position `1`, and so on.
+
+```python
+def scaled_dot_product_attention_with_rope(
+    query: Matrix,
+    key: Matrix,
+    value: Matrix,
+) -> tuple[Matrix, Matrix]:
+    return scaled_dot_product_attention(
+        apply_rope(query),
+        apply_rope(key),
+        value,
+    )
+```
+
+`scaled_dot_product_attention_with_rope` keeps the attention formula from @sec-ch06-attention.
+The only difference is that queries and keys are rotated before the dot products are computed.
+Values are not rotated; they are still mixed by the final attention weights.
+
+```python
+def chapter_07(seed: int = 607) -> dict[str, object]:
+    rng = random.Random(seed)
+    query = random_matrix(4, 8, rng)
+    key = random_matrix(4, 8, rng)
+    value = random_matrix(4, 8, rng)
+    output, weights = scaled_dot_product_attention_with_rope(query, key, value)
+    return {
+        "rotated_first": apply_rope_to_vector([1.0, 0.0], 1),
+        "rotated_shape": (len(apply_rope(query)), len(query[0])),
+        "output_shape": (len(output), len(output[0])),
+        "weight_rows": [sum(row) for row in weights],
+    }
+```
+
+`chapter_07` is the runnable demo used by `python3 src/python/chapter_demos.py`.
+It checks that RoPE preserves the query/key matrix shape and that the resulting attention rows still sum to 1 after softmax.

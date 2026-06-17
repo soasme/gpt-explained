@@ -45,17 +45,18 @@ book:
     - part: parts/transformer-core.qmd
       chapters:
         - ch06-attention.qmd
-        - ch07-multi-head-attention.qmd
-        - ch08-feed-forward.qmd
-        - ch09-transformer-block.qmd
+        - ch07-rope.qmd
+        - ch08-multi-head-attention.qmd
+        - ch09-feed-forward.qmd
+        - ch10-transformer-block.qmd
     - part: parts/prediction-and-learning.qmd
       chapters:
-        - ch10-vocab-projection.qmd
-        - ch11-loss.qmd
-        - ch12-training.qmd
+        - ch11-vocab-projection.qmd
+        - ch12-loss.qmd
+        - ch13-training.qmd
     - part: parts/modern-gpt.qmd
       chapters:
-        - ch13-modern-gpt.qmd
+        - ch14-modern-gpt.qmd
   appendices:
     - A-microgpt.qmd
 

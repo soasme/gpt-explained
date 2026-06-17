@@ -8,7 +8,7 @@ $$
 W_q \in \mathbb{R}^{d\times d_k}, \quad W_k \in \mathbb{R}^{d\times d_k}, \quad W_v \in \mathbb{R}^{d\times d_v}
 $$
 
-And compute:
+Compute:
 
 $$
 Q = X W_q  \in \mathbb{R}^{T\times d_k} \quad K = X W_k  \in \mathbb{R}^{T\times d_k} \quad V = X W_v  \in \mathbb{R}^{T\times d_v}

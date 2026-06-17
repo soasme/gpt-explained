@@ -1,0 +1,52 @@
+## The Math
+
+RoPE treats a vector as pairs of dimensions.
+For each pair, it applies a 2D rotation.
+
+For a vector pair $(x, y)$ and angle $\theta$:
+
+$$
+\begin{bmatrix}
+x' \\
+y'
+\end{bmatrix}
+=
+\begin{bmatrix}
+\cos \theta & -\sin \theta \\
+\sin \theta & \cos \theta
+\end{bmatrix}
+\begin{bmatrix}
+x \\
+y
+\end{bmatrix}
+$$
+
+For token position $m$ and dimension pair $r$, RoPE uses:
+
+$$
+\theta_{m,r} = \frac{m}{10000^{2r/d}}
+$$
+
+So each pair rotates at a different frequency.
+Early dimensions rotate quickly; later dimensions rotate slowly.
+
+The important property is what happens inside the attention dot product:
+
+$$
+(R_m q) \cdot (R_n k) = q \cdot (R_{n-m} k)
+$$
+
+The score depends on the relative distance $n-m$ between the query position and key position.
+That is how RoPE encodes relative position without adding a separate position vector to $X$.
+
+The full attention formula becomes:
+
+$$
+\operatorname{Attention}_{\text{RoPE}}(Q,K,V)
+=
+\operatorname{softmax}\!\left(
+\frac{(R Q)(R K)^{\top}}{\sqrt{d_k}} + M
+\right)V
+$$
+
+where $RQ$ means "rotate every query row by its position" and $RK$ means the same for keys.

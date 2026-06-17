@@ -223,6 +223,42 @@ def add_positional_encoding(tokens: Matrix, positions: Matrix) -> Matrix:
 # end::positional_encoding[]
 
 
+# tag::rope[]
+# tag::rope_rotate_vector[]
+def rope_angle(position: int, pair_index: int, d_model: int) -> float:
+    return position / (10000.0 ** (2.0 * pair_index / d_model))
+
+
+def rotate_pair(x: float, y: float, angle: float) -> tuple[float, float]:
+    cos_theta = math.cos(angle)
+    sin_theta = math.sin(angle)
+    return x * cos_theta - y * sin_theta, x * sin_theta + y * cos_theta
+
+
+def apply_rope_to_vector(vector: Vector, position: int) -> Vector:
+    if len(vector) % 2 != 0:
+        raise ValueError("RoPE requires an even vector dimension")
+
+    rotated: Vector = []
+    d_model = len(vector)
+    for i in range(0, d_model, 2):
+        angle = rope_angle(position, i // 2, d_model)
+        x, y = rotate_pair(vector[i], vector[i + 1], angle)
+        rotated.extend([x, y])
+    return rotated
+# end::rope_rotate_vector[]
+
+
+# tag::rope_matrix[]
+def apply_rope(matrix: Matrix) -> Matrix:
+    return [
+        apply_rope_to_vector(row, position)
+        for position, row in enumerate(matrix)
+    ]
+# end::rope_matrix[]
+# end::rope[]
+
+
 # tag::attention[]
 # tag::causal_mask[]
 def causal_mask(size: int) -> Matrix:
@@ -246,6 +282,20 @@ def self_attention(x: Matrix, wq: Matrix, wk: Matrix, wv: Matrix) -> tuple[Matri
         matrix_multiply(x, wv),
     )
 # end::sdpa[]
+
+
+# tag::rope_attention[]
+def scaled_dot_product_attention_with_rope(
+    query: Matrix,
+    key: Matrix,
+    value: Matrix,
+) -> tuple[Matrix, Matrix]:
+    return scaled_dot_product_attention(
+        apply_rope(query),
+        apply_rope(key),
+        value,
+    )
+# end::rope_attention[]
 # end::attention[]
 
 

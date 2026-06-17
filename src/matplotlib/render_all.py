@@ -9,17 +9,17 @@ from ch02_embeddings import embedding_lookup, semantic_space
 from ch02_gradient import gradient_plot
 from ch02_matrix_multiply import mat_multiply
 from ch02_softmax import softmax_plot
-from ch02_vectors import vectors
+from ch02_vectors import l2_norm, vector_addition
 from ch03_tokens import token_id_blocks
 from ch03_positional_encoding import pe_matrix, sin_waves
 from ch04_attention import attn_weights, qkv_diagram
-from ch05_multi_head_attention import mha
-from ch06_ffn import ffn_diagram, ffn_memory
-from ch07_transformer_block import block_diagram, residual_diagram
-from ch08_vocab_projection import generation_loop, vocab_projection
-from ch09_loss import loss_diagram
-from ch10_training import training_diagram
-from ch13_rope import rope_plot
+from ch08_multi_head_attention import mha
+from ch09_ffn import ffn_diagram, ffn_memory
+from ch10_transformer_block import block_diagram, residual_diagram
+from ch11_vocab_projection import generation_loop, vocab_projection
+from ch12_loss import loss_diagram
+from ch13_training import training_diagram
+from ch14_rope import rope_plot
 
 
 RENDER_STEPS = [
@@ -29,17 +29,17 @@ RENDER_STEPS = [
     ("ch02_gradient", [gradient_plot]),
     ("ch02_matrix_multiply", [mat_multiply]),
     ("ch02_softmax", [softmax_plot]),
-    ("ch02_vectors", [vectors]),
+    ("ch02_vectors", [vector_addition, l2_norm]),
     ("ch03_tokens", [token_id_blocks]),
     ("ch03_positional_encoding", [pe_matrix, sin_waves]),
     ("ch04_attention", [qkv_diagram, attn_weights]),
-    ("ch05_multi_head_attention", [mha]),
-    ("ch06_ffn", [ffn_diagram, ffn_memory]),
-    ("ch07_transformer_block", [block_diagram, residual_diagram]),
-    ("ch08_vocab_projection", [vocab_projection, generation_loop]),
-    ("ch09_loss", [loss_diagram]),
-    ("ch10_training", [training_diagram]),
-    ("ch13_rope", [rope_plot]),
+    ("ch08_multi_head_attention", [mha]),
+    ("ch09_ffn", [ffn_diagram, ffn_memory]),
+    ("ch10_transformer_block", [block_diagram, residual_diagram]),
+    ("ch11_vocab_projection", [vocab_projection, generation_loop]),
+    ("ch12_loss", [loss_diagram]),
+    ("ch13_training", [training_diagram]),
+    ("ch14_rope", [rope_plot]),
 ]
 
 

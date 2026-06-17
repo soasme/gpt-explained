@@ -13,6 +13,10 @@ Cons:
 Sinusoidal encoding is deterministic and extrapolates naturally.
 Modern architectures (LLaMA, Mistral) use a more sophisticated variant called *Rotary Positional Encoding (RoPE)* which applies the positional information inside the attention computation rather than at the input stage.
 
+So far, position has been added to the token representation.
+Modern GPT-style models put position into attention itself rather than adding it at the input.
+That idea is called RoPE.
+
 ## Key Takeaways
 
 - Without position information, the model is *permutation-invariant* — it cannot distinguish `"dog bites man"` from `"man bites dog"`.
@@ -24,5 +28,5 @@ Modern architectures (LLaMA, Mistral) use a more sophisticated variant called *R
 ::: {.callout-note}
 *What's next?*
 We now have $\tilde{X} \in \mathbb{R}^{T\times d}$ — a matrix that knows both what each token is and where it sits.
-Now the interesting part begins: *attention*, the mechanism that lets tokens share information with each other. See @sec-ch06-attention.
+Next: *attention*, the mechanism that lets tokens share information with each other. See @sec-ch06-attention.
 :::

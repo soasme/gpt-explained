@@ -25,9 +25,9 @@ If a diagram surprises you, open its source and change the numbers.
 Work through the exercises at the end of each chapter.
 The exercises are not optional decoration — they are the fastest way to verify that you understood the material rather than just read it.
 
-## Summary
+## What the book covers
 
-The book covers thirteen chapters and one appendix:
+The book covers fourteen chapters and one appendix:
 
 **Foundations.** @sec-ch01-introduction gives an overview of GPT and its history.
 @sec-ch02-notation introduces the math notation used throughout: vectors, matrices, dot products, softmax, logarithms, mean, and variance.
@@ -37,15 +37,16 @@ The book covers thirteen chapters and one appendix:
 @sec-ch05-positional-encoding introduces sinusoidal positional encoding.
 
 **Transformer Core.** @sec-ch06-attention derives scaled dot-product attention step by step.
-@sec-ch07-multi-head-attention extends it to multi-head attention.
-@sec-ch08-feed-forward covers the feed-forward sub-layer.
-@sec-ch09-transformer-block assembles these pieces into a full transformer block with residual connections and layer normalization.
+@sec-ch07-rope shows how modern GPT-style models put position directly inside attention.
+@sec-ch08-multi-head-attention extends it to multi-head attention.
+@sec-ch09-feed-forward covers the feed-forward sub-layer.
+@sec-ch10-transformer-block assembles these pieces into a full transformer block with residual connections and layer normalization.
 
-**Prediction and Learning.** @sec-ch10-vocab-projection covers vocabulary projection.
-@sec-ch11-loss derives cross-entropy loss and perplexity.
-@sec-ch12-training traces backpropagation and the Adam optimizer through the full model.
+**Prediction and Learning.** @sec-ch11-vocab-projection covers vocabulary projection.
+@sec-ch12-loss derives cross-entropy loss and perplexity.
+@sec-ch13-training traces backpropagation and the Adam optimizer through the full model.
 
-**Modern GPT.** @sec-ch13-modern-gpt describes the changes in current models: RoPE positional encoding, grouped-query attention, SwiGLU activations, and RMSNorm.
+**Modern GPT.** @sec-ch14-modern-gpt describes the changes in current models: RoPE positional encoding, grouped-query attention, SwiGLU activations, and RMSNorm.
 
 **Appendix A** presents the complete micro-GPT implementation — the same code from across the chapters assembled into one readable file.
 

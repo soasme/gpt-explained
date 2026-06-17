@@ -36,4 +36,4 @@ def sinusoidal_position(position: int, d_model: int) -> Vector:
 
 ### Example
 
-With $d = 4$ (four embedding dimensions), position $pos = 0, 1, 2$, each position produces a unique pattern of sine/cosine values, allowing the model to distinguish tokens by position.
+With $d = 4$ (four embedding dimensions), position $pos = 0, 1, 2$, each position produces a unique pattern of sine/cosine values. The model can therefore distinguish tokens by position.

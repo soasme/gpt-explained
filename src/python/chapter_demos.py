@@ -8,6 +8,8 @@ import random
 from micro_bpe import demo as bpe_demo
 from common import (
     GPTConfig,
+    apply_rope,
+    apply_rope_to_vector,
     causal_mask,
     cosine_similarity,
     dot,
@@ -27,6 +29,7 @@ from common import (
     multi_head_attention,
     random_matrix,
     relu,
+    scaled_dot_product_attention_with_rope,
     scaled_dot_product_attention,
     self_attention,
     sigmoid,
@@ -114,7 +117,23 @@ def chapter_06(seed: int = 6) -> dict[str, object]:
 
 
 # tag::chapter_07[]
-def chapter_07(seed: int = 7) -> dict[str, object]:
+def chapter_07(seed: int = 607) -> dict[str, object]:
+    rng = random.Random(seed)
+    query = random_matrix(4, 8, rng)
+    key = random_matrix(4, 8, rng)
+    value = random_matrix(4, 8, rng)
+    output, weights = scaled_dot_product_attention_with_rope(query, key, value)
+    return {
+        "rotated_first": apply_rope_to_vector([1.0, 0.0], 1),
+        "rotated_shape": (len(apply_rope(query)), len(query[0])),
+        "output_shape": (len(output), len(output[0])),
+        "weight_rows": [sum(row) for row in weights],
+    }
+# end::chapter_07[]
+
+
+# tag::chapter_08[]
+def chapter_08(seed: int = 7) -> dict[str, object]:
     rng = random.Random(seed)
     x = random_matrix(4, 8, rng)
     params = make_multi_head_attention(8, 2, rng)
@@ -123,21 +142,21 @@ def chapter_07(seed: int = 7) -> dict[str, object]:
         "output_shape": (len(output), len(output[0])),
         "num_heads": len(weights),
     }
-# end::chapter_07[]
+# end::chapter_08[]
 
 
-# tag::chapter_08[]
-def chapter_08(seed: int = 8) -> dict[str, object]:
+# tag::chapter_09[]
+def chapter_09(seed: int = 8) -> dict[str, object]:
     rng = random.Random(seed)
     x = random_matrix(3, 8, rng)
     params = make_feed_forward(8, rng)
     output = feed_forward(x, params)
     return {"output_shape": (len(output), len(output[0]))}
-# end::chapter_08[]
+# end::chapter_09[]
 
 
-# tag::chapter_09[]
-def chapter_09(seed: int = 9) -> dict[str, object]:
+# tag::chapter_10[]
+def chapter_10(seed: int = 9) -> dict[str, object]:
     rng = random.Random(seed)
     x = random_matrix(3, 8, rng)
     block = make_transformer_block(8, 2, rng)
@@ -147,11 +166,11 @@ def chapter_09(seed: int = 9) -> dict[str, object]:
         "normed_shape": (len(normed), len(normed[0])),
         "output_shape": (len(output), len(output[0])),
     }
-# end::chapter_09[]
+# end::chapter_10[]
 
 
-# tag::chapter_10[]
-def chapter_10(seed: int = 10) -> dict[str, object]:
+# tag::chapter_11[]
+def chapter_11(seed: int = 10) -> dict[str, object]:
     config = GPTConfig(vocab_size=50, d_model=16, num_heads=4, num_layers=1, max_seq_len=16)
     params = make_gpt_params(config, random.Random(seed))
     logits = gpt_forward([1, 2, 3], params, config)
@@ -160,11 +179,11 @@ def chapter_10(seed: int = 10) -> dict[str, object]:
         "prob_sum": sum(softmax(logits)),
         "top": max(range(len(logits)), key=logits.__getitem__),
     }
-# end::chapter_10[]
+# end::chapter_11[]
 
 
-# tag::chapter_11[]
-def chapter_11() -> dict[str, object]:
+# tag::chapter_12[]
+def chapter_12() -> dict[str, object]:
     logits_list = [
         [0.0, 0.0, 0.0, 0.0, 0.0],
         [0.0, 0.0, 0.0, 0.0, 1.791759469],
@@ -179,11 +198,11 @@ def chapter_11() -> dict[str, object]:
         "perplexity": perplexity(loss),
         "gradient": softmax_cross_entropy_grad(logits_list[0], 3),
     }
-# end::chapter_11[]
+# end::chapter_12[]
 
 
-# tag::chapter_12[]
-def chapter_12() -> dict[str, object]:
+# tag::chapter_13[]
+def chapter_13() -> dict[str, object]:
     delta = [0.1, -0.2]
     weights = [[0.5, -0.25, 0.75], [0.1, 0.2, -0.3]]
     x = [1.0, 2.0, 3.0]
@@ -197,13 +216,13 @@ def chapter_12() -> dict[str, object]:
         "grad_x": grad_x,
         "updated": updated,
     }
-# end::chapter_12[]
-
-
-# tag::chapter_13[]
-def chapter_13() -> dict[str, object]:
-    return gpt_demo(seed=13)
 # end::chapter_13[]
+
+
+# tag::chapter_14[]
+def chapter_14() -> dict[str, object]:
+    return gpt_demo(seed=13)
+# end::chapter_14[]
 
 
 def run_all() -> dict[str, dict[str, object]]:
@@ -220,6 +239,7 @@ def run_all() -> dict[str, dict[str, object]]:
         "chapter_11": chapter_11(),
         "chapter_12": chapter_12(),
         "chapter_13": chapter_13(),
+        "chapter_14": chapter_14(),
     }
 
 
