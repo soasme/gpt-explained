@@ -660,138 +660,106 @@ V_{k+1} = V_k \cup \{(a, b) \mid \text{freq}(a, b) \text{ is max over all adjace
 <h2 data-number="3.4" class="anchored" data-anchor-id="the-code-a-micro-bpe-in-python"><span class="header-section-number">3.4</span> The Code: A Micro-BPE in Python</h2>
 <section id="the-vocabulary-abstraction" class="level3" data-number="3.4.1">
 <h3 data-number="3.4.1" class="anchored" data-anchor-id="the-vocabulary-abstraction"><span class="header-section-number">3.4.1</span> The Vocabulary Abstraction</h3>
-<p>A vocab maps string tokens to integer IDs. These helpers create, extend, and query that mapping.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" data-snippet="make_vocab" data-startfrom="12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 11;"><span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_vocab() <span class="op">-&gt;</span> <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">int</span>]:</span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>make_vocab</code> starts with an empty token-to-ID mapping.</p>
-<!-- snippet: src/python/micro_bpe.py#make_vocab -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_vocab() <span class="op">-&gt;</span> <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">int</span>]:</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" data-snippet="vocab_extend" data-startfrom="18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 17;"><span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> vocab_extend(vocab: <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">int</span>], token: <span class="bu">str</span>, token_id: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">int</span>]:</span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> vocab <span class="op">|</span> {token: token_id}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>vocab_extend</code> returns a vocabulary with one more token ID.</p>
-<!-- snippet: src/python/micro_bpe.py#vocab_extend -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> vocab_extend(vocab: <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">int</span>], token: <span class="bu">str</span>, token_id: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">int</span>]:</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> vocab <span class="op">|</span> {token: token_id}</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
-<p><code>vocab_lookup</code> retrieves the ID for a token, or <code>None</code> if the token is unknown.</p>
-<!-- snippet: src/python/micro_bpe.py#vocab_lookup -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> vocab_lookup(vocab: <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">int</span>], token: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">int</span> <span class="op">|</span> <span class="va">None</span>:</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> vocab.get(token)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" data-snippet="vocab_lookup" data-startfrom="24"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 23;"><span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> vocab_lookup(vocab: <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">int</span>], token: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">int</span> <span class="op">|</span> <span class="va">None</span>:</span>
+<span id="cb5-25"><a href="#cb5-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> vocab.get(token)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>vocab_lookup</code> retrieves the ID for a token, or <code>None</code> if the token is unknown. Together, these helpers create, extend, and query the mapping from string tokens to integer IDs.</p>
 </section>
 <section id="characters-and-corpus" class="level3" data-number="3.4.2">
 <h3 data-number="3.4.2" class="anchored" data-anchor-id="characters-and-corpus"><span class="header-section-number">3.4.2</span> Characters and Corpus</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" data-snippet="word_to_tokens" data-startfrom="30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 29;"><span id="cb6-30"><a href="#cb6-30" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> word_to_tokens(word: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">str</span>]:</span>
+<span id="cb6-31"><a href="#cb6-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">list</span>(word) <span class="op">+</span> [<span class="st">"_"</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>word_to_tokens</code> turns one word into characters and appends <code>"_"</code> as the end-of-word marker.</p>
-<!-- snippet: src/python/micro_bpe.py#word_to_tokens -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> word_to_tokens(word: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">str</span>]:</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">list</span>(word) <span class="op">+</span> [<span class="st">"_"</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" data-snippet="words_to_corpus" data-startfrom="36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 35;"><span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> words_to_corpus(words: Sequence[<span class="bu">str</span>]) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">list</span>[<span class="bu">str</span>]]:</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [word_to_tokens(word) <span class="cf">for</span> word <span class="kw">in</span> words]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>words_to_corpus</code> applies that conversion to every word in the training corpus.</p>
-<!-- snippet: src/python/micro_bpe.py#words_to_corpus -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> words_to_corpus(words: Sequence[<span class="bu">str</span>]) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">list</span>[<span class="bu">str</span>]]:</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [word_to_tokens(word) <span class="cf">for</span> word <span class="kw">in</span> words]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
 </section>
 <section id="counting-pairs" class="level3" data-number="3.4.3">
 <h3 data-number="3.4.3" class="anchored" data-anchor-id="counting-pairs"><span class="header-section-number">3.4.3</span> Counting Pairs</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" data-snippet="imports" data-startfrom="6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 5;"><span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> Counter</span>
+<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> Sequence</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>This section uses <code>Counter</code> to tally pair frequencies and <code>Sequence</code> for read-only sequence type hints.</p>
-<!-- snippet: src/python/micro_bpe.py#imports -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> collections <span class="im">import</span> Counter</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> typing <span class="im">import</span> Sequence</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" data-snippet="adjacent_pairs" data-startfrom="42"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 41;"><span id="cb9-42"><a href="#cb9-42" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> adjacent_pairs(tokens: Sequence[<span class="bu">str</span>]) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">tuple</span>[<span class="bu">str</span>, <span class="bu">str</span>]]:</span>
+<span id="cb9-43"><a href="#cb9-43" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">list</span>(<span class="bu">zip</span>(tokens, tokens[<span class="dv">1</span>:]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>adjacent_pairs</code> lists every neighboring token pair in one token sequence.</p>
-<!-- snippet: src/python/micro_bpe.py#adjacent_pairs -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> adjacent_pairs(tokens: Sequence[<span class="bu">str</span>]) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">tuple</span>[<span class="bu">str</span>, <span class="bu">str</span>]]:</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">list</span>(<span class="bu">zip</span>(tokens, tokens[<span class="dv">1</span>:]))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10" data-snippet="count_pairs" data-startfrom="48"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 47;"><span id="cb10-48"><a href="#cb10-48" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> count_pairs(corpus: Sequence[Sequence[<span class="bu">str</span>]]) <span class="op">-&gt;</span> Counter[<span class="bu">tuple</span>[<span class="bu">str</span>, <span class="bu">str</span>]]:</span>
+<span id="cb10-49"><a href="#cb10-49" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Counter(pair <span class="cf">for</span> tokens <span class="kw">in</span> corpus <span class="cf">for</span> pair <span class="kw">in</span> adjacent_pairs(tokens))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>count_pairs</code> counts those neighboring pairs across the whole corpus.</p>
-<!-- snippet: src/python/micro_bpe.py#count_pairs -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> count_pairs(corpus: Sequence[Sequence[<span class="bu">str</span>]]) <span class="op">-&gt;</span> Counter[<span class="bu">tuple</span>[<span class="bu">str</span>, <span class="bu">str</span>]]:</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> Counter(pair <span class="cf">for</span> tokens <span class="kw">in</span> corpus <span class="cf">for</span> pair <span class="kw">in</span> adjacent_pairs(tokens))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" data-snippet="most_frequent" data-startfrom="54"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 53;"><span id="cb11-54"><a href="#cb11-54" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> most_frequent(counts: Counter[<span class="bu">tuple</span>[<span class="bu">str</span>, <span class="bu">str</span>]]) <span class="op">-&gt;</span> <span class="bu">tuple</span>[<span class="bu">str</span>, <span class="bu">str</span>]:</span>
+<span id="cb11-55"><a href="#cb11-55" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">max</span>(counts, key<span class="op">=</span>counts.get)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>most_frequent</code> chooses the pair with the highest count.</p>
-<!-- snippet: src/python/micro_bpe.py#most_frequent -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> most_frequent(counts: Counter[<span class="bu">tuple</span>[<span class="bu">str</span>, <span class="bu">str</span>]]) <span class="op">-&gt;</span> <span class="bu">tuple</span>[<span class="bu">str</span>, <span class="bu">str</span>]:</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">max</span>(counts, key<span class="op">=</span>counts.get)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
 </section>
 <section id="applying-a-merge" class="level3" data-number="3.4.4">
 <h3 data-number="3.4.4" class="anchored" data-anchor-id="applying-a-merge"><span class="header-section-number">3.4.4</span> Applying a Merge</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12" data-snippet="merge_pair" data-startfrom="60"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 59;"><span id="cb12-60"><a href="#cb12-60" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> merge_pair(tokens: Sequence[<span class="bu">str</span>], left: <span class="bu">str</span>, right: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">str</span>]:</span>
+<span id="cb12-61"><a href="#cb12-61" aria-hidden="true" tabindex="-1"></a>    merged <span class="op">=</span> []</span>
+<span id="cb12-62"><a href="#cb12-62" aria-hidden="true" tabindex="-1"></a>    i <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb12-63"><a href="#cb12-63" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> i <span class="op">&lt;</span> <span class="bu">len</span>(tokens):</span>
+<span id="cb12-64"><a href="#cb12-64" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> i <span class="op">+</span> <span class="dv">1</span> <span class="op">&lt;</span> <span class="bu">len</span>(tokens) <span class="kw">and</span> tokens[i] <span class="op">==</span> left <span class="kw">and</span> tokens[i <span class="op">+</span> <span class="dv">1</span>] <span class="op">==</span> right:</span>
+<span id="cb12-65"><a href="#cb12-65" aria-hidden="true" tabindex="-1"></a>            merged.append(left <span class="op">+</span> right)</span>
+<span id="cb12-66"><a href="#cb12-66" aria-hidden="true" tabindex="-1"></a>            i <span class="op">+=</span> <span class="dv">2</span></span>
+<span id="cb12-67"><a href="#cb12-67" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb12-68"><a href="#cb12-68" aria-hidden="true" tabindex="-1"></a>            merged.append(tokens[i])</span>
+<span id="cb12-69"><a href="#cb12-69" aria-hidden="true" tabindex="-1"></a>            i <span class="op">+=</span> <span class="dv">1</span></span>
+<span id="cb12-70"><a href="#cb12-70" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> merged</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>merge_pair</code> scans one token sequence and replaces every matching adjacent pair with the joined token.</p>
-<!-- snippet: src/python/micro_bpe.py#merge_pair -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> merge_pair(tokens: Sequence[<span class="bu">str</span>], left: <span class="bu">str</span>, right: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">str</span>]:</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    merged <span class="op">=</span> []</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    i <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> i <span class="op">&lt;</span> <span class="bu">len</span>(tokens):</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> i <span class="op">+</span> <span class="dv">1</span> <span class="op">&lt;</span> <span class="bu">len</span>(tokens) <span class="kw">and</span> tokens[i] <span class="op">==</span> left <span class="kw">and</span> tokens[i <span class="op">+</span> <span class="dv">1</span>] <span class="op">==</span> right:</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>            merged.append(left <span class="op">+</span> right)</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>            i <span class="op">+=</span> <span class="dv">2</span></span>
-<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
-<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>            merged.append(tokens[i])</span>
-<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a>            i <span class="op">+=</span> <span class="dv">1</span></span>
-<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> merged</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13" data-snippet="merge_corpus" data-startfrom="75"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 74;"><span id="cb13-75"><a href="#cb13-75" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> merge_corpus(corpus: Sequence[Sequence[<span class="bu">str</span>]], left: <span class="bu">str</span>, right: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">list</span>[<span class="bu">str</span>]]:</span>
+<span id="cb13-76"><a href="#cb13-76" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [merge_pair(tokens, left, right) <span class="cf">for</span> tokens <span class="kw">in</span> corpus]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>merge_corpus</code> applies the same merge to every token sequence in the corpus.</p>
-<!-- snippet: src/python/micro_bpe.py#merge_corpus -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> merge_corpus(corpus: Sequence[Sequence[<span class="bu">str</span>]], left: <span class="bu">str</span>, right: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">list</span>[<span class="bu">str</span>]]:</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [merge_pair(tokens, left, right) <span class="cf">for</span> tokens <span class="kw">in</span> corpus]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
 </section>
 <section id="the-training-loop" class="level3" data-number="3.4.5">
 <h3 data-number="3.4.5" class="anchored" data-anchor-id="the-training-loop"><span class="header-section-number">3.4.5</span> The Training Loop</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14" data-snippet="unique_tokens" data-startfrom="81"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 80;"><span id="cb14-81"><a href="#cb14-81" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> unique_tokens(corpus: Sequence[Sequence[<span class="bu">str</span>]]) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">str</span>]:</span>
+<span id="cb14-82"><a href="#cb14-82" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">sorted</span>({token <span class="cf">for</span> tokens <span class="kw">in</span> corpus <span class="cf">for</span> token <span class="kw">in</span> tokens})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>unique_tokens</code> collects the current vocabulary items from the tokenized corpus.</p>
-<!-- snippet: src/python/micro_bpe.py#unique_tokens -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> unique_tokens(corpus: Sequence[Sequence[<span class="bu">str</span>]]) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">str</span>]:</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">sorted</span>({token <span class="cf">for</span> tokens <span class="kw">in</span> corpus <span class="cf">for</span> token <span class="kw">in</span> tokens})</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15" data-snippet="train_bpe" data-startfrom="87"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 86;"><span id="cb15-87"><a href="#cb15-87" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> train_bpe(words: Sequence[<span class="bu">str</span>], target_size: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">tuple</span>[<span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">int</span>], <span class="bu">list</span>[<span class="bu">tuple</span>[<span class="bu">str</span>, <span class="bu">str</span>]]]:</span>
+<span id="cb15-88"><a href="#cb15-88" aria-hidden="true" tabindex="-1"></a>    corpus <span class="op">=</span> words_to_corpus(words)</span>
+<span id="cb15-89"><a href="#cb15-89" aria-hidden="true" tabindex="-1"></a>    vocab <span class="op">=</span> {token: token_id <span class="cf">for</span> token_id, token <span class="kw">in</span> <span class="bu">enumerate</span>(unique_tokens(corpus))}</span>
+<span id="cb15-90"><a href="#cb15-90" aria-hidden="true" tabindex="-1"></a>    merges <span class="op">=</span> []</span>
+<span id="cb15-91"><a href="#cb15-91" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-92"><a href="#cb15-92" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="bu">len</span>(vocab) <span class="op">&lt;</span> target_size:</span>
+<span id="cb15-93"><a href="#cb15-93" aria-hidden="true" tabindex="-1"></a>        counts <span class="op">=</span> count_pairs(corpus)</span>
+<span id="cb15-94"><a href="#cb15-94" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> counts:</span>
+<span id="cb15-95"><a href="#cb15-95" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span></span>
+<span id="cb15-96"><a href="#cb15-96" aria-hidden="true" tabindex="-1"></a>        left, right <span class="op">=</span> most_frequent(counts)</span>
+<span id="cb15-97"><a href="#cb15-97" aria-hidden="true" tabindex="-1"></a>        new_token <span class="op">=</span> left <span class="op">+</span> right</span>
+<span id="cb15-98"><a href="#cb15-98" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> new_token <span class="kw">not</span> <span class="kw">in</span> vocab:</span>
+<span id="cb15-99"><a href="#cb15-99" aria-hidden="true" tabindex="-1"></a>            vocab[new_token] <span class="op">=</span> <span class="bu">len</span>(vocab)</span>
+<span id="cb15-100"><a href="#cb15-100" aria-hidden="true" tabindex="-1"></a>        merges.append((left, right))</span>
+<span id="cb15-101"><a href="#cb15-101" aria-hidden="true" tabindex="-1"></a>        corpus <span class="op">=</span> merge_corpus(corpus, left, right)</span>
+<span id="cb15-102"><a href="#cb15-102" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-103"><a href="#cb15-103" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> vocab, merges</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>train_bpe</code> repeatedly counts pairs, merges the most frequent pair, records the merge rule, and adds each new token to the vocabulary.</p>
-<!-- snippet: src/python/micro_bpe.py#train_bpe -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> train_bpe(words: Sequence[<span class="bu">str</span>], target_size: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">tuple</span>[<span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">int</span>], <span class="bu">list</span>[<span class="bu">tuple</span>[<span class="bu">str</span>, <span class="bu">str</span>]]]:</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    corpus <span class="op">=</span> words_to_corpus(words)</span>
-<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a>    vocab <span class="op">=</span> {token: token_id <span class="cf">for</span> token_id, token <span class="kw">in</span> <span class="bu">enumerate</span>(unique_tokens(corpus))}</span>
-<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a>    merges <span class="op">=</span> []</span>
-<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-6"><a href="#cb15-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">while</span> <span class="bu">len</span>(vocab) <span class="op">&lt;</span> target_size:</span>
-<span id="cb15-7"><a href="#cb15-7" aria-hidden="true" tabindex="-1"></a>        counts <span class="op">=</span> count_pairs(corpus)</span>
-<span id="cb15-8"><a href="#cb15-8" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> <span class="kw">not</span> counts:</span>
-<span id="cb15-9"><a href="#cb15-9" aria-hidden="true" tabindex="-1"></a>            <span class="cf">break</span></span>
-<span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>        left, right <span class="op">=</span> most_frequent(counts)</span>
-<span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>        new_token <span class="op">=</span> left <span class="op">+</span> right</span>
-<span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> new_token <span class="kw">not</span> <span class="kw">in</span> vocab:</span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a>            vocab[new_token] <span class="op">=</span> <span class="bu">len</span>(vocab)</span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a>        merges.append((left, right))</span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a>        corpus <span class="op">=</span> merge_corpus(corpus, left, right)</span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-17"><a href="#cb15-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> vocab, merges</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
 </section>
 <section id="encoding" class="level3" data-number="3.4.6">
 <h3 data-number="3.4.6" class="anchored" data-anchor-id="encoding"><span class="header-section-number">3.4.6</span> Encoding</h3>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16" data-snippet="encode" data-startfrom="108"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 107;"><span id="cb16-108"><a href="#cb16-108" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> encode(word: <span class="bu">str</span>, merges: Sequence[<span class="bu">tuple</span>[<span class="bu">str</span>, <span class="bu">str</span>]], vocab: <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">int</span>]) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">int</span>]:</span>
+<span id="cb16-109"><a href="#cb16-109" aria-hidden="true" tabindex="-1"></a>    tokens <span class="op">=</span> word_to_tokens(word)</span>
+<span id="cb16-110"><a href="#cb16-110" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> left, right <span class="kw">in</span> merges:</span>
+<span id="cb16-111"><a href="#cb16-111" aria-hidden="true" tabindex="-1"></a>        tokens <span class="op">=</span> merge_pair(tokens, left, right)</span>
+<span id="cb16-112"><a href="#cb16-112" aria-hidden="true" tabindex="-1"></a>    missing <span class="op">=</span> [token <span class="cf">for</span> token <span class="kw">in</span> tokens <span class="cf">if</span> token <span class="kw">not</span> <span class="kw">in</span> vocab]</span>
+<span id="cb16-113"><a href="#cb16-113" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> missing:</span>
+<span id="cb16-114"><a href="#cb16-114" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="ss">f"unknown token(s): </span><span class="sc">{</span>missing<span class="sc">}</span><span class="ss">"</span>)</span>
+<span id="cb16-115"><a href="#cb16-115" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [vocab[token] <span class="cf">for</span> token <span class="kw">in</span> tokens]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>encode</code> applies the trained merge rules to a new word and returns the final token IDs.</p>
-<!-- snippet: src/python/micro_bpe.py#encode -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> encode(word: <span class="bu">str</span>, merges: Sequence[<span class="bu">tuple</span>[<span class="bu">str</span>, <span class="bu">str</span>]], vocab: <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">int</span>]) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">int</span>]:</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    tokens <span class="op">=</span> word_to_tokens(word)</span>
-<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> left, right <span class="kw">in</span> merges:</span>
-<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a>        tokens <span class="op">=</span> merge_pair(tokens, left, right)</span>
-<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>    missing <span class="op">=</span> [token <span class="cf">for</span> token <span class="kw">in</span> tokens <span class="cf">if</span> token <span class="kw">not</span> <span class="kw">in</span> vocab]</span>
-<span id="cb16-6"><a href="#cb16-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> missing:</span>
-<span id="cb16-7"><a href="#cb16-7" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="ss">f"unknown token(s): </span><span class="sc">{</span>missing<span class="sc">}</span><span class="ss">"</span>)</span>
-<span id="cb16-8"><a href="#cb16-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [vocab[token] <span class="cf">for</span> token <span class="kw">in</span> tokens]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
 </section>
 <section id="demo" class="level3" data-number="3.4.7">
 <h3 data-number="3.4.7" class="anchored" data-anchor-id="demo"><span class="header-section-number">3.4.7</span> Demo</h3>
-<p><code>demo</code> trains a tiny tokenizer and encodes two example words.</p>
-<!-- snippet: src/python/micro_bpe.py#demo -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> demo() <span class="op">-&gt;</span> <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">object</span>]:</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    words <span class="op">=</span> [<span class="st">"low"</span>, <span class="st">"lower"</span>, <span class="st">"newest"</span>, <span class="st">"widest"</span>]</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    vocab, merges <span class="op">=</span> train_bpe(words, <span class="dv">20</span>)</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>        <span class="st">"vocab"</span>: vocab,</span>
-<span id="cb17-6"><a href="#cb17-6" aria-hidden="true" tabindex="-1"></a>        <span class="st">"merges"</span>: merges,</span>
-<span id="cb17-7"><a href="#cb17-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"low"</span>: encode(<span class="st">"low"</span>, merges, vocab),</span>
-<span id="cb17-8"><a href="#cb17-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"lower"</span>: encode(<span class="st">"lower"</span>, merges, vocab),</span>
-<span id="cb17-9"><a href="#cb17-9" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
-<p>Run this file directly with <code>python3 src/python/micro_bpe.py</code>.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17" data-snippet="demo" data-startfrom="120"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 119;"><span id="cb17-120"><a href="#cb17-120" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> demo() <span class="op">-&gt;</span> <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">object</span>]:</span>
+<span id="cb17-121"><a href="#cb17-121" aria-hidden="true" tabindex="-1"></a>    words <span class="op">=</span> [<span class="st">"low"</span>, <span class="st">"lower"</span>, <span class="st">"newest"</span>, <span class="st">"widest"</span>]</span>
+<span id="cb17-122"><a href="#cb17-122" aria-hidden="true" tabindex="-1"></a>    vocab, merges <span class="op">=</span> train_bpe(words, <span class="dv">20</span>)</span>
+<span id="cb17-123"><a href="#cb17-123" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb17-124"><a href="#cb17-124" aria-hidden="true" tabindex="-1"></a>        <span class="st">"vocab"</span>: vocab,</span>
+<span id="cb17-125"><a href="#cb17-125" aria-hidden="true" tabindex="-1"></a>        <span class="st">"merges"</span>: merges,</span>
+<span id="cb17-126"><a href="#cb17-126" aria-hidden="true" tabindex="-1"></a>        <span class="st">"low"</span>: encode(<span class="st">"low"</span>, merges, vocab),</span>
+<span id="cb17-127"><a href="#cb17-127" aria-hidden="true" tabindex="-1"></a>        <span class="st">"lower"</span>: encode(<span class="st">"lower"</span>, merges, vocab),</span>
+<span id="cb17-128"><a href="#cb17-128" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>demo</code> trains a tiny tokenizer and encodes two example words. Run this file directly with <code>python3 src/python/micro_bpe.py</code>.</p>
 <p>Output:</p>
 <pre class="text"><code>Vocabulary:
   0 -&gt; _

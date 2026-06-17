@@ -555,9 +555,7 @@ Figure&nbsp;2.2: Capital sigma adds terms; capital pi multiplies terms
 </div>
 </div>
 <p>In Python, the book represents a vector as a list of floating-point numbers:</p>
-<!-- snippet: src/python/common.py#vector_type -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a>Vector <span class="op">=</span> <span class="bu">list</span>[<span class="bu">float</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-snippet="vector_type" data-startfrom="17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 16;"><span id="cb1-17"><a href="#cb1-17" aria-hidden="true" tabindex="-1"></a>Vector <span class="op">=</span> <span class="bu">list</span>[<span class="bu">float</span>]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>This simple representation is enough for the small implementations in the book. Packages like NumPy provide their own vector type, usually as an <code>ndarray</code>, with faster arithmetic, compact memory layout, and many built-in operations. For larger numerical programs, you would usually use NumPy, PyTorch, JAX, or another tensor library instead.</p>
 <section id="vector-addition" class="level3" data-number="2.3.1">
 <h3 data-number="2.3.1" class="anchored" data-anchor-id="vector-addition"><span class="header-section-number">2.3.1</span> Vector Addition</h3>
@@ -566,10 +564,8 @@ Figure&nbsp;2.2: Capital sigma adds terms; capital pi multiplies terms
 u + v = [u_1+v_1, u_2+v_2, \ldots]
 \]</span></p>
 <p>The Python version follows that sentence directly: walk through both vectors together and add each pair.</p>
-<!-- snippet: src/python/common.py#add_vectors -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> add_vectors(left: Vector, right: Vector) <span class="op">-&gt;</span> Vector:</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [a <span class="op">+</span> b <span class="cf">for</span> a, b <span class="kw">in</span> <span class="bu">zip</span>(left, right)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" data-snippet="add_vectors" data-startfrom="52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 51;"><span id="cb2-52"><a href="#cb2-52" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> add_vectors(left: Vector, right: Vector) <span class="op">-&gt;</span> Vector:</span>
+<span id="cb2-53"><a href="#cb2-53" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [a <span class="op">+</span> b <span class="cf">for</span> a, b <span class="kw">in</span> <span class="bu">zip</span>(left, right)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>For example, take <span class="math inline">\(u = [3.0, 4.0]\)</span> and <span class="math inline">\(v = [1.0, -2.0]\)</span>. The first components give <span class="math inline">\(3.0 + 1.0 = 4.0\)</span>, and the second components give <span class="math inline">\(4.0 + (-2.0) = 2.0\)</span>. So:</p>
 <p><span class="math display">\[
 u + v = [3.0+1.0, 4.0+(-2.0)] = [4.0, 2.0]
@@ -597,10 +593,8 @@ Figure&nbsp;2.3: Vector addition in 2D
 c\cdot v = [cv_1, cv_2, \ldots]
 \]</span></p>
 <p>In code, this means multiplying every value in the list by the same scalar.</p>
-<!-- snippet: src/python/common.py#scale_vector -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> scale_vector(vector: Vector, scalar: <span class="bu">float</span>) <span class="op">-&gt;</span> Vector:</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [scalar <span class="op">*</span> value <span class="cf">for</span> value <span class="kw">in</span> vector]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" data-snippet="scale_vector" data-startfrom="58"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 57;"><span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> scale_vector(vector: Vector, scalar: <span class="bu">float</span>) <span class="op">-&gt;</span> Vector:</span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [scalar <span class="op">*</span> value <span class="cf">for</span> value <span class="kw">in</span> vector]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>For <span class="math inline">\(u = [3.0, 4.0]\)</span>, multiplying by <span class="math inline">\(2.0\)</span> doubles both components:</p>
 <p><span class="math display">\[
 2.0 \cdot u = [6.0, 8.0]
@@ -613,10 +607,8 @@ c\cdot v = [cv_1, cv_2, \ldots]
 \|v\| = \sqrt{v_1^2 + v_2^2 + \ldots + v_n^2}
 \]</span></p>
 <p>The implementation squares every component, adds the squares, then takes the square root.</p>
-<!-- snippet: src/python/common.py#vector_norm -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> vector_norm(vector: Sequence[<span class="bu">float</span>]) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> math.sqrt(<span class="bu">sum</span>(value <span class="op">*</span> value <span class="cf">for</span> value <span class="kw">in</span> vector))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" data-snippet="vector_norm" data-startfrom="64"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 63;"><span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> vector_norm(vector: Sequence[<span class="bu">float</span>]) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> math.sqrt(<span class="bu">sum</span>(value <span class="op">*</span> value <span class="cf">for</span> value <span class="kw">in</span> vector))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>For <span class="math inline">\(u = [3.0, 4.0]\)</span>, the length is:</p>
 <p><span class="math display">\[
 \|u\| = \sqrt{3.0^2 + 4.0^2} = \sqrt{9.0+16.0} = 5.0
@@ -644,10 +636,8 @@ Figure&nbsp;2.4: The vector [3, 4] has L2 norm 5
 \hat{v} = v / \|v\|
 \]</span></p>
 <p>The helper below combines the two earlier operations: compute the norm, then scale by its reciprocal.</p>
-<!-- snippet: src/python/common.py#unit_vector -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> unit_vector(vector: Vector) <span class="op">-&gt;</span> Vector:</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> scale_vector(vector, <span class="fl">1.0</span> <span class="op">/</span> vector_norm(vector))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" data-snippet="unit_vector" data-startfrom="70"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 69;"><span id="cb5-70"><a href="#cb5-70" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> unit_vector(vector: Vector) <span class="op">-&gt;</span> Vector:</span>
+<span id="cb5-71"><a href="#cb5-71" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> scale_vector(vector, <span class="fl">1.0</span> <span class="op">/</span> vector_norm(vector))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>For <span class="math inline">\(u = [3.0, 4.0]\)</span>, the norm is <span class="math inline">\(5.0\)</span>, so each component is divided by <span class="math inline">\(5.0\)</span>:</p>
 <p><span class="math display">\[
 [3.0/5.0, 4.0/5.0] = [0.6, 0.8]
@@ -664,10 +654,8 @@ Figure&nbsp;2.4: The vector [3, 4] has L2 norm 5
 u \cdot v = \sum_{i=1}^{n} u_i v_i = u_1 v_1 + u_2 v_2 + \ldots + u_n v_n
 \]</span></p>
 <p>That is also the most direct way to write it in Python. The <code>zip</code> pairs matching components, and <code>sum</code> adds the pairwise products.</p>
-<!-- snippet: src/python/common.py#dot -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> dot(left: Sequence[<span class="bu">float</span>], right: Sequence[<span class="bu">float</span>]) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">sum</span>(a <span class="op">*</span> b <span class="cf">for</span> a, b <span class="kw">in</span> <span class="bu">zip</span>(left, right))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" data-snippet="dot" data-startfrom="77"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 76;"><span id="cb6-77"><a href="#cb6-77" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> dot(left: Sequence[<span class="bu">float</span>], right: Sequence[<span class="bu">float</span>]) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb6-78"><a href="#cb6-78" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">sum</span>(a <span class="op">*</span> b <span class="cf">for</span> a, b <span class="kw">in</span> <span class="bu">zip</span>(left, right))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>With <span class="math inline">\(u = [3.0, 4.0, 0.0]\)</span> and <span class="math inline">\(v = [1.0, -2.0, 5.0]\)</span>, the matching products are <span class="math inline">\(3.0 \cdot 1.0\)</span>, <span class="math inline">\(4.0 \cdot (-2.0)\)</span>, and <span class="math inline">\(0.0 \cdot 5.0\)</span>. Adding them gives:</p>
 <p><span class="math display">\[
 u \cdot v = (3.0)(1.0) + (4.0)(-2.0) + (0.0)(5.0) = 3.0 - 8.0 + 0.0 = -5.0
@@ -685,10 +673,8 @@ u \cdot v = \|u\| \|v\| \cos\theta
 \cos\theta = \frac{u \cdot v}{\|u\|\|v\|}
 \]</span></p>
 <p>The implementation is just that formula: dot product divided by the two vector lengths.</p>
-<!-- snippet: src/python/common.py#cosine_similarity -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> cosine_similarity(left: Sequence[<span class="bu">float</span>], right: Sequence[<span class="bu">float</span>]) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> dot(left, right) <span class="op">/</span> (vector_norm(left) <span class="op">*</span> vector_norm(right))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" data-snippet="cosine_similarity" data-startfrom="83"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 82;"><span id="cb7-83"><a href="#cb7-83" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> cosine_similarity(left: Sequence[<span class="bu">float</span>], right: Sequence[<span class="bu">float</span>]) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb7-84"><a href="#cb7-84" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> dot(left, right) <span class="op">/</span> (vector_norm(left) <span class="op">*</span> vector_norm(right))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Using the same <span class="math inline">\(u\)</span> and <span class="math inline">\(v\)</span> as above, <span class="math inline">\(\|u\| = 5.0\)</span> and <span class="math inline">\(\|v\| = \sqrt{30.0}\)</span>. Since the dot product is <span class="math inline">\(-5.0\)</span>, the cosine similarity is:</p>
 <p><span class="math display">\[
 \frac{u \cdot v}{\|u\|\|v\|} = \frac{-5.0}{5.0\sqrt{30.0}} \approx -0.183
@@ -714,9 +700,7 @@ Figure&nbsp;2.5: Dot product as scalar projection in 2D
 <section id="matrix-multiplication" class="level2" data-number="2.5">
 <h2 data-number="2.5" class="anchored" data-anchor-id="matrix-multiplication"><span class="header-section-number">2.5</span> Matrix Multiplication</h2>
 <p>A matrix is a rectangular grid of numbers. Matrices make it possible to organize many vectors or many linear equations at once. Matrix multiplication combines rows from one matrix with columns from another. The book represents a matrix as a list of rows, where each row is a list of floats:</p>
-<!-- snippet: src/python/common.py#matrix_type -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a>Matrix <span class="op">=</span> <span class="bu">list</span>[<span class="bu">list</span>[<span class="bu">float</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" data-snippet="matrix_type" data-startfrom="20"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 19;"><span id="cb8-20"><a href="#cb8-20" aria-hidden="true" tabindex="-1"></a>Matrix <span class="op">=</span> <span class="bu">list</span>[<span class="bu">list</span>[<span class="bu">float</span>]]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <div class="callout callout-style-simple callout-note">
 <div class="callout-body d-flex">
 <div class="callout-icon-container">
@@ -741,10 +725,8 @@ A = \begin{bmatrix} 1.0 &amp; 2.0 &amp; 3.0 \\ 4.0 &amp; 5.0 &amp; 6.0 \end{bmat
 <h3 data-number="2.5.1" class="anchored" data-anchor-id="transpose"><span class="header-section-number">2.5.1</span> Transpose</h3>
 <p>Transposing a matrix swaps rows and columns. The first row becomes the first column, the second row becomes the second column, and so on. If <span class="math inline">\(A \in \mathbb{R}^{m \times n}\)</span>, then <span class="math inline">\(A^T \in \mathbb{R}^{n \times m}\)</span>.</p>
 <p>In Python, <code>zip(*matrix)</code> groups together the first item from every row, then the second item from every row, and so on. Converting each group back to a list gives the transposed rows.</p>
-<!-- snippet: src/python/common.py#transpose -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> transpose(matrix: Matrix) <span class="op">-&gt;</span> Matrix:</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [<span class="bu">list</span>(col) <span class="cf">for</span> col <span class="kw">in</span> <span class="bu">zip</span>(<span class="op">*</span>matrix)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10" data-snippet="transpose" data-startfrom="91"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 90;"><span id="cb10-91"><a href="#cb10-91" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> transpose(matrix: Matrix) <span class="op">-&gt;</span> Matrix:</span>
+<span id="cb10-92"><a href="#cb10-92" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [<span class="bu">list</span>(col) <span class="cf">for</span> col <span class="kw">in</span> <span class="bu">zip</span>(<span class="op">*</span>matrix)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>For:</p>
 <p><span class="math display">\[
 A = \begin{bmatrix} 1.0 &amp; 2.0 \\ 3.0 &amp; 4.0 \end{bmatrix}
@@ -761,11 +743,9 @@ A^T = \begin{bmatrix} 1.0 &amp; 3.0 \\ 2.0 &amp; 4.0 \end{bmatrix}
 C_{ij} = \sum_{r=1}^{k} A_{ir} B_{rj}
 \]</span></p>
 <p>That equation says: take row <span class="math inline">\(i\)</span> from <span class="math inline">\(A\)</span>, take column <span class="math inline">\(j\)</span> from <span class="math inline">\(B\)</span>, and compute their dot product. The implementation transposes the right matrix first so its columns become easy to iterate over as rows.</p>
-<!-- snippet: src/python/common.py#matrix_multiply -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> matrix_multiply(left: Matrix, right: Matrix) <span class="op">-&gt;</span> Matrix:</span>
-<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a>    right_t <span class="op">=</span> transpose(right)</span>
-<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [[dot(row, col) <span class="cf">for</span> col <span class="kw">in</span> right_t] <span class="cf">for</span> row <span class="kw">in</span> left]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" data-snippet="matrix_multiply" data-startfrom="109"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 108;"><span id="cb11-109"><a href="#cb11-109" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> matrix_multiply(left: Matrix, right: Matrix) <span class="op">-&gt;</span> Matrix:</span>
+<span id="cb11-110"><a href="#cb11-110" aria-hidden="true" tabindex="-1"></a>    right_t <span class="op">=</span> transpose(right)</span>
+<span id="cb11-111"><a href="#cb11-111" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [[dot(row, col) <span class="cf">for</span> col <span class="kw">in</span> right_t] <span class="cf">for</span> row <span class="kw">in</span> left]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>For:</p>
 <p><span class="math display">\[
 A = \begin{bmatrix} 1.0 &amp; 2.0 \\ 3.0 &amp; 4.0 \end{bmatrix}
@@ -821,13 +801,11 @@ Figure&nbsp;2.6: Matrix multiplication: each output cell is a dot product of a r
 <p><span class="math display">\[
 \text{softmax}(z)_i = \frac{e^{z_i - \max(z)}}{\sum_{j} e^{z_j - \max(z)}}
 \]</span></p>
-<!-- snippet: src/python/common.py#softmax_vector -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> softmax(logits: Sequence[<span class="bu">float</span>]) <span class="op">-&gt;</span> Vector:</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>    max_logit <span class="op">=</span> <span class="bu">max</span>(logits)</span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>    exp_values <span class="op">=</span> [math.exp(value <span class="op">-</span> max_logit) <span class="cf">for</span> value <span class="kw">in</span> logits]</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a>    total <span class="op">=</span> <span class="bu">sum</span>(exp_values)</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [value <span class="op">/</span> total <span class="cf">for</span> value <span class="kw">in</span> exp_values]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12" data-snippet="softmax_vector" data-startfrom="124"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 123;"><span id="cb12-124"><a href="#cb12-124" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> softmax(logits: Sequence[<span class="bu">float</span>]) <span class="op">-&gt;</span> Vector:</span>
+<span id="cb12-125"><a href="#cb12-125" aria-hidden="true" tabindex="-1"></a>    max_logit <span class="op">=</span> <span class="bu">max</span>(logits)</span>
+<span id="cb12-126"><a href="#cb12-126" aria-hidden="true" tabindex="-1"></a>    exp_values <span class="op">=</span> [math.exp(value <span class="op">-</span> max_logit) <span class="cf">for</span> value <span class="kw">in</span> logits]</span>
+<span id="cb12-127"><a href="#cb12-127" aria-hidden="true" tabindex="-1"></a>    total <span class="op">=</span> <span class="bu">sum</span>(exp_values)</span>
+<span id="cb12-128"><a href="#cb12-128" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [value <span class="op">/</span> total <span class="cf">for</span> value <span class="kw">in</span> exp_values]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>For <span class="math inline">\(z = [2.0, 1.0, 0.1]\)</span>, the maximum is <span class="math inline">\(2.0\)</span>, so the shifted values are <span class="math inline">\([0.0, -1.0, -1.9]\)</span>. After exponentiating, we get approximately <span class="math inline">\([1.000, 0.368, 0.150]\)</span>, whose sum is <span class="math inline">\(1.518\)</span>. Dividing each value by that sum gives:</p>
 <p><span class="math display">\[
 \text{softmax}(z) \approx [0.659, 0.242, 0.099]
@@ -837,10 +815,8 @@ Figure&nbsp;2.6: Matrix multiplication: each output cell is a dot product of a r
 <section id="row-wise-softmax" class="level3" data-number="2.6.2">
 <h3 data-number="2.6.2" class="anchored" data-anchor-id="row-wise-softmax"><span class="header-section-number">2.6.2</span> Row-wise Softmax</h3>
 <p>Sometimes the input is a matrix of scores. Each row can be normalized into its own probability distribution. Row-wise softmax applies the vector softmax independently to every row.</p>
-<!-- snippet: src/python/common.py#softmax_rows -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> softmax_rows(matrix: Matrix) <span class="op">-&gt;</span> Matrix:</span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [softmax(row) <span class="cf">for</span> row <span class="kw">in</span> matrix]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13" data-snippet="softmax_rows" data-startfrom="133"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 132;"><span id="cb13-133"><a href="#cb13-133" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> softmax_rows(matrix: Matrix) <span class="op">-&gt;</span> Matrix:</span>
+<span id="cb13-134"><a href="#cb13-134" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [softmax(row) <span class="cf">for</span> row <span class="kw">in</span> matrix]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>After this step, each row sums to 1.</p>
 <p><a href="#fig-ch02-softmax" class="quarto-xref">Figure&nbsp;<span>2.7</span></a> shows how softmax maps raw logits to a probability distribution.</p>
 <div id="cell-fig-ch02-softmax" class="cell" data-fig-height="5" data-fig-width="5" data-execution_count="7">
@@ -873,10 +849,8 @@ e^{\ln x} = x \quad \text{and} \quad \ln(e^x) = x
 \exp(x) = e^x
 \]</span></p>
 <p>In Python, this is <code>math.exp</code>.</p>
-<!-- snippet: src/python/common.py#natural_exp -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> natural_exp(value: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> math.exp(value)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14" data-snippet="natural_exp" data-startfrom="166"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 165;"><span id="cb14-166"><a href="#cb14-166" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> natural_exp(value: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb14-167"><a href="#cb14-167" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> math.exp(value)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Two anchor values appear often enough to keep in mind. If the exponent is <span class="math inline">\(0.0\)</span>, the result is <span class="math inline">\(1.0\)</span>. If the exponent is <span class="math inline">\(1.0\)</span>, the result is <span class="math inline">\(e\)</span>:</p>
 <p><span class="math display">\[
 e^{0.0} = 1.0
@@ -892,10 +866,8 @@ e^{1.0} \approx 2.718
 \ln x = y \quad \text{means} \quad e^y = x
 \]</span></p>
 <p>In Python, this is <code>math.log</code>.</p>
-<!-- snippet: src/python/common.py#natural_log -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> natural_log(value: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> math.log(value)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15" data-snippet="natural_log" data-startfrom="160"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 159;"><span id="cb15-160"><a href="#cb15-160" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> natural_log(value: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb15-161"><a href="#cb15-161" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> math.log(value)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Some useful values:</p>
 <p><span class="math display">\[
 \ln(1.0) = 0.0
@@ -946,10 +918,8 @@ Figure&nbsp;2.8: The natural log and its negative over inputs between 0 and 1
 \mu = \frac{1}{n}\sum_{i=1}^n x_i
 \]</span></p>
 <p>The implementation is just that calculation.</p>
-<!-- snippet: src/python/common.py#mean -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> mean(values: Sequence[<span class="bu">float</span>]) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">sum</span>(values) <span class="op">/</span> <span class="bu">len</span>(values)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb16" data-snippet="mean" data-startfrom="174"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 173;"><span id="cb16-174"><a href="#cb16-174" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> mean(values: Sequence[<span class="bu">float</span>]) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb16-175"><a href="#cb16-175" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">sum</span>(values) <span class="op">/</span> <span class="bu">len</span>(values)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>For <span class="math inline">\(x = [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]\)</span>, the sum is <span class="math inline">\(40.0\)</span> and there are <span class="math inline">\(8\)</span> values. So:</p>
 <p><span class="math display">\[
 \mu = \frac{40.0}{8.0} = 5.0
@@ -962,11 +932,9 @@ Figure&nbsp;2.8: The natural log and its negative over inputs between 0 and 1
 \sigma^2 = \frac{1}{n}\sum_{i=1}^n (x_i - \mu)^2
 \]</span></p>
 <p>The Python helper computes the mean first, then follows the formula.</p>
-<!-- snippet: src/python/common.py#variance -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> variance(values: Sequence[<span class="bu">float</span>]) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>    avg <span class="op">=</span> mean(values)</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">sum</span>((value <span class="op">-</span> avg) <span class="op">**</span> <span class="dv">2</span> <span class="cf">for</span> value <span class="kw">in</span> values) <span class="op">/</span> <span class="bu">len</span>(values)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb17" data-snippet="variance" data-startfrom="180"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 179;"><span id="cb17-180"><a href="#cb17-180" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> variance(values: Sequence[<span class="bu">float</span>]) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb17-181"><a href="#cb17-181" aria-hidden="true" tabindex="-1"></a>    avg <span class="op">=</span> mean(values)</span>
+<span id="cb17-182"><a href="#cb17-182" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">sum</span>((value <span class="op">-</span> avg) <span class="op">**</span> <span class="dv">2</span> <span class="cf">for</span> value <span class="kw">in</span> values) <span class="op">/</span> <span class="bu">len</span>(values)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Continuing with <span class="math inline">\(x = [2.0, 4.0, 4.0, 4.0, 5.0, 5.0, 7.0, 9.0]\)</span>, the mean is <span class="math inline">\(5.0\)</span>. The squared deviations are:</p>
 <p><span class="math display">\[
 9.0, 1.0, 1.0, 1.0, 0.0, 0.0, 4.0, 16.0
@@ -982,10 +950,8 @@ Figure&nbsp;2.8: The natural log and its negative over inputs between 0 and 1
 <p><span class="math display">\[
 \sigma = \sqrt{\sigma^2}
 \]</span></p>
-<!-- snippet: src/python/common.py#standard_deviation -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb18-1"><a href="#cb18-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> standard_deviation(values: Sequence[<span class="bu">float</span>]) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb18-2"><a href="#cb18-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> math.sqrt(variance(values))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb18" data-snippet="standard_deviation" data-startfrom="187"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 186;"><span id="cb18-187"><a href="#cb18-187" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> standard_deviation(values: Sequence[<span class="bu">float</span>]) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb18-188"><a href="#cb18-188" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> math.sqrt(variance(values))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>In this example, the variance is <span class="math inline">\(4.0\)</span>, so the standard deviation is:</p>
 <p><span class="math display">\[
 \sigma = \sqrt{4.0} = 2.0

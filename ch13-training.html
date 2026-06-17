@@ -477,10 +477,8 @@ w \xrightarrow{f} z \xrightarrow{g} \mathcal{L}
 <p>In a transformer, the chain has hundreds of layers. Backprop starts at the loss and works backward, multiplying local derivatives as it goes. Each layer only needs two things: the gradient arriving from the layer above (called <span class="math inline">\(\delta\)</span>, “delta”), and its own local derivative.</p>
 <section id="step-1-a-gradient-update-for-one-weight" class="level3" data-number="13.3.1">
 <h3 data-number="13.3.1" class="anchored" data-anchor-id="step-1-a-gradient-update-for-one-weight"><span class="header-section-number">13.3.1</span> Step 1: A gradient update for one weight</h3>
-<!-- snippet: src/python/train.py#sgd_update_scalar -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sgd_update_scalar(weight: <span class="bu">float</span>, gradient: <span class="bu">float</span>, learning_rate: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> weight <span class="op">-</span> learning_rate <span class="op">*</span> gradient</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-snippet="sgd_update_scalar" data-startfrom="46"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 45;"><span id="cb1-46"><a href="#cb1-46" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sgd_update_scalar(weight: <span class="bu">float</span>, gradient: <span class="bu">float</span>, learning_rate: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb1-47"><a href="#cb1-47" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> weight <span class="op">-</span> learning_rate <span class="op">*</span> gradient</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>If the gradient is positive (loss rises when <span class="math inline">\(w\)</span> increases), we subtract — decreasing <span class="math inline">\(w\)</span>. If negative, we add. The learning rate <span class="math inline">\(\eta\)</span> scales how large the step is.</p>
 <p>This is the entire idea. Everything that follows is this rule, applied to millions of weights simultaneously.</p>
 </section>
@@ -493,12 +491,11 @@ w \xrightarrow{f} z \xrightarrow{g} \mathcal{L}
 \]</span></p>
 <p>where <span class="math inline">\(z_j\)</span> are the logits and <span class="math inline">\(t\)</span> is the true token.</p>
 <p>For the true token <span class="math inline">\(j = t\)</span>: gradient is <span class="math inline">\(P_t - 1\)</span> (negative, so we push <span class="math inline">\(z_t\)</span> up). For every other token: gradient is <span class="math inline">\(P_j\)</span> (positive, so we push those logits down). The model is nudged to be more confident about the correct answer.</p>
-<!-- snippet: src/python/train.py#loss_grad -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> softmax_cross_entropy_grad(logits: Sequence[<span class="bu">float</span>], true_id: <span class="bu">int</span>) <span class="op">-&gt;</span> Vector:</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    grad <span class="op">=</span> softmax(logits)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    grad[true_id] <span class="op">-=</span> <span class="fl">1.0</span></span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> grad</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" data-snippet="loss_grad" data-startfrom="36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 35;"><span id="cb2-36"><a href="#cb2-36" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> softmax_cross_entropy_grad(logits: Sequence[<span class="bu">float</span>], true_id: <span class="bu">int</span>) <span class="op">-&gt;</span> Vector:</span>
+<span id="cb2-37"><a href="#cb2-37" aria-hidden="true" tabindex="-1"></a>    grad <span class="op">=</span> softmax(logits)</span>
+<span id="cb2-38"><a href="#cb2-38" aria-hidden="true" tabindex="-1"></a>    grad[true_id] <span class="op">-=</span> <span class="fl">1.0</span></span>
+<span id="cb2-39"><a href="#cb2-39" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> grad</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>softmax_cross_entropy_grad</code> starts with the predicted probabilities, then subtracts 1 from the correct token. That gives the gradient signal that pushes the correct logit up and the incorrect logits down.</p>
 </section>
 <section id="backprop-through-a-linear-layer" class="level2" data-number="13.5">
 <h2 data-number="13.5" class="anchored" data-anchor-id="backprop-through-a-linear-layer"><span class="header-section-number">13.5</span> Backprop Through a Linear Layer</h2>
@@ -512,12 +509,11 @@ w \xrightarrow{f} z \xrightarrow{g} \mathcal{L}
 <p>The first equation tells us how to update <span class="math inline">\(W\)</span>. The second passes the gradient backward to whatever fed <span class="math inline">\(x\)</span> into this layer.</p>
 <section id="step-2-linear-layer-backward-pass" class="level3" data-number="13.5.1">
 <h3 data-number="13.5.1" class="anchored" data-anchor-id="step-2-linear-layer-backward-pass"><span class="header-section-number">13.5.1</span> Step 2: Linear layer backward pass</h3>
-<!-- snippet: src/python/train.py#linear_backward -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> linear_backward(delta: Vector, weights: Matrix, x: Vector) <span class="op">-&gt;</span> <span class="bu">tuple</span>[Matrix, Vector]:</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    grad_w <span class="op">=</span> [[delta_i <span class="op">*</span> x_j <span class="cf">for</span> x_j <span class="kw">in</span> x] <span class="cf">for</span> delta_i <span class="kw">in</span> delta]</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    grad_x <span class="op">=</span> [<span class="bu">sum</span>(weights[i][j] <span class="op">*</span> delta[i] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(delta))) <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(x))]</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> grad_w, grad_x</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" data-snippet="linear_backward" data-startfrom="52"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 51;"><span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> linear_backward(delta: Vector, weights: Matrix, x: Vector) <span class="op">-&gt;</span> <span class="bu">tuple</span>[Matrix, Vector]:</span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>    grad_w <span class="op">=</span> [[delta_i <span class="op">*</span> x_j <span class="cf">for</span> x_j <span class="kw">in</span> x] <span class="cf">for</span> delta_i <span class="kw">in</span> delta]</span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>    grad_x <span class="op">=</span> [<span class="bu">sum</span>(weights[i][j] <span class="op">*</span> delta[i] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(delta))) <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(x))]</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> grad_w, grad_x</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>linear_backward</code> returns both gradients needed by backpropagation. <code>grad_w</code> updates the linear layer’s weights, while <code>grad_x</code> passes the gradient back to the layer that produced <code>x</code>.</p>
 </section>
 </section>
 <section id="accumulating-gradients-across-the-sequence" class="level2" data-number="13.6">
@@ -525,14 +521,12 @@ w \xrightarrow{f} z \xrightarrow{g} \mathcal{L}
 <p>We compute the softmax-CE gradient independently at each position <span class="math inline">\(t\)</span>. But all positions share the same unembedding matrix <span class="math inline">\(W_u\)</span> (and the same transformer weights). Their gradient contributions must be <em>summed</em> before updating any weight.</p>
 <section id="step-4-summing-gradient-contributions" class="level3" data-number="13.6.1">
 <h3 data-number="13.6.1" class="anchored" data-anchor-id="step-4-summing-gradient-contributions"><span class="header-section-number">13.6.1</span> Step 4: Summing gradient contributions</h3>
-<!-- snippet: src/python/train.py#accumulate_gradients -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> accumulate_gradients(gradients: Sequence[Matrix]) <span class="op">-&gt;</span> Matrix:</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    rows, cols <span class="op">=</span> shape(gradients[<span class="dv">0</span>])</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    total <span class="op">=</span> make_matrix(rows, cols)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> gradient <span class="kw">in</span> gradients:</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>        total <span class="op">=</span> matrix_add(total, gradient)</span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> total</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" data-snippet="accumulate_gradients" data-startfrom="60"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 59;"><span id="cb4-60"><a href="#cb4-60" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> accumulate_gradients(gradients: Sequence[Matrix]) <span class="op">-&gt;</span> Matrix:</span>
+<span id="cb4-61"><a href="#cb4-61" aria-hidden="true" tabindex="-1"></a>    rows, cols <span class="op">=</span> shape(gradients[<span class="dv">0</span>])</span>
+<span id="cb4-62"><a href="#cb4-62" aria-hidden="true" tabindex="-1"></a>    total <span class="op">=</span> make_matrix(rows, cols)</span>
+<span id="cb4-63"><a href="#cb4-63" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> gradient <span class="kw">in</span> gradients:</span>
+<span id="cb4-64"><a href="#cb4-64" aria-hidden="true" tabindex="-1"></a>        total <span class="op">=</span> matrix_add(total, gradient)</span>
+<span id="cb4-65"><a href="#cb4-65" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> total</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>The more a weight influenced the output at many positions, the larger (and more reliable) its accumulated gradient.</p>
 </section>
 </section>
@@ -544,12 +538,10 @@ W \leftarrow W - \eta \cdot \frac{\partial \mathcal{L}}{\partial W}
 \]</span></p>
 <section id="step-5-updating-a-weight-matrix-in-place" class="level3" data-number="13.7.1">
 <h3 data-number="13.7.1" class="anchored" data-anchor-id="step-5-updating-a-weight-matrix-in-place"><span class="header-section-number">13.7.1</span> Step 5: Updating a weight matrix in place</h3>
-<!-- snippet: src/python/train.py#sgd_update_matrix -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sgd_update_matrix(weights: Matrix, gradient: Matrix, learning_rate: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i, row <span class="kw">in</span> <span class="bu">enumerate</span>(weights):</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> j, value <span class="kw">in</span> <span class="bu">enumerate</span>(row):</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>            row[j] <span class="op">=</span> value <span class="op">-</span> learning_rate <span class="op">*</span> gradient[i][j]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" data-snippet="sgd_update_matrix" data-startfrom="70"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 69;"><span id="cb5-70"><a href="#cb5-70" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sgd_update_matrix(weights: Matrix, gradient: Matrix, learning_rate: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="va">None</span>:</span>
+<span id="cb5-71"><a href="#cb5-71" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i, row <span class="kw">in</span> <span class="bu">enumerate</span>(weights):</span>
+<span id="cb5-72"><a href="#cb5-72" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> j, value <span class="kw">in</span> <span class="bu">enumerate</span>(row):</span>
+<span id="cb5-73"><a href="#cb5-73" aria-hidden="true" tabindex="-1"></a>            row[j] <span class="op">=</span> value <span class="op">-</span> learning_rate <span class="op">*</span> gradient[i][j]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p>Every entry <span class="math inline">\(W_{ij}\)</span> moves a small step in the direction that reduces the loss.</p>
 </section>
 </section>
@@ -614,16 +606,88 @@ W \leftarrow W - \eta \cdot \frac{\partial \mathcal{L}}{\partial W}
 </div>
 </div>
 </div>
-<p>Figure <a href="#fig-ch13-update-training" class="quarto-xref">Figure&nbsp;<span>13.1</span></a> shows gradients flowing backward from the loss through each layer while weights are updated.</p>
-<div id="fig-ch13-update-training" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Backpropagation: gradient flowing from loss backward through each layer, updating weights">
+<p><a href="#fig-ch13-update-training" class="quarto-xref">Figure&nbsp;<span>13.1</span></a> shows gradients flowing backward from the loss through each layer while weights are updated.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-ch13-update-training" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-ch13-update-training-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="images/ch13_training.png" class="img-fluid figure-img" alt="Backpropagation: gradient flowing from loss backward through each layer, updating weights">
+<div>
+<svg width="672" height="480" viewbox="0.00 0.00 204.02 351.80" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 347.8)">
+<title>training</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-347.8 200.02,-347.8 200.02,4 -4,4"></polygon>
+<!-- data -->
+<g id="node1" class="node">
+<title>data</title>
+<path fill="white" stroke="#1177bb" stroke-width="2" d="M130.23,-343.8C130.23,-343.8 13.43,-343.8 13.43,-343.8 7.43,-343.8 1.43,-337.8 1.43,-331.8 1.43,-331.8 1.43,-319.8 1.43,-319.8 1.43,-313.8 7.43,-307.8 13.43,-307.8 13.43,-307.8 130.23,-307.8 130.23,-307.8 136.23,-307.8 142.23,-313.8 142.23,-319.8 142.23,-319.8 142.23,-331.8 142.23,-331.8 142.23,-337.8 136.23,-343.8 130.23,-343.8"></path>
+<text text-anchor="middle" x="71.83" y="-321.6" font-family="monospace" font-size="14.00" fill="#1177bb">Training data (tokens)</text>
+</g>
+<!-- fwd -->
+<g id="node2" class="node">
+<title>fwd</title>
+<path fill="white" stroke="#228811" stroke-width="2" d="M131.07,-270.8C131.07,-270.8 12.59,-270.8 12.59,-270.8 6.59,-270.8 0.59,-264.8 0.59,-258.8 0.59,-258.8 0.59,-246.8 0.59,-246.8 0.59,-240.8 6.59,-234.8 12.59,-234.8 12.59,-234.8 131.07,-234.8 131.07,-234.8 137.07,-234.8 143.07,-240.8 143.07,-246.8 143.07,-246.8 143.07,-258.8 143.07,-258.8 143.07,-264.8 137.07,-270.8 131.07,-270.8"></path>
+<text text-anchor="middle" x="71.83" y="-248.6" font-family="monospace" font-size="14.00" fill="#228811">Forward pass (predict)</text>
+</g>
+<!-- data&#45;&gt;fwd -->
+<g id="edge1" class="edge">
+<title>data-&gt;fwd</title>
+<path fill="none" stroke="#555555" d="M71.83,-307.61C71.83,-299.59 71.83,-289.85 71.83,-280.87"></path>
+<polygon fill="#555555" stroke="#555555" points="75.33,-280.83 71.83,-270.83 68.33,-280.83 75.33,-280.83"></polygon>
+</g>
+<!-- loss -->
+<g id="node3" class="node">
+<title>loss</title>
+<path fill="white" stroke="#cc8800" stroke-width="2" d="M131.49,-197.8C131.49,-197.8 12.17,-197.8 12.17,-197.8 6.17,-197.8 0.17,-191.8 0.17,-185.8 0.17,-185.8 0.17,-173.8 0.17,-173.8 0.17,-167.8 6.17,-161.8 12.17,-161.8 12.17,-161.8 131.49,-161.8 131.49,-161.8 137.49,-161.8 143.49,-167.8 143.49,-173.8 143.49,-173.8 143.49,-185.8 143.49,-185.8 143.49,-191.8 137.49,-197.8 131.49,-197.8"></path>
+<text text-anchor="middle" x="71.83" y="-175.6" font-family="monospace" font-size="14.00" fill="#cc8800">Loss &nbsp;L = −log P(true)</text>
+</g>
+<!-- fwd&#45;&gt;loss -->
+<g id="edge2" class="edge">
+<title>fwd-&gt;loss</title>
+<path fill="none" stroke="#555555" d="M71.83,-234.61C71.83,-226.59 71.83,-216.85 71.83,-207.87"></path>
+<polygon fill="#555555" stroke="#555555" points="75.33,-207.83 71.83,-197.83 68.33,-207.83 75.33,-207.83"></polygon>
+</g>
+<!-- back -->
+<g id="node4" class="node">
+<title>back</title>
+<path fill="white" stroke="#cc2222" stroke-width="2" d="M129.17,-109C129.17,-109 14.5,-109 14.5,-109 8.5,-109 2.5,-103 2.5,-97 2.5,-97 2.5,-85 2.5,-85 2.5,-79 8.5,-73 14.5,-73 14.5,-73 129.17,-73 129.17,-73 135.17,-73 141.17,-79 141.17,-85 141.17,-85 141.17,-97 141.17,-97 141.17,-103 135.17,-109 129.17,-109"></path>
+<text text-anchor="middle" x="71.83" y="-86.8" font-family="monospace" font-size="14.00" fill="#cc2222">Backprop (chain rule)</text>
+</g>
+<!-- loss&#45;&gt;back -->
+<g id="edge3" class="edge">
+<title>loss-&gt;back</title>
+<path fill="none" stroke="#555555" d="M71.83,-161.65C71.83,-149.52 71.83,-133.02 71.83,-119.12"></path>
+<polygon fill="#555555" stroke="#555555" points="75.33,-119.11 71.83,-109.11 68.33,-119.11 75.33,-119.11"></polygon>
+</g>
+<!-- update -->
+<g id="node5" class="node">
+<title>update</title>
+<path fill="white" stroke="#1177bb" stroke-width="2" d="M112.38,-36C112.38,-36 31.28,-36 31.28,-36 25.28,-36 19.28,-30 19.28,-24 19.28,-24 19.28,-12 19.28,-12 19.28,-6 25.28,0 31.28,0 31.28,0 112.38,0 112.38,0 118.38,0 124.38,-6 124.38,-12 124.38,-12 124.38,-24 124.38,-24 124.38,-30 118.38,-36 112.38,-36"></path>
+<text text-anchor="middle" x="71.83" y="-13.8" font-family="monospace" font-size="14.00" fill="#1177bb">θ ← θ − α · ∇L</text>
+</g>
+<!-- back&#45;&gt;update -->
+<g id="edge4" class="edge">
+<title>back-&gt;update</title>
+<path fill="none" stroke="#555555" d="M71.83,-72.81C71.83,-64.79 71.83,-55.05 71.83,-46.07"></path>
+<polygon fill="#555555" stroke="#555555" points="75.33,-46.03 71.83,-36.03 68.33,-46.03 75.33,-46.03"></polygon>
+</g>
+<!-- update&#45;&gt;fwd -->
+<g id="edge5" class="edge">
+<title>update-&gt;fwd</title>
+<path fill="none" stroke="#999999" stroke-dasharray="5,2" d="M110.54,-36.14C125.53,-44.89 141.15,-57.1 149.83,-73 169.57,-109.17 162.67,-179.42 152.83,-197.8 145.83,-210.88 134.12,-221.33 121.74,-229.43"></path>
+<polygon fill="#999999" stroke="#999999" points="119.85,-226.48 113.11,-234.66 123.47,-232.47 119.85,-226.48"></polygon>
+<text text-anchor="middle" x="178.93" y="-131.2" font-family="Times,serif" font-size="14.00">repeat</text>
+</g>
+</g>
+</svg>
+</div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch13-update-training-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;13.1: Backpropagation and weight updates
+Figure&nbsp;13.1: Backpropagation: gradient flowing from loss backward through each layer, updating weights.
 </figcaption>
 </figure>
+</div>
+</div>
 </div>
 </section>
 <section id="key-takeaways" class="level2" data-number="13.10">

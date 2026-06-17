@@ -438,26 +438,24 @@ window.Quarto = {
 </section>
 <section id="end-to-end-demo" class="level2" data-number="A.3">
 <h2 data-number="A.3" class="anchored" data-anchor-id="end-to-end-demo"><span class="header-section-number">A.3</span> End-to-End Demo</h2>
-<!-- snippet: src/python/inference.py#demo -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> demo(seed: <span class="bu">int</span> <span class="op">=</span> <span class="dv">7</span>) <span class="op">-&gt;</span> <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">object</span>]:</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    config <span class="op">=</span> GPTConfig(vocab_size<span class="op">=</span><span class="dv">100</span>, d_model<span class="op">=</span><span class="dv">32</span>, num_heads<span class="op">=</span><span class="dv">4</span>, num_layers<span class="op">=</span><span class="dv">2</span>, max_seq_len<span class="op">=</span><span class="dv">64</span>)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    model_rng <span class="op">=</span> random.Random(seed)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    sample_rng <span class="op">=</span> random.Random(seed <span class="op">+</span> <span class="dv">1</span>)</span>
-<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a>    params <span class="op">=</span> make_gpt_params(config, model_rng)</span>
-<span id="cb2-6"><a href="#cb2-6" aria-hidden="true" tabindex="-1"></a>    logits <span class="op">=</span> gpt_forward([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>], params, config)</span>
-<span id="cb2-7"><a href="#cb2-7" aria-hidden="true" tabindex="-1"></a>    probabilities <span class="op">=</span> softmax(logits)</span>
-<span id="cb2-8"><a href="#cb2-8" aria-hidden="true" tabindex="-1"></a>    top_token <span class="op">=</span> <span class="bu">max</span>(<span class="bu">range</span>(<span class="bu">len</span>(probabilities)), key<span class="op">=</span>probabilities.<span class="fu">__getitem__</span>)</span>
-<span id="cb2-9"><a href="#cb2-9" aria-hidden="true" tabindex="-1"></a>    generated <span class="op">=</span> generate(params, config, [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>], <span class="dv">10</span>, temperature<span class="op">=</span><span class="fl">0.8</span>, top_k<span class="op">=</span><span class="dv">10</span>, rng<span class="op">=</span>sample_rng)</span>
-<span id="cb2-10"><a href="#cb2-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
-<span id="cb2-11"><a href="#cb2-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"config"</span>: config,</span>
-<span id="cb2-12"><a href="#cb2-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">"parameters"</span>: count_parameters(config),</span>
-<span id="cb2-13"><a href="#cb2-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">"logits_first_10"</span>: logits[:<span class="dv">10</span>],</span>
-<span id="cb2-14"><a href="#cb2-14" aria-hidden="true" tabindex="-1"></a>        <span class="st">"top_token"</span>: top_token,</span>
-<span id="cb2-15"><a href="#cb2-15" aria-hidden="true" tabindex="-1"></a>        <span class="st">"top_probability"</span>: probabilities[top_token],</span>
-<span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a>        <span class="st">"generated"</span>: generated,</span>
-<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>        <span class="st">"full_sequence"</span>: [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>] <span class="op">+</span> generated,</span>
-<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" data-snippet="demo" data-startfrom="63"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 62;"><span id="cb2-63"><a href="#cb2-63" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> demo(seed: <span class="bu">int</span> <span class="op">=</span> <span class="dv">7</span>) <span class="op">-&gt;</span> <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">object</span>]:</span>
+<span id="cb2-64"><a href="#cb2-64" aria-hidden="true" tabindex="-1"></a>    config <span class="op">=</span> GPTConfig(vocab_size<span class="op">=</span><span class="dv">100</span>, d_model<span class="op">=</span><span class="dv">32</span>, num_heads<span class="op">=</span><span class="dv">4</span>, num_layers<span class="op">=</span><span class="dv">2</span>, max_seq_len<span class="op">=</span><span class="dv">64</span>)</span>
+<span id="cb2-65"><a href="#cb2-65" aria-hidden="true" tabindex="-1"></a>    model_rng <span class="op">=</span> random.Random(seed)</span>
+<span id="cb2-66"><a href="#cb2-66" aria-hidden="true" tabindex="-1"></a>    sample_rng <span class="op">=</span> random.Random(seed <span class="op">+</span> <span class="dv">1</span>)</span>
+<span id="cb2-67"><a href="#cb2-67" aria-hidden="true" tabindex="-1"></a>    params <span class="op">=</span> make_gpt_params(config, model_rng)</span>
+<span id="cb2-68"><a href="#cb2-68" aria-hidden="true" tabindex="-1"></a>    logits <span class="op">=</span> gpt_forward([<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>, <span class="dv">4</span>, <span class="dv">5</span>], params, config)</span>
+<span id="cb2-69"><a href="#cb2-69" aria-hidden="true" tabindex="-1"></a>    probabilities <span class="op">=</span> softmax(logits)</span>
+<span id="cb2-70"><a href="#cb2-70" aria-hidden="true" tabindex="-1"></a>    top_token <span class="op">=</span> <span class="bu">max</span>(<span class="bu">range</span>(<span class="bu">len</span>(probabilities)), key<span class="op">=</span>probabilities.<span class="fu">__getitem__</span>)</span>
+<span id="cb2-71"><a href="#cb2-71" aria-hidden="true" tabindex="-1"></a>    generated <span class="op">=</span> generate(params, config, [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>], <span class="dv">10</span>, temperature<span class="op">=</span><span class="fl">0.8</span>, top_k<span class="op">=</span><span class="dv">10</span>, rng<span class="op">=</span>sample_rng)</span>
+<span id="cb2-72"><a href="#cb2-72" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb2-73"><a href="#cb2-73" aria-hidden="true" tabindex="-1"></a>        <span class="st">"config"</span>: config,</span>
+<span id="cb2-74"><a href="#cb2-74" aria-hidden="true" tabindex="-1"></a>        <span class="st">"parameters"</span>: count_parameters(config),</span>
+<span id="cb2-75"><a href="#cb2-75" aria-hidden="true" tabindex="-1"></a>        <span class="st">"logits_first_10"</span>: logits[:<span class="dv">10</span>],</span>
+<span id="cb2-76"><a href="#cb2-76" aria-hidden="true" tabindex="-1"></a>        <span class="st">"top_token"</span>: top_token,</span>
+<span id="cb2-77"><a href="#cb2-77" aria-hidden="true" tabindex="-1"></a>        <span class="st">"top_probability"</span>: probabilities[top_token],</span>
+<span id="cb2-78"><a href="#cb2-78" aria-hidden="true" tabindex="-1"></a>        <span class="st">"generated"</span>: generated,</span>
+<span id="cb2-79"><a href="#cb2-79" aria-hidden="true" tabindex="-1"></a>        <span class="st">"full_sequence"</span>: [<span class="dv">1</span>, <span class="dv">2</span>, <span class="dv">3</span>] <span class="op">+</span> generated,</span>
+<span id="cb2-80"><a href="#cb2-80" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </section>
 <section id="microgpt-architecture-summary-reference" class="level2" data-number="A.4">
 <h2 data-number="A.4" class="anchored" data-anchor-id="microgpt-architecture-summary-reference"><span class="header-section-number">A.4</span> microGPT Architecture Summary (Reference)</h2>

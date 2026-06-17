@@ -454,17 +454,6 @@ Q = X W_q  \in \mathbb{R}^{T\times d_k} \quad K = X W_k  \in \mathbb{R}^{T\times
 S = Q K^{\top} / \sqrt{d_k}  \in \mathbb{R}^{T\times T}
 \]</span></p>
 <p><code>S[i,j]</code> measures how relevant token <code>j</code> is to token <code>i</code>. The division by <span class="math inline">\(\sqrt{d_k}\)</span> prevents the dot products from growing too large.</p>
-<div class="callout callout-style-simple callout-note">
-<div class="callout-body d-flex">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-body-container">
-<p><em>Math Minute — Matrix Multiplication</em></p>
-<p>For matrices <span class="math inline">\(A \in \mathbb{R}^{m\times n}\)</span> and <span class="math inline">\(B \in \mathbb{R}^{n\times p}\)</span>: <span class="math inline">\((AB)[i,j] = \sum_k A[i,k] \cdot B[k,j]\)</span>. The result has shape <span class="math inline">\([m\times p]\)</span>. Each entry is a dot product of a row of <code>A</code> and a column of <code>B</code>.</p>
-</div>
-</div>
-</div>
 </section>
 <section id="step-3-apply-causal-mask-for-autoregressive-models" class="level3" data-number="6.2.3">
 <h3 data-number="6.2.3" class="anchored" data-anchor-id="step-3-apply-causal-mask-for-autoregressive-models"><span class="header-section-number">6.2.3</span> Step 3: Apply Causal Mask (for autoregressive models)</h3>
@@ -554,85 +543,49 @@ Figure&nbsp;6.2: Causal attention weight heatmap
 </section>
 <section id="the-code-scaled-dot-product-attention-in-python" class="level2" data-number="6.4">
 <h2 data-number="6.4" class="anchored" data-anchor-id="the-code-scaled-dot-product-attention-in-python"><span class="header-section-number">6.4</span> The Code: Scaled Dot-Product Attention in Python</h2>
-<p>Attention is a composition of named operations. The matrix abstraction from <a href="ch02-notation.html" class="quarto-xref"><span>Chapter 2</span></a> carries forward; we add multiply, transpose, scale, and add.</p>
-<!-- snippet: src/python/common.py#matrix_ops -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tag::transpose[]</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> transpose(matrix: Matrix) <span class="op">-&gt;</span> Matrix:</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [<span class="bu">list</span>(col) <span class="cf">for</span> col <span class="kw">in</span> <span class="bu">zip</span>(<span class="op">*</span>matrix)]</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="co"># end::transpose[]</span></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> matrix_add(left: Matrix, right: Matrix) <span class="op">-&gt;</span> Matrix:</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [[a <span class="op">+</span> b <span class="cf">for</span> a, b <span class="kw">in</span> <span class="bu">zip</span>(row_a, row_b)] <span class="cf">for</span> row_a, row_b <span class="kw">in</span> <span class="bu">zip</span>(left, right)]</span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> matrix_scale(matrix: Matrix, scalar: <span class="bu">float</span>) <span class="op">-&gt;</span> Matrix:</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [[scalar <span class="op">*</span> value <span class="cf">for</span> value <span class="kw">in</span> row] <span class="cf">for</span> row <span class="kw">in</span> matrix]</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a><span class="co"># tag::matrix_multiply[]</span></span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> matrix_multiply(left: Matrix, right: Matrix) <span class="op">-&gt;</span> Matrix:</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    right_t <span class="op">=</span> transpose(right)</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [[dot(row, col) <span class="cf">for</span> col <span class="kw">in</span> right_t] <span class="cf">for</span> row <span class="kw">in</span> left]</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a><span class="co"># end::matrix_multiply[]</span></span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> hstack(matrices: Sequence[Matrix]) <span class="op">-&gt;</span> Matrix:</span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [<span class="bu">sum</span>((matrix[row] <span class="cf">for</span> matrix <span class="kw">in</span> matrices), []) <span class="cf">for</span> row <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(matrices[<span class="dv">0</span>]))]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
-<p><code>softmax</code> converts a vector of raw scores into a probability distribution. We subtract the maximum value before exponentiating to prevent overflow.</p>
-<div class="callout callout-style-simple callout-note">
-<div class="callout-body d-flex">
-<div class="callout-icon-container">
-<i class="callout-icon"></i>
-</div>
-<div class="callout-body-container">
-<p><em>Math Minute — Softmax</em></p>
-<p><code>softmax(z)</code> turns a vector of raw scores into a probability distribution. For vector <span class="math inline">\(z = [z_1, z_2, \ldots, z_n]\)</span>:</p>
-<p><span class="math display">\[
-\operatorname{softmax}(z)_i = \frac{\exp(z_i)}{\sum_j \exp(z_j)}
-\]</span></p>
-<p>Output values are all positive and sum to 1. Large scores get amplified; small scores get suppressed. The largest score receives most of the weight.</p>
-</div>
-</div>
-</div>
-<!-- snippet: src/python/common.py#softmax -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># tag::softmax_vector[]</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> softmax(logits: Sequence[<span class="bu">float</span>]) <span class="op">-&gt;</span> Vector:</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    max_logit <span class="op">=</span> <span class="bu">max</span>(logits)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    exp_values <span class="op">=</span> [math.exp(value <span class="op">-</span> max_logit) <span class="cf">for</span> value <span class="kw">in</span> logits]</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    total <span class="op">=</span> <span class="bu">sum</span>(exp_values)</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [value <span class="op">/</span> total <span class="cf">for</span> value <span class="kw">in</span> exp_values]</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a><span class="co"># end::softmax_vector[]</span></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a><span class="co"># tag::softmax_rows[]</span></span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> softmax_rows(matrix: Matrix) <span class="op">-&gt;</span> Matrix:</span>
-<span id="cb8-12"><a href="#cb8-12" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [softmax(row) <span class="cf">for</span> row <span class="kw">in</span> matrix]</span>
-<span id="cb8-13"><a href="#cb8-13" aria-hidden="true" tabindex="-1"></a><span class="co"># end::softmax_rows[]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" data-snippet="transpose" data-startfrom="91"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 90;"><span id="cb7-91"><a href="#cb7-91" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> transpose(matrix: Matrix) <span class="op">-&gt;</span> Matrix:</span>
+<span id="cb7-92"><a href="#cb7-92" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [<span class="bu">list</span>(col) <span class="cf">for</span> col <span class="kw">in</span> <span class="bu">zip</span>(<span class="op">*</span>matrix)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>transpose</code> swaps rows and columns so attention can compare every query row with every key row.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" data-snippet="matrix_add" data-startfrom="97"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 96;"><span id="cb8-97"><a href="#cb8-97" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> matrix_add(left: Matrix, right: Matrix) <span class="op">-&gt;</span> Matrix:</span>
+<span id="cb8-98"><a href="#cb8-98" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [[a <span class="op">+</span> b <span class="cf">for</span> a, b <span class="kw">in</span> <span class="bu">zip</span>(row_a, row_b)] <span class="cf">for</span> row_a, row_b <span class="kw">in</span> <span class="bu">zip</span>(left, right)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>matrix_add</code> adds two matrices element by element. Attention uses it to add the causal mask to the score matrix.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" data-snippet="matrix_scale" data-startfrom="103"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 102;"><span id="cb9-103"><a href="#cb9-103" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> matrix_scale(matrix: Matrix, scalar: <span class="bu">float</span>) <span class="op">-&gt;</span> Matrix:</span>
+<span id="cb9-104"><a href="#cb9-104" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [[scalar <span class="op">*</span> value <span class="cf">for</span> value <span class="kw">in</span> row] <span class="cf">for</span> row <span class="kw">in</span> matrix]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>matrix_scale</code> multiplies every entry by the same scalar. Attention uses this for the <span class="math inline">\(1/\sqrt{d_k}\)</span> scaling factor.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10" data-snippet="matrix_multiply" data-startfrom="109"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 108;"><span id="cb10-109"><a href="#cb10-109" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> matrix_multiply(left: Matrix, right: Matrix) <span class="op">-&gt;</span> Matrix:</span>
+<span id="cb10-110"><a href="#cb10-110" aria-hidden="true" tabindex="-1"></a>    right_t <span class="op">=</span> transpose(right)</span>
+<span id="cb10-111"><a href="#cb10-111" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [[dot(row, col) <span class="cf">for</span> col <span class="kw">in</span> right_t] <span class="cf">for</span> row <span class="kw">in</span> left]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>matrix_multiply</code> computes the query-key score matrix and later the weighted sum of values.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb11" data-snippet="hstack" data-startfrom="116"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 115;"><span id="cb11-116"><a href="#cb11-116" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> hstack(matrices: Sequence[Matrix]) <span class="op">-&gt;</span> Matrix:</span>
+<span id="cb11-117"><a href="#cb11-117" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [<span class="bu">sum</span>((matrix[row] <span class="cf">for</span> matrix <span class="kw">in</span> matrices), []) <span class="cf">for</span> row <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(matrices[<span class="dv">0</span>]))]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>hstack</code> concatenates matrices column-wise. It is used later by multi-head attention after each head has produced its own output.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb12" data-snippet="softmax_vector" data-startfrom="124"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 123;"><span id="cb12-124"><a href="#cb12-124" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> softmax(logits: Sequence[<span class="bu">float</span>]) <span class="op">-&gt;</span> Vector:</span>
+<span id="cb12-125"><a href="#cb12-125" aria-hidden="true" tabindex="-1"></a>    max_logit <span class="op">=</span> <span class="bu">max</span>(logits)</span>
+<span id="cb12-126"><a href="#cb12-126" aria-hidden="true" tabindex="-1"></a>    exp_values <span class="op">=</span> [math.exp(value <span class="op">-</span> max_logit) <span class="cf">for</span> value <span class="kw">in</span> logits]</span>
+<span id="cb12-127"><a href="#cb12-127" aria-hidden="true" tabindex="-1"></a>    total <span class="op">=</span> <span class="bu">sum</span>(exp_values)</span>
+<span id="cb12-128"><a href="#cb12-128" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [value <span class="op">/</span> total <span class="cf">for</span> value <span class="kw">in</span> exp_values]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>softmax</code> converts a vector of raw scores into a probability distribution. It subtracts the maximum value before exponentiating to prevent overflow.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb13" data-snippet="softmax_rows" data-startfrom="133"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 132;"><span id="cb13-133"><a href="#cb13-133" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> softmax_rows(matrix: Matrix) <span class="op">-&gt;</span> Matrix:</span>
+<span id="cb13-134"><a href="#cb13-134" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [softmax(row) <span class="cf">for</span> row <span class="kw">in</span> matrix]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>softmax_rows</code> applies the same conversion independently to every row of the attention score matrix.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb14" data-snippet="causal_mask" data-startfrom="276"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 275;"><span id="cb14-276"><a href="#cb14-276" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> causal_mask(size: <span class="bu">int</span>) <span class="op">-&gt;</span> Matrix:</span>
+<span id="cb14-277"><a href="#cb14-277" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [[<span class="fl">0.0</span> <span class="cf">if</span> j <span class="op">&lt;=</span> i <span class="cf">else</span> <span class="op">-</span><span class="fl">1.0e9</span> <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(size)] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(size)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>causal_mask</code> fills the upper triangle with <span class="math inline">\(-10^9\)</span> so future tokens cannot be attended to.</p>
-<!-- snippet: src/python/common.py#causal_mask -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> causal_mask(size: <span class="bu">int</span>) <span class="op">-&gt;</span> Matrix:</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [[<span class="fl">0.0</span> <span class="cf">if</span> j <span class="op">&lt;=</span> i <span class="cf">else</span> <span class="op">-</span><span class="fl">1.0e9</span> <span class="cf">for</span> j <span class="kw">in</span> <span class="bu">range</span>(size)] <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(size)]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
-<p><code>scaled_dot_product_attention</code> and <code>self_attention</code> are direct translations of the attention formula.</p>
-<!-- snippet: src/python/common.py#sdpa -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> scaled_dot_product_attention(query: Matrix, key: Matrix, value: Matrix) <span class="op">-&gt;</span> <span class="bu">tuple</span>[Matrix, Matrix]:</span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>    d_key <span class="op">=</span> shape(query)[<span class="dv">1</span>]</span>
-<span id="cb10-3"><a href="#cb10-3" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> matrix_scale(matrix_multiply(query, transpose(key)), <span class="fl">1.0</span> <span class="op">/</span> math.sqrt(d_key))</span>
-<span id="cb10-4"><a href="#cb10-4" aria-hidden="true" tabindex="-1"></a>    masked_scores <span class="op">=</span> matrix_add(scores, causal_mask(<span class="bu">len</span>(scores)))</span>
-<span id="cb10-5"><a href="#cb10-5" aria-hidden="true" tabindex="-1"></a>    weights <span class="op">=</span> softmax_rows(masked_scores)</span>
-<span id="cb10-6"><a href="#cb10-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> matrix_multiply(weights, value), weights</span>
-<span id="cb10-7"><a href="#cb10-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-8"><a href="#cb10-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb10-9"><a href="#cb10-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> self_attention(x: Matrix, wq: Matrix, wk: Matrix, wv: Matrix) <span class="op">-&gt;</span> <span class="bu">tuple</span>[Matrix, Matrix]:</span>
-<span id="cb10-10"><a href="#cb10-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> scaled_dot_product_attention(</span>
-<span id="cb10-11"><a href="#cb10-11" aria-hidden="true" tabindex="-1"></a>        matrix_multiply(x, wq),</span>
-<span id="cb10-12"><a href="#cb10-12" aria-hidden="true" tabindex="-1"></a>        matrix_multiply(x, wk),</span>
-<span id="cb10-13"><a href="#cb10-13" aria-hidden="true" tabindex="-1"></a>        matrix_multiply(x, wv),</span>
-<span id="cb10-14"><a href="#cb10-14" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb15" data-snippet="sdpa" data-startfrom="282"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 281;"><span id="cb15-282"><a href="#cb15-282" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> scaled_dot_product_attention(query: Matrix, key: Matrix, value: Matrix) <span class="op">-&gt;</span> <span class="bu">tuple</span>[Matrix, Matrix]:</span>
+<span id="cb15-283"><a href="#cb15-283" aria-hidden="true" tabindex="-1"></a>    d_key <span class="op">=</span> shape(query)[<span class="dv">1</span>]</span>
+<span id="cb15-284"><a href="#cb15-284" aria-hidden="true" tabindex="-1"></a>    scores <span class="op">=</span> matrix_scale(matrix_multiply(query, transpose(key)), <span class="fl">1.0</span> <span class="op">/</span> math.sqrt(d_key))</span>
+<span id="cb15-285"><a href="#cb15-285" aria-hidden="true" tabindex="-1"></a>    masked_scores <span class="op">=</span> matrix_add(scores, causal_mask(<span class="bu">len</span>(scores)))</span>
+<span id="cb15-286"><a href="#cb15-286" aria-hidden="true" tabindex="-1"></a>    weights <span class="op">=</span> softmax_rows(masked_scores)</span>
+<span id="cb15-287"><a href="#cb15-287" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> matrix_multiply(weights, value), weights</span>
+<span id="cb15-288"><a href="#cb15-288" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-289"><a href="#cb15-289" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-290"><a href="#cb15-290" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> self_attention(x: Matrix, wq: Matrix, wk: Matrix, wv: Matrix) <span class="op">-&gt;</span> <span class="bu">tuple</span>[Matrix, Matrix]:</span>
+<span id="cb15-291"><a href="#cb15-291" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> scaled_dot_product_attention(</span>
+<span id="cb15-292"><a href="#cb15-292" aria-hidden="true" tabindex="-1"></a>        matrix_multiply(x, wq),</span>
+<span id="cb15-293"><a href="#cb15-293" aria-hidden="true" tabindex="-1"></a>        matrix_multiply(x, wk),</span>
+<span id="cb15-294"><a href="#cb15-294" aria-hidden="true" tabindex="-1"></a>        matrix_multiply(x, wv),</span>
+<span id="cb15-295"><a href="#cb15-295" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>scaled_dot_product_attention</code> is a direct translation of the attention formula: scores, mask, softmax, weighted sum. <code>self_attention</code> first projects the same input matrix into queries, keys, and values, then calls SDPA.</p>
 <p>Run with <code>python3 src/python/chapter_demos.py</code>.</p>
 </section>
 <section id="key-takeaways" class="level2" data-number="6.5">

@@ -438,8 +438,8 @@ window.Quarto = {
 <p>A single transformer block (Pre-LN variant, used by most modern GPTs):</p>
 <p><span class="math display">\[
 \begin{aligned}
-x_1 &amp;= x + \text{MHA}(\text{LayerNorm}(x)) &amp;&amp; \text{(attention sub-layer)} \\
-x_2 &amp;= x_1 + \text{FFN}(\text{LayerNorm}(x_1)) &amp;&amp; \text{(FFN sub-layer)}
+x_1 &amp;= x + \text{MHA}(\text{LayerNorm}(x)) &amp;&amp; \text{(Multi-Head Attention sub-layer)} \\
+x_2 &amp;= x_1 + \text{FFN}(\text{LayerNorm}(x_1)) &amp;&amp; \text{(Feed-Forward Network sub-layer)}
 \end{aligned}
 \]</span></p>
 <p>This is the <em>Pre-Layer-Norm</em> architecture. The original “Attention Is All You Need” paper used Post-LN, but Pre-LN is more stable to train and is used in GPT-2 onwards.</p>
@@ -495,102 +495,263 @@ x_norm = [1.136, -1.215, 0.823, -0.745]
    = [1.3, 0.2, 0.7, 0.3]</code></pre>
 <p><em>Second LayerNorm + FFN + residual</em> (analogously) → <span class="math inline">\(x_2\)</span>.</p>
 <p><span class="math inline">\(x_1\)</span> contains <em>both</em> the original information (from <code>x</code>) and the new information (from <code>mha_out</code>). Nothing is overwritten — the residual stream accumulates.</p>
-<p>Figure <a href="#fig-ch10-matrix-block" class="quarto-xref">Figure&nbsp;<span>10.1</span></a> shows the full Pre-LN transformer block with LayerNorm before each sub-layer and residual connections around both.</p>
-<div id="fig-ch10-matrix-block" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Full transformer block (Pre-LN) — LayerNorm before each sub-layer, residual connections around both.">
+<p><a href="#fig-ch10-matrix-block" class="quarto-xref">Figure&nbsp;<span>10.1</span></a> shows the full Pre-LN transformer block with LayerNorm before each sub-layer and residual connections around both.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-ch10-matrix-block" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-ch10-matrix-block-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="images/ch10_block.png" class="img-fluid figure-img" alt="Full transformer block (Pre-LN) — LayerNorm before each sub-layer, residual connections around both.">
+<div>
+<svg width="672" height="480" viewbox="0.00 0.00 206.22 572.60" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 568.6)">
+<title>transformer_block</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-568.6 202.22,-568.6 202.22,4 -4,4"></polygon>
+<!-- x_in -->
+<g id="node1" class="node">
+<title>x_in</title>
+<text text-anchor="middle" x="73.9" y="-542.4" font-family="monospace" font-size="14.00">x &nbsp;(input)</text>
+</g>
+<!-- ln1 -->
+<g id="node2" class="node">
+<title>ln1</title>
+<path fill="white" stroke="#1177bb" stroke-width="2" d="M109.7,-491.6C109.7,-491.6 38.09,-491.6 38.09,-491.6 32.09,-491.6 26.09,-485.6 26.09,-479.6 26.09,-479.6 26.09,-467.6 26.09,-467.6 26.09,-461.6 32.09,-455.6 38.09,-455.6 38.09,-455.6 109.7,-455.6 109.7,-455.6 115.7,-455.6 121.7,-461.6 121.7,-467.6 121.7,-467.6 121.7,-479.6 121.7,-479.6 121.7,-485.6 115.7,-491.6 109.7,-491.6"></path>
+<text text-anchor="middle" x="73.9" y="-469.4" font-family="monospace" font-size="14.00" fill="#1177bb">Layer Norm 1</text>
+</g>
+<!-- x_in&#45;&gt;ln1 -->
+<g id="edge1" class="edge">
+<title>x_in-&gt;ln1</title>
+<path fill="none" stroke="#555555" d="M73.9,-528.41C73.9,-520.39 73.9,-510.65 73.9,-501.67"></path>
+<polygon fill="#555555" stroke="#555555" points="77.4,-501.63 73.9,-491.63 70.4,-501.63 77.4,-501.63"></polygon>
+</g>
+<!-- add1 -->
+<g id="node4" class="node">
+<title>add1</title>
+<ellipse fill="white" stroke="#999999" stroke-width="2" cx="73.9" cy="-315.3" rx="14.5" ry="14.5"></ellipse>
+<text text-anchor="middle" x="73.9" y="-311.1" font-family="monospace" font-size="14.00" fill="#999999">+</text>
+</g>
+<!-- x_in&#45;&gt;add1 -->
+<g id="edge8" class="edge">
+<title>x_in-&gt;add1</title>
+<path fill="none" stroke="#999999" stroke-dasharray="5,2" d="M97.58,-528.55C109.27,-518.95 122.6,-506.01 130.9,-491.6 151.13,-456.45 147.2,-443.08 151.9,-402.8 153.75,-386.91 159.54,-380.86 151.9,-366.8 140.39,-345.64 115.76,-331.98 97.24,-324.27"></path>
+<polygon fill="#999999" stroke="#999999" points="98.29,-320.93 87.7,-320.59 95.77,-327.46 98.29,-320.93"></polygon>
+<text text-anchor="middle" x="172.06" y="-425" font-family="Times,serif" font-size="14.00">residual</text>
+</g>
+<!-- mha -->
+<g id="node3" class="node">
+<title>mha</title>
+<path fill="white" stroke="#228811" stroke-width="2" d="M130.6,-402.8C130.6,-402.8 17.2,-402.8 17.2,-402.8 11.2,-402.8 5.2,-396.8 5.2,-390.8 5.2,-390.8 5.2,-378.8 5.2,-378.8 5.2,-372.8 11.2,-366.8 17.2,-366.8 17.2,-366.8 130.6,-366.8 130.6,-366.8 136.6,-366.8 142.6,-372.8 142.6,-378.8 142.6,-378.8 142.6,-390.8 142.6,-390.8 142.6,-396.8 136.6,-402.8 130.6,-402.8"></path>
+<text text-anchor="middle" x="73.9" y="-380.6" font-family="monospace" font-size="14.00" fill="#228811">Multi-Head Attention</text>
+</g>
+<!-- ln1&#45;&gt;mha -->
+<g id="edge2" class="edge">
+<title>ln1-&gt;mha</title>
+<path fill="none" stroke="#555555" d="M73.9,-455.45C73.9,-443.32 73.9,-426.82 73.9,-412.92"></path>
+<polygon fill="#555555" stroke="#555555" points="77.4,-412.91 73.9,-402.91 70.4,-412.91 77.4,-412.91"></polygon>
+</g>
+<!-- mha&#45;&gt;add1 -->
+<g id="edge3" class="edge">
+<title>mha-&gt;add1</title>
+<path fill="none" stroke="#555555" d="M73.9,-366.77C73.9,-358.66 73.9,-348.83 73.9,-340.01"></path>
+<polygon fill="#555555" stroke="#555555" points="77.4,-339.93 73.9,-329.93 70.4,-339.93 77.4,-339.93"></polygon>
+</g>
+<!-- ln2 -->
+<g id="node5" class="node">
+<title>ln2</title>
+<path fill="white" stroke="#1177bb" stroke-width="2" d="M109.7,-263.8C109.7,-263.8 38.09,-263.8 38.09,-263.8 32.09,-263.8 26.09,-257.8 26.09,-251.8 26.09,-251.8 26.09,-239.8 26.09,-239.8 26.09,-233.8 32.09,-227.8 38.09,-227.8 38.09,-227.8 109.7,-227.8 109.7,-227.8 115.7,-227.8 121.7,-233.8 121.7,-239.8 121.7,-239.8 121.7,-251.8 121.7,-251.8 121.7,-257.8 115.7,-263.8 109.7,-263.8"></path>
+<text text-anchor="middle" x="73.9" y="-241.6" font-family="monospace" font-size="14.00" fill="#1177bb">Layer Norm 2</text>
+</g>
+<!-- add1&#45;&gt;ln2 -->
+<g id="edge4" class="edge">
+<title>add1-&gt;ln2</title>
+<path fill="none" stroke="#555555" d="M73.9,-300.64C73.9,-293.11 73.9,-283.48 73.9,-274.45"></path>
+<polygon fill="#555555" stroke="#555555" points="77.4,-274.29 73.9,-264.29 70.4,-274.29 77.4,-274.29"></polygon>
+</g>
+<!-- add2 -->
+<g id="node7" class="node">
+<title>add2</title>
+<ellipse fill="white" stroke="#999999" stroke-width="2" cx="73.9" cy="-87.5" rx="14.5" ry="14.5"></ellipse>
+<text text-anchor="middle" x="73.9" y="-83.3" font-family="monospace" font-size="14.00" fill="#999999">+</text>
+</g>
+<!-- add1&#45;&gt;add2 -->
+<g id="edge9" class="edge">
+<title>add1-&gt;add2</title>
+<path fill="none" stroke="#999999" stroke-dasharray="5,2" d="M85.72,-306.84C98.67,-298.06 119.14,-282.33 130.9,-263.8 152.93,-229.07 151.06,-215.71 156.9,-175 159.17,-159.16 164.74,-152.95 156.9,-139 144.3,-116.59 117.28,-102.96 97.48,-95.6"></path>
+<polygon fill="#999999" stroke="#999999" points="98.49,-92.25 87.89,-92.31 96.21,-98.87 98.49,-92.25"></polygon>
+<text text-anchor="middle" x="176.06" y="-197.2" font-family="Times,serif" font-size="14.00">residual</text>
+</g>
+<!-- ffn -->
+<g id="node6" class="node">
+<title>ffn</title>
+<path fill="white" stroke="#cc8800" stroke-width="2" d="M135.7,-175C135.7,-175 12.1,-175 12.1,-175 6.1,-175 0.1,-169 0.1,-163 0.1,-163 0.1,-151 0.1,-151 0.1,-145 6.1,-139 12.1,-139 12.1,-139 135.7,-139 135.7,-139 141.7,-139 147.7,-145 147.7,-151 147.7,-151 147.7,-163 147.7,-163 147.7,-169 141.7,-175 135.7,-175"></path>
+<text text-anchor="middle" x="73.9" y="-152.8" font-family="monospace" font-size="14.00" fill="#cc8800">Feed-Forward Network</text>
+</g>
+<!-- ln2&#45;&gt;ffn -->
+<g id="edge5" class="edge">
+<title>ln2-&gt;ffn</title>
+<path fill="none" stroke="#555555" d="M73.9,-227.65C73.9,-215.52 73.9,-199.02 73.9,-185.12"></path>
+<polygon fill="#555555" stroke="#555555" points="77.4,-185.11 73.9,-175.11 70.4,-185.11 77.4,-185.11"></polygon>
+</g>
+<!-- ffn&#45;&gt;add2 -->
+<g id="edge6" class="edge">
+<title>ffn-&gt;add2</title>
+<path fill="none" stroke="#555555" d="M73.9,-138.97C73.9,-130.86 73.9,-121.03 73.9,-112.21"></path>
+<polygon fill="#555555" stroke="#555555" points="77.4,-112.13 73.9,-102.13 70.4,-112.13 77.4,-112.13"></polygon>
+</g>
+<!-- x_out -->
+<g id="node8" class="node">
+<title>x_out</title>
+<text text-anchor="middle" x="73.9" y="-13.8" font-family="monospace" font-size="14.00">x &nbsp;(output)</text>
+</g>
+<!-- add2&#45;&gt;x_out -->
+<g id="edge7" class="edge">
+<title>add2-&gt;x_out</title>
+<path fill="none" stroke="#555555" d="M73.9,-72.84C73.9,-65.31 73.9,-55.68 73.9,-46.65"></path>
+<polygon fill="#555555" stroke="#555555" points="77.4,-46.49 73.9,-36.49 70.4,-46.49 77.4,-46.49"></polygon>
+</g>
+</g>
+</svg>
+</div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch10-matrix-block-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;10.1: Pre-LN transformer block
+Figure&nbsp;10.1: Full transformer block (Pre-LN) — LayerNorm before each sub-layer, residual connections around both.
 </figcaption>
 </figure>
 </div>
-<p>Figure <a href="#fig-ch10-matrix-residual" class="quarto-xref">Figure&nbsp;<span>10.2</span></a> shows the residual stream carrying information forward while gradients flow backward through additions.</p>
-<div id="fig-ch10-matrix-residual" class="quarto-float quarto-figure quarto-figure-center anchored" alt="The residual stream — information flows unimpeded through addition, gradients flow backward.">
+</div>
+</div>
+<p><a href="#fig-ch10-matrix-residual" class="quarto-xref">Figure&nbsp;<span>10.2</span></a> shows the residual stream carrying information forward while gradients flow backward through additions.</p>
+<div class="cell" data-layout-align="default">
+<div class="cell-output-display">
+<div id="fig-ch10-matrix-residual" class="quarto-float quarto-figure quarto-figure-center anchored">
 <figure class="quarto-float quarto-float-fig figure">
 <div aria-describedby="fig-ch10-matrix-residual-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="images/ch10_residual.png" class="img-fluid figure-img" alt="The residual stream — information flows unimpeded through addition, gradients flow backward.">
+<div>
+<svg width="672" height="480" viewbox="0.00 0.00 383.40 78.54" xmlns="http://www.w3.org/2000/svg" xlink="http://www.w3.org/1999/xlink" style="; max-width: none; max-height: none">
+<g id="graph0" class="graph" transform="scale(1 1) rotate(0) translate(4 74.54)">
+<title>residual</title>
+<polygon fill="white" stroke="transparent" points="-4,4 -4,-74.54 379.4,-74.54 379.4,4 -4,4"></polygon>
+<!-- x -->
+<g id="node1" class="node">
+<title>x</title>
+<text text-anchor="middle" x="27" y="-48.34" font-family="monospace" font-size="14.00">x</text>
+</g>
+<!-- sub -->
+<g id="node2" class="node">
+<title>sub</title>
+<path fill="white" stroke="#1177bb" stroke-width="2" d="M158.63,-70.54C158.63,-70.54 103.12,-70.54 103.12,-70.54 97.12,-70.54 91.12,-64.54 91.12,-58.54 91.12,-58.54 91.12,-46.54 91.12,-46.54 91.12,-40.54 97.12,-34.54 103.12,-34.54 103.12,-34.54 158.63,-34.54 158.63,-34.54 164.63,-34.54 170.63,-40.54 170.63,-46.54 170.63,-46.54 170.63,-58.54 170.63,-58.54 170.63,-64.54 164.63,-70.54 158.63,-70.54"></path>
+<text text-anchor="middle" x="130.88" y="-48.34" font-family="monospace" font-size="14.00" fill="#1177bb">sublayer(x)</text>
+</g>
+<!-- x&#45;&gt;sub -->
+<g id="edge1" class="edge">
+<title>x-&gt;sub</title>
+<path fill="none" stroke="#555555" d="M54.24,-52.54C62.37,-52.54 71.62,-52.54 80.79,-52.54"></path>
+<polygon fill="#555555" stroke="#555555" points="81.05,-56.04 91.05,-52.54 81.05,-49.04 81.05,-56.04"></polygon>
+</g>
+<!-- add -->
+<g id="node3" class="node">
+<title>add</title>
+<ellipse fill="white" stroke="#228811" stroke-width="2" cx="222.25" cy="-52.54" rx="14.5" ry="14.5"></ellipse>
+<text text-anchor="middle" x="222.25" y="-48.34" font-family="monospace" font-size="14.00" fill="#228811">+</text>
+</g>
+<!-- x&#45;&gt;add -->
+<g id="edge4" class="edge">
+<title>x-&gt;add</title>
+<path fill="none" stroke="#999999" stroke-dasharray="5,2" d="M47.3,-34.46C58.98,-24.79 74.73,-13.84 91,-8.74 124.82,1.87 137.54,3.66 170.75,-8.74 184.34,-13.81 196.7,-24.37 205.79,-33.85"></path>
+<polygon fill="#999999" stroke="#999999" points="203.32,-36.33 212.61,-41.42 208.52,-31.65 203.32,-36.33"></polygon>
+<text text-anchor="middle" x="130.88" y="-13.74" font-family="Times,serif" font-size="14.00">skip (x)</text>
+</g>
+<!-- sub&#45;&gt;add -->
+<g id="edge2" class="edge">
+<title>sub-&gt;add</title>
+<path fill="none" stroke="#555555" d="M170.82,-52.54C179.87,-52.54 189.25,-52.54 197.42,-52.54"></path>
+<polygon fill="#555555" stroke="#555555" points="197.68,-56.04 207.68,-52.54 197.68,-49.04 197.68,-56.04"></polygon>
+</g>
+<!-- out -->
+<g id="node4" class="node">
+<title>out</title>
+<text text-anchor="middle" x="324.58" y="-48.34" font-family="monospace" font-size="14.00">x + sublayer(x)</text>
+</g>
+<!-- add&#45;&gt;out -->
+<g id="edge3" class="edge">
+<title>add-&gt;out</title>
+<path fill="none" stroke="#555555" d="M236.78,-52.54C244,-52.54 253.45,-52.54 263.45,-52.54"></path>
+<polygon fill="#555555" stroke="#555555" points="263.57,-56.04 273.57,-52.54 263.57,-49.04 263.57,-56.04"></polygon>
+</g>
+</g>
+</svg>
+</div>
 </div>
 <figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch10-matrix-residual-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;10.2: Residual stream
+Figure&nbsp;10.2: The residual stream — information flows unimpeded through addition, gradients flow backward.
 </figcaption>
 </figure>
+</div>
+</div>
 </div>
 </section>
 <section id="the-code-transformer-block-in-python" class="level2" data-number="10.5">
 <h2 data-number="10.5" class="anchored" data-anchor-id="the-code-transformer-block-in-python"><span class="header-section-number">10.5</span> The Code: Transformer Block in Python</h2>
-<p>Layer normalization shifts a single vector to mean 0, variance 1, then applies learned scale and shift. <code>LayerNorm</code> holds the learned parameters <span class="math inline">\(\gamma\)</span> and <span class="math inline">\(\beta\)</span>; <code>make_layer_norm</code> initializes them to identity.</p>
-<!-- snippet: src/python/common.py#layer_norm_vec -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> LayerNorm:</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    gamma: Vector</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    beta: Vector</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    epsilon: <span class="bu">float</span> <span class="op">=</span> <span class="fl">1.0e-5</span></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_layer_norm(d_model: <span class="bu">int</span>) <span class="op">-&gt;</span> LayerNorm:</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> LayerNorm(gamma<span class="op">=</span>[<span class="fl">1.0</span>] <span class="op">*</span> d_model, beta<span class="op">=</span>[<span class="fl">0.0</span>] <span class="op">*</span> d_model)</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> layer_norm_vector(vector: Vector, params: LayerNorm) <span class="op">-&gt;</span> Vector:</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>    avg <span class="op">=</span> mean(vector)</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>    std <span class="op">=</span> math.sqrt(variance(vector) <span class="op">+</span> params.epsilon)</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>        params.gamma[i] <span class="op">*</span> ((value <span class="op">-</span> avg) <span class="op">/</span> std) <span class="op">+</span> params.beta[i]</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i, value <span class="kw">in</span> <span class="bu">enumerate</span>(vector)</span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    ]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" data-snippet="layer_norm_vec" data-startfrom="394"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 393;"><span id="cb5-394"><a href="#cb5-394" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span></span>
+<span id="cb5-395"><a href="#cb5-395" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> LayerNorm:</span>
+<span id="cb5-396"><a href="#cb5-396" aria-hidden="true" tabindex="-1"></a>    gamma: Vector</span>
+<span id="cb5-397"><a href="#cb5-397" aria-hidden="true" tabindex="-1"></a>    beta: Vector</span>
+<span id="cb5-398"><a href="#cb5-398" aria-hidden="true" tabindex="-1"></a>    epsilon: <span class="bu">float</span> <span class="op">=</span> <span class="fl">1.0e-5</span></span>
+<span id="cb5-399"><a href="#cb5-399" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-400"><a href="#cb5-400" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-401"><a href="#cb5-401" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_layer_norm(d_model: <span class="bu">int</span>) <span class="op">-&gt;</span> LayerNorm:</span>
+<span id="cb5-402"><a href="#cb5-402" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> LayerNorm(gamma<span class="op">=</span>[<span class="fl">1.0</span>] <span class="op">*</span> d_model, beta<span class="op">=</span>[<span class="fl">0.0</span>] <span class="op">*</span> d_model)</span>
+<span id="cb5-403"><a href="#cb5-403" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-404"><a href="#cb5-404" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-405"><a href="#cb5-405" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> layer_norm_vector(vector: Vector, params: LayerNorm) <span class="op">-&gt;</span> Vector:</span>
+<span id="cb5-406"><a href="#cb5-406" aria-hidden="true" tabindex="-1"></a>    avg <span class="op">=</span> mean(vector)</span>
+<span id="cb5-407"><a href="#cb5-407" aria-hidden="true" tabindex="-1"></a>    std <span class="op">=</span> math.sqrt(variance(vector) <span class="op">+</span> params.epsilon)</span>
+<span id="cb5-408"><a href="#cb5-408" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [</span>
+<span id="cb5-409"><a href="#cb5-409" aria-hidden="true" tabindex="-1"></a>        params.gamma[i] <span class="op">*</span> ((value <span class="op">-</span> avg) <span class="op">/</span> std) <span class="op">+</span> params.beta[i]</span>
+<span id="cb5-410"><a href="#cb5-410" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> i, value <span class="kw">in</span> <span class="bu">enumerate</span>(vector)</span>
+<span id="cb5-411"><a href="#cb5-411" aria-hidden="true" tabindex="-1"></a>    ]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Layer normalization shifts a single vector to mean 0, variance 1, then applies learned scale and shift. <code>LayerNorm</code> holds the learned parameters <span class="math inline">\(\gamma\)</span> and <span class="math inline">\(\beta\)</span>. <code>make_layer_norm</code> initializes them to identity.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" data-snippet="layer_norm_matrix" data-startfrom="416"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 415;"><span id="cb6-416"><a href="#cb6-416" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> layer_norm_matrix(matrix: Matrix, params: LayerNorm) <span class="op">-&gt;</span> Matrix:</span>
+<span id="cb6-417"><a href="#cb6-417" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [layer_norm_vector(row, params) <span class="cf">for</span> row <span class="kw">in</span> matrix]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>layer_norm_matrix</code> applies <code>layer_norm_vector</code> independently to each row of a <span class="math inline">\([T \times d]\)</span> matrix.</p>
-<!-- snippet: src/python/common.py#layer_norm_matrix -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> layer_norm_matrix(matrix: Matrix, params: LayerNorm) <span class="op">-&gt;</span> Matrix:</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [layer_norm_vector(row, params) <span class="cf">for</span> row <span class="kw">in</span> matrix]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
-<p><code>TransformerBlock</code> groups the four sub-layers; <code>make_transformer_block</code> allocates their parameters.</p>
-<!-- snippet: src/python/common.py#transformer_block_params -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> TransformerBlock:</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    attention: MultiHeadAttention</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    feed_forward: FeedForward</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    ln1: LayerNorm</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    ln2: LayerNorm</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_transformer_block(d_model: <span class="bu">int</span>, num_heads: <span class="bu">int</span>, rng: random.Random) <span class="op">-&gt;</span> TransformerBlock:</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> TransformerBlock(</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>        attention<span class="op">=</span>make_multi_head_attention(d_model, num_heads, rng),</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>        feed_forward<span class="op">=</span>make_feed_forward(d_model, rng),</span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>        ln1<span class="op">=</span>make_layer_norm(d_model),</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        ln2<span class="op">=</span>make_layer_norm(d_model),</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
-<p><code>transformer_block</code> is the Pre-LN residual block; <code>forward_stack</code> threads input through <span class="math inline">\(N\)</span> blocks.</p>
-<!-- snippet: src/python/common.py#transformer_block_forward -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> transformer_block(x: Matrix, params: TransformerBlock) <span class="op">-&gt;</span> Matrix:</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    attn_out, _weights <span class="op">=</span> multi_head_attention(layer_norm_matrix(x, params.ln1), params.attention)</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>    x1 <span class="op">=</span> matrix_add(x, attn_out)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>    ffn_out <span class="op">=</span> feed_forward(layer_norm_matrix(x1, params.ln2), params.feed_forward)</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> matrix_add(x1, ffn_out)</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb8-8"><a href="#cb8-8" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> forward_stack(x: Matrix, blocks: Iterable[TransformerBlock]) <span class="op">-&gt;</span> Matrix:</span>
-<span id="cb8-9"><a href="#cb8-9" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> block <span class="kw">in</span> blocks:</span>
-<span id="cb8-10"><a href="#cb8-10" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> transformer_block(x, block)</span>
-<span id="cb8-11"><a href="#cb8-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> x</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
-<p><em>Demo.</em> Run with <code>python3 src/python/chapter_demos.py</code>:</p>
-<!-- snippet: src/python/chapter_demos.py#chapter_10 -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> chapter_10(seed: <span class="bu">int</span> <span class="op">=</span> <span class="dv">9</span>) <span class="op">-&gt;</span> <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">object</span>]:</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> random.Random(seed)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> random_matrix(<span class="dv">3</span>, <span class="dv">8</span>, rng)</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    block <span class="op">=</span> make_transformer_block(<span class="dv">8</span>, <span class="dv">2</span>, rng)</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    normed <span class="op">=</span> layer_norm_matrix(x, make_layer_norm(<span class="dv">8</span>))</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    output <span class="op">=</span> transformer_block(x, block)</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"normed_shape"</span>: (<span class="bu">len</span>(normed), <span class="bu">len</span>(normed[<span class="dv">0</span>])),</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"output_shape"</span>: (<span class="bu">len</span>(output), <span class="bu">len</span>(output[<span class="dv">0</span>])),</span>
-<span id="cb9-10"><a href="#cb9-10" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" data-snippet="transformer_block_params" data-startfrom="424"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 423;"><span id="cb7-424"><a href="#cb7-424" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span></span>
+<span id="cb7-425"><a href="#cb7-425" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> TransformerBlock:</span>
+<span id="cb7-426"><a href="#cb7-426" aria-hidden="true" tabindex="-1"></a>    attention: MultiHeadAttention</span>
+<span id="cb7-427"><a href="#cb7-427" aria-hidden="true" tabindex="-1"></a>    feed_forward: FeedForward</span>
+<span id="cb7-428"><a href="#cb7-428" aria-hidden="true" tabindex="-1"></a>    ln1: LayerNorm</span>
+<span id="cb7-429"><a href="#cb7-429" aria-hidden="true" tabindex="-1"></a>    ln2: LayerNorm</span>
+<span id="cb7-430"><a href="#cb7-430" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-431"><a href="#cb7-431" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-432"><a href="#cb7-432" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_transformer_block(d_model: <span class="bu">int</span>, num_heads: <span class="bu">int</span>, rng: random.Random) <span class="op">-&gt;</span> TransformerBlock:</span>
+<span id="cb7-433"><a href="#cb7-433" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> TransformerBlock(</span>
+<span id="cb7-434"><a href="#cb7-434" aria-hidden="true" tabindex="-1"></a>        attention<span class="op">=</span>make_multi_head_attention(d_model, num_heads, rng),</span>
+<span id="cb7-435"><a href="#cb7-435" aria-hidden="true" tabindex="-1"></a>        feed_forward<span class="op">=</span>make_feed_forward(d_model, rng),</span>
+<span id="cb7-436"><a href="#cb7-436" aria-hidden="true" tabindex="-1"></a>        ln1<span class="op">=</span>make_layer_norm(d_model),</span>
+<span id="cb7-437"><a href="#cb7-437" aria-hidden="true" tabindex="-1"></a>        ln2<span class="op">=</span>make_layer_norm(d_model),</span>
+<span id="cb7-438"><a href="#cb7-438" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>TransformerBlock</code> groups the attention module, feed-forward module, and two layer norms. <code>make_transformer_block</code> allocates their parameters.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" data-snippet="transformer_block_forward" data-startfrom="443"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 442;"><span id="cb8-443"><a href="#cb8-443" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> transformer_block(x: Matrix, params: TransformerBlock) <span class="op">-&gt;</span> Matrix:</span>
+<span id="cb8-444"><a href="#cb8-444" aria-hidden="true" tabindex="-1"></a>    attn_out, _weights <span class="op">=</span> multi_head_attention(layer_norm_matrix(x, params.ln1), params.attention)</span>
+<span id="cb8-445"><a href="#cb8-445" aria-hidden="true" tabindex="-1"></a>    x1 <span class="op">=</span> matrix_add(x, attn_out)</span>
+<span id="cb8-446"><a href="#cb8-446" aria-hidden="true" tabindex="-1"></a>    ffn_out <span class="op">=</span> feed_forward(layer_norm_matrix(x1, params.ln2), params.feed_forward)</span>
+<span id="cb8-447"><a href="#cb8-447" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> matrix_add(x1, ffn_out)</span>
+<span id="cb8-448"><a href="#cb8-448" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-449"><a href="#cb8-449" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb8-450"><a href="#cb8-450" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> forward_stack(x: Matrix, blocks: Iterable[TransformerBlock]) <span class="op">-&gt;</span> Matrix:</span>
+<span id="cb8-451"><a href="#cb8-451" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> block <span class="kw">in</span> blocks:</span>
+<span id="cb8-452"><a href="#cb8-452" aria-hidden="true" tabindex="-1"></a>        x <span class="op">=</span> transformer_block(x, block)</span>
+<span id="cb8-453"><a href="#cb8-453" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> x</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>transformer_block</code> is the Pre-LN residual block: normalize, attend, add the residual, normalize, apply FFN, add the residual again. <code>forward_stack</code> threads the sequence through <span class="math inline">\(N\)</span> blocks.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" data-snippet="chapter_10" data-startfrom="159"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 158;"><span id="cb9-159"><a href="#cb9-159" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> chapter_10(seed: <span class="bu">int</span> <span class="op">=</span> <span class="dv">9</span>) <span class="op">-&gt;</span> <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">object</span>]:</span>
+<span id="cb9-160"><a href="#cb9-160" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> random.Random(seed)</span>
+<span id="cb9-161"><a href="#cb9-161" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> random_matrix(<span class="dv">3</span>, <span class="dv">8</span>, rng)</span>
+<span id="cb9-162"><a href="#cb9-162" aria-hidden="true" tabindex="-1"></a>    block <span class="op">=</span> make_transformer_block(<span class="dv">8</span>, <span class="dv">2</span>, rng)</span>
+<span id="cb9-163"><a href="#cb9-163" aria-hidden="true" tabindex="-1"></a>    normed <span class="op">=</span> layer_norm_matrix(x, make_layer_norm(<span class="dv">8</span>))</span>
+<span id="cb9-164"><a href="#cb9-164" aria-hidden="true" tabindex="-1"></a>    output <span class="op">=</span> transformer_block(x, block)</span>
+<span id="cb9-165"><a href="#cb9-165" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb9-166"><a href="#cb9-166" aria-hidden="true" tabindex="-1"></a>        <span class="st">"normed_shape"</span>: (<span class="bu">len</span>(normed), <span class="bu">len</span>(normed[<span class="dv">0</span>])),</span>
+<span id="cb9-167"><a href="#cb9-167" aria-hidden="true" tabindex="-1"></a>        <span class="st">"output_shape"</span>: (<span class="bu">len</span>(output), <span class="bu">len</span>(output[<span class="dv">0</span>])),</span>
+<span id="cb9-168"><a href="#cb9-168" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The demo runs one transformer block over a three-token sequence and checks that layer norm and the block both preserve the outer shape. Run it with <code>python3 src/python/chapter_demos.py</code>.</p>
 </section>
 <section id="why-n-blocks" class="level2" data-number="10.6">
 <h2 data-number="10.6" class="anchored" data-anchor-id="why-n-blocks"><span class="header-section-number">10.6</span> Why N Blocks?</h2>

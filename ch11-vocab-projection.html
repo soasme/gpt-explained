@@ -534,90 +534,82 @@ Figure&nbsp;11.2: Autoregressive generation loop
 </section>
 <section id="the-code-full-microgpt-forward-pass-in-python" class="level2" data-number="11.5">
 <h2 data-number="11.5" class="anchored" data-anchor-id="the-code-full-microgpt-forward-pass-in-python"><span class="header-section-number">11.5</span> The Code: Full microGPT Forward Pass in Python</h2>
-<p>Configuration is data. We represent the model’s five hyperparameters as a plain list and define selectors once.</p>
-<!-- snippet: src/python/common.py#gpt_config -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span>(frozen<span class="op">=</span><span class="va">True</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> GPTConfig:</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    vocab_size: <span class="bu">int</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    d_model: <span class="bu">int</span></span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    num_heads: <span class="bu">int</span></span>
-<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    num_layers: <span class="bu">int</span></span>
-<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>    max_seq_len: <span class="bu">int</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
-<p><code>make_gpt_params</code> allocates all learnable weights. <code>wte</code> is the token embedding matrix <span class="math inline">\([|V| \times d]\)</span>; <code>wpe</code> is the position embedding matrix. Weight tying means the unembedding step will reuse <code>wte</code> transposed — no separate parameter is stored.</p>
-<!-- snippet: src/python/common.py#gpt_params -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span></span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> GPTParams:</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    wte: Matrix</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    wpe: Matrix</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>    blocks: <span class="bu">list</span>[TransformerBlock]</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    ln_f: LayerNorm</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_gpt_params(config: GPTConfig, rng: random.Random) <span class="op">-&gt;</span> GPTParams:</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> GPTParams(</span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a>        wte<span class="op">=</span>random_matrix(config.vocab_size, config.d_model, rng),</span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a>        wpe<span class="op">=</span>random_matrix(config.max_seq_len, config.d_model, rng),</span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a>        blocks<span class="op">=</span>[</span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a>            make_transformer_block(config.d_model, config.num_heads, rng)</span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(config.num_layers)</span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a>        ],</span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a>        ln_f<span class="op">=</span>make_layer_norm(config.d_model),</span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" data-snippet="gpt_config" data-startfrom="459"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 458;"><span id="cb4-459"><a href="#cb4-459" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span>(frozen<span class="op">=</span><span class="va">True</span>)</span>
+<span id="cb4-460"><a href="#cb4-460" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> GPTConfig:</span>
+<span id="cb4-461"><a href="#cb4-461" aria-hidden="true" tabindex="-1"></a>    vocab_size: <span class="bu">int</span></span>
+<span id="cb4-462"><a href="#cb4-462" aria-hidden="true" tabindex="-1"></a>    d_model: <span class="bu">int</span></span>
+<span id="cb4-463"><a href="#cb4-463" aria-hidden="true" tabindex="-1"></a>    num_heads: <span class="bu">int</span></span>
+<span id="cb4-464"><a href="#cb4-464" aria-hidden="true" tabindex="-1"></a>    num_layers: <span class="bu">int</span></span>
+<span id="cb4-465"><a href="#cb4-465" aria-hidden="true" tabindex="-1"></a>    max_seq_len: <span class="bu">int</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Configuration is data. <code>GPTConfig</code> stores the model’s five hyperparameters in one immutable object.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" data-snippet="gpt_params" data-startfrom="470"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 469;"><span id="cb5-470"><a href="#cb5-470" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span></span>
+<span id="cb5-471"><a href="#cb5-471" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> GPTParams:</span>
+<span id="cb5-472"><a href="#cb5-472" aria-hidden="true" tabindex="-1"></a>    wte: Matrix</span>
+<span id="cb5-473"><a href="#cb5-473" aria-hidden="true" tabindex="-1"></a>    wpe: Matrix</span>
+<span id="cb5-474"><a href="#cb5-474" aria-hidden="true" tabindex="-1"></a>    blocks: <span class="bu">list</span>[TransformerBlock]</span>
+<span id="cb5-475"><a href="#cb5-475" aria-hidden="true" tabindex="-1"></a>    ln_f: LayerNorm</span>
+<span id="cb5-476"><a href="#cb5-476" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-477"><a href="#cb5-477" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-478"><a href="#cb5-478" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_gpt_params(config: GPTConfig, rng: random.Random) <span class="op">-&gt;</span> GPTParams:</span>
+<span id="cb5-479"><a href="#cb5-479" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> GPTParams(</span>
+<span id="cb5-480"><a href="#cb5-480" aria-hidden="true" tabindex="-1"></a>        wte<span class="op">=</span>random_matrix(config.vocab_size, config.d_model, rng),</span>
+<span id="cb5-481"><a href="#cb5-481" aria-hidden="true" tabindex="-1"></a>        wpe<span class="op">=</span>random_matrix(config.max_seq_len, config.d_model, rng),</span>
+<span id="cb5-482"><a href="#cb5-482" aria-hidden="true" tabindex="-1"></a>        blocks<span class="op">=</span>[</span>
+<span id="cb5-483"><a href="#cb5-483" aria-hidden="true" tabindex="-1"></a>            make_transformer_block(config.d_model, config.num_heads, rng)</span>
+<span id="cb5-484"><a href="#cb5-484" aria-hidden="true" tabindex="-1"></a>            <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(config.num_layers)</span>
+<span id="cb5-485"><a href="#cb5-485" aria-hidden="true" tabindex="-1"></a>        ],</span>
+<span id="cb5-486"><a href="#cb5-486" aria-hidden="true" tabindex="-1"></a>        ln_f<span class="op">=</span>make_layer_norm(config.d_model),</span>
+<span id="cb5-487"><a href="#cb5-487" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>make_gpt_params</code> allocates all learnable weights. <code>wte</code> is the token embedding matrix <span class="math inline">\([|V| \times d]\)</span>; <code>wpe</code> is the position embedding matrix. Weight tying means the unembedding step will reuse <code>wte</code> transposed, so no separate parameter is stored.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" data-snippet="gpt_forward" data-startfrom="492"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 491;"><span id="cb6-492"><a href="#cb6-492" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> gpt_forward(token_ids: Sequence[<span class="bu">int</span>], params: GPTParams, config: GPTConfig) <span class="op">-&gt;</span> Vector:</span>
+<span id="cb6-493"><a href="#cb6-493" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(token_ids) <span class="op">&gt;</span> config.max_seq_len:</span>
+<span id="cb6-494"><a href="#cb6-494" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"token_ids exceeds max_seq_len"</span>)</span>
+<span id="cb6-495"><a href="#cb6-495" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-496"><a href="#cb6-496" aria-hidden="true" tabindex="-1"></a>    token_embeddings <span class="op">=</span> embed_sequence(params.wte, token_ids)</span>
+<span id="cb6-497"><a href="#cb6-497" aria-hidden="true" tabindex="-1"></a>    position_embeddings <span class="op">=</span> embed_sequence(params.wpe, <span class="bu">range</span>(<span class="bu">len</span>(token_ids)))</span>
+<span id="cb6-498"><a href="#cb6-498" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> matrix_add(token_embeddings, position_embeddings)</span>
+<span id="cb6-499"><a href="#cb6-499" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> forward_stack(x, params.blocks)</span>
+<span id="cb6-500"><a href="#cb6-500" aria-hidden="true" tabindex="-1"></a>    h <span class="op">=</span> layer_norm_vector(x[<span class="op">-</span><span class="dv">1</span>], params.ln_f)</span>
+<span id="cb6-501"><a href="#cb6-501" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [dot(h, token_vector) <span class="cf">for</span> token_vector <span class="kw">in</span> params.wte]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>gpt_forward</code> is the full pipeline: embed token IDs, add position embeddings, pass through <span class="math inline">\(N\)</span> transformer blocks, apply the final layer norm to the last token’s vector, then compute dot products with every row of <code>wte</code>.</p>
-<!-- snippet: src/python/common.py#gpt_forward -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> gpt_forward(token_ids: Sequence[<span class="bu">int</span>], params: GPTParams, config: GPTConfig) <span class="op">-&gt;</span> Vector:</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(token_ids) <span class="op">&gt;</span> config.max_seq_len:</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"token_ids exceeds max_seq_len"</span>)</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    token_embeddings <span class="op">=</span> embed_sequence(params.wte, token_ids)</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    position_embeddings <span class="op">=</span> embed_sequence(params.wpe, <span class="bu">range</span>(<span class="bu">len</span>(token_ids)))</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> matrix_add(token_embeddings, position_embeddings)</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> forward_stack(x, params.blocks)</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>    h <span class="op">=</span> layer_norm_vector(x[<span class="op">-</span><span class="dv">1</span>], params.ln_f)</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [dot(h, token_vector) <span class="cf">for</span> token_vector <span class="kw">in</span> params.wte]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
-<p><code>generate</code> is the autoregressive loop.</p>
-<!-- snippet: src/python/inference.py#generation -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> temperature_scale(logits: Sequence[<span class="bu">float</span>], temperature: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">float</span>]:</span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [value <span class="op">/</span> temperature <span class="cf">for</span> value <span class="kw">in</span> logits]</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> top_k_filter(logits: Sequence[<span class="bu">float</span>], k: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">float</span>]:</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>    keep <span class="op">=</span> {index <span class="cf">for</span> index, _value <span class="kw">in</span> <span class="bu">sorted</span>(<span class="bu">enumerate</span>(logits), key<span class="op">=</span><span class="kw">lambda</span> item: item[<span class="dv">1</span>], reverse<span class="op">=</span><span class="va">True</span>)[:k]}</span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [value <span class="cf">if</span> index <span class="kw">in</span> keep <span class="cf">else</span> <span class="op">-</span><span class="fl">1.0e9</span> <span class="cf">for</span> index, value <span class="kw">in</span> <span class="bu">enumerate</span>(logits)]</span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sample_token(probabilities: Sequence[<span class="bu">float</span>], rng: random.Random) <span class="op">-&gt;</span> <span class="bu">int</span>:</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    threshold <span class="op">=</span> rng.random()</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a>    cumulative <span class="op">=</span> <span class="fl">0.0</span></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> index, probability <span class="kw">in</span> <span class="bu">enumerate</span>(probabilities):</span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a>        cumulative <span class="op">+=</span> probability</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> threshold <span class="op">&lt;=</span> cumulative:</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> index</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">len</span>(probabilities) <span class="op">-</span> <span class="dv">1</span></span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> generate(</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>    params: GPTParams,</span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>    config: GPTConfig,</span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    start_ids: Sequence[<span class="bu">int</span>],</span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>    max_new_tokens: <span class="bu">int</span>,</span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    temperature: <span class="bu">float</span>,</span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    top_k: <span class="bu">int</span>,</span>
-<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>    rng: random.Random,</span>
-<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">int</span>]:</span>
-<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a>    tokens <span class="op">=</span> <span class="bu">list</span>(start_ids)</span>
-<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a>    generated <span class="op">=</span> []</span>
-<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(max_new_tokens):</span>
-<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>        logits <span class="op">=</span> gpt_forward(tokens, params, config)</span>
-<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>        probabilities <span class="op">=</span> softmax(top_k_filter(temperature_scale(logits, temperature), top_k))</span>
-<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>        next_token <span class="op">=</span> sample_token(probabilities, rng)</span>
-<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>        tokens.append(next_token)</span>
-<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>        generated.append(next_token)</span>
-<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> generated</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" data-snippet="generation" data-startfrom="22"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 21;"><span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> temperature_scale(logits: Sequence[<span class="bu">float</span>], temperature: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">float</span>]:</span>
+<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [value <span class="op">/</span> temperature <span class="cf">for</span> value <span class="kw">in</span> logits]</span>
+<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> top_k_filter(logits: Sequence[<span class="bu">float</span>], k: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">float</span>]:</span>
+<span id="cb7-27"><a href="#cb7-27" aria-hidden="true" tabindex="-1"></a>    keep <span class="op">=</span> {index <span class="cf">for</span> index, _value <span class="kw">in</span> <span class="bu">sorted</span>(<span class="bu">enumerate</span>(logits), key<span class="op">=</span><span class="kw">lambda</span> item: item[<span class="dv">1</span>], reverse<span class="op">=</span><span class="va">True</span>)[:k]}</span>
+<span id="cb7-28"><a href="#cb7-28" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [value <span class="cf">if</span> index <span class="kw">in</span> keep <span class="cf">else</span> <span class="op">-</span><span class="fl">1.0e9</span> <span class="cf">for</span> index, value <span class="kw">in</span> <span class="bu">enumerate</span>(logits)]</span>
+<span id="cb7-29"><a href="#cb7-29" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-30"><a href="#cb7-30" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-31"><a href="#cb7-31" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sample_token(probabilities: Sequence[<span class="bu">float</span>], rng: random.Random) <span class="op">-&gt;</span> <span class="bu">int</span>:</span>
+<span id="cb7-32"><a href="#cb7-32" aria-hidden="true" tabindex="-1"></a>    threshold <span class="op">=</span> rng.random()</span>
+<span id="cb7-33"><a href="#cb7-33" aria-hidden="true" tabindex="-1"></a>    cumulative <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="cb7-34"><a href="#cb7-34" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> index, probability <span class="kw">in</span> <span class="bu">enumerate</span>(probabilities):</span>
+<span id="cb7-35"><a href="#cb7-35" aria-hidden="true" tabindex="-1"></a>        cumulative <span class="op">+=</span> probability</span>
+<span id="cb7-36"><a href="#cb7-36" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> threshold <span class="op">&lt;=</span> cumulative:</span>
+<span id="cb7-37"><a href="#cb7-37" aria-hidden="true" tabindex="-1"></a>            <span class="cf">return</span> index</span>
+<span id="cb7-38"><a href="#cb7-38" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">len</span>(probabilities) <span class="op">-</span> <span class="dv">1</span></span>
+<span id="cb7-39"><a href="#cb7-39" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-40"><a href="#cb7-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-41"><a href="#cb7-41" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> generate(</span>
+<span id="cb7-42"><a href="#cb7-42" aria-hidden="true" tabindex="-1"></a>    params: GPTParams,</span>
+<span id="cb7-43"><a href="#cb7-43" aria-hidden="true" tabindex="-1"></a>    config: GPTConfig,</span>
+<span id="cb7-44"><a href="#cb7-44" aria-hidden="true" tabindex="-1"></a>    start_ids: Sequence[<span class="bu">int</span>],</span>
+<span id="cb7-45"><a href="#cb7-45" aria-hidden="true" tabindex="-1"></a>    max_new_tokens: <span class="bu">int</span>,</span>
+<span id="cb7-46"><a href="#cb7-46" aria-hidden="true" tabindex="-1"></a>    temperature: <span class="bu">float</span>,</span>
+<span id="cb7-47"><a href="#cb7-47" aria-hidden="true" tabindex="-1"></a>    top_k: <span class="bu">int</span>,</span>
+<span id="cb7-48"><a href="#cb7-48" aria-hidden="true" tabindex="-1"></a>    rng: random.Random,</span>
+<span id="cb7-49"><a href="#cb7-49" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="bu">list</span>[<span class="bu">int</span>]:</span>
+<span id="cb7-50"><a href="#cb7-50" aria-hidden="true" tabindex="-1"></a>    tokens <span class="op">=</span> <span class="bu">list</span>(start_ids)</span>
+<span id="cb7-51"><a href="#cb7-51" aria-hidden="true" tabindex="-1"></a>    generated <span class="op">=</span> []</span>
+<span id="cb7-52"><a href="#cb7-52" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(max_new_tokens):</span>
+<span id="cb7-53"><a href="#cb7-53" aria-hidden="true" tabindex="-1"></a>        logits <span class="op">=</span> gpt_forward(tokens, params, config)</span>
+<span id="cb7-54"><a href="#cb7-54" aria-hidden="true" tabindex="-1"></a>        probabilities <span class="op">=</span> softmax(top_k_filter(temperature_scale(logits, temperature), top_k))</span>
+<span id="cb7-55"><a href="#cb7-55" aria-hidden="true" tabindex="-1"></a>        next_token <span class="op">=</span> sample_token(probabilities, rng)</span>
+<span id="cb7-56"><a href="#cb7-56" aria-hidden="true" tabindex="-1"></a>        tokens.append(next_token)</span>
+<span id="cb7-57"><a href="#cb7-57" aria-hidden="true" tabindex="-1"></a>        generated.append(next_token)</span>
+<span id="cb7-58"><a href="#cb7-58" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> generated</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>generate</code> is the autoregressive loop. It repeatedly runs the model, scales and filters the logits, samples one next token, appends it to the context, and continues.</p>
 <p>Run with <code>python3 src/python/chapter_demos.py</code>.</p>
 </section>
 <section id="weight-tying-in-detail" class="level2" data-number="11.6">

@@ -356,7 +356,7 @@ window.Quarto = {
     <h2 id="toc-title">Table of contents</h2>
    
   <ul class="collapse">
-  <li><a href="#rotary-positional-encoding-rope" id="toc-rotary-positional-encoding-rope" class="nav-link active" data-scroll-target="#rotary-positional-encoding-rope"><span class="header-section-number">14.1</span> Rotary Positional Encoding (RoPE)</a></li>
+  <li><a href="#kv-cache" id="toc-kv-cache" class="nav-link active" data-scroll-target="#kv-cache"><span class="header-section-number">14.1</span> KV Cache</a></li>
   <li><a href="#multi-query-and-grouped-query-attention" id="toc-multi-query-and-grouped-query-attention" class="nav-link" data-scroll-target="#multi-query-and-grouped-query-attention"><span class="header-section-number">14.2</span> Multi-Query and Grouped-Query Attention</a></li>
   <li><a href="#flash-attention" id="toc-flash-attention" class="nav-link" data-scroll-target="#flash-attention"><span class="header-section-number">14.3</span> Flash Attention</a></li>
   <li><a href="#alternative-architectures" id="toc-alternative-architectures" class="nav-link" data-scroll-target="#alternative-architectures"><span class="header-section-number">14.4</span> Alternative Architectures</a></li>
@@ -387,36 +387,25 @@ window.Quarto = {
 
 
 <p>The previous chapters built a complete GPT from scratch. Real production models add several refinements that improve efficiency, context length, and capability. This chapter surveys the most important innovations beyond the baseline transformer.</p>
-<section id="rotary-positional-encoding-rope" class="level2" data-number="14.1">
-<h2 data-number="14.1" class="anchored" data-anchor-id="rotary-positional-encoding-rope"><span class="header-section-number">14.1</span> Rotary Positional Encoding (RoPE)</h2>
-<p>The sinusoidal positional encoding in <a href="ch05-positional-encoding.html" class="quarto-xref"><span>Chapter 5</span></a> adds a fixed signal to each embedding <em>before</em> the attention layers. <em>RoPE</em> (Su et al., 2021) takes a different approach: it encodes position directly into the query and key vectors inside each attention layer by rotating them.</p>
-<p>For a query vector <span class="math inline">\(q\)</span> at position <span class="math inline">\(m\)</span> and key vector <span class="math inline">\(k\)</span> at position <span class="math inline">\(n\)</span>:</p>
+<section id="kv-cache" class="level2" data-number="14.1">
+<h2 data-number="14.1" class="anchored" data-anchor-id="kv-cache"><span class="header-section-number">14.1</span> KV Cache</h2>
+<p>During inference, GPT generates one token at a time. At each step, the model runs a full forward pass — including attention over every previous token.</p>
+<p>Without any optimization, this is wasteful: the key and value matrices for tokens <span class="math inline">\(1, \ldots, t-1\)</span> are identical to what was computed in the previous step. The <em>KV cache</em> (Key-Value cache) stores those matrices and reuses them.</p>
+<p>At step <span class="math inline">\(t\)</span>, only the new token’s query, key, and value are computed fresh:</p>
 <p><span class="math display">\[
-\langle R_m q,\; R_n k \rangle = \langle q, R_{n-m} k \rangle
+q_t = x_t W_q, \quad k_t = x_t W_k, \quad v_t = x_t W_v
 \]</span></p>
-<p>where <span class="math inline">\(R_\theta\)</span> is a block-diagonal rotation matrix. The dot product depends only on the <em>relative</em> position <span class="math inline">\(n - m\)</span>, not the absolute positions. This gives the model a natural sense of distance between tokens.</p>
-<p>Key advantages of RoPE:</p>
-<ul>
-<li>Generalises to sequences longer than those seen during training.</li>
-<li>No extra parameters — the rotation is deterministic.</li>
-<li>Compatible with linear attention variants.</li>
-<li>Used in LLaMA, Mistral, Qwen, and most open-weight models.</li>
-</ul>
-<p>In 2D, a rotation by <span class="math inline">\(\theta\)</span> looks like:</p>
+<p>Then <span class="math inline">\(k_t\)</span> and <span class="math inline">\(v_t\)</span> are appended to the cache, and attention is computed using the full cached <span class="math inline">\(K\)</span> and <span class="math inline">\(V\)</span>:</p>
 <p><span class="math display">\[
-R_\theta = \begin{bmatrix} \cos\theta &amp; -\sin\theta \\ \sin\theta &amp; \cos\theta \end{bmatrix}
+\text{head}_t = \operatorname{softmax}\!\left(\frac{q_t \, K_{\text{cache}}^{\top}}{\sqrt{d_k}} + M_t\right) V_{\text{cache}}
 \]</span></p>
-<p>For a <span class="math inline">\(d\)</span>-dimensional vector, <span class="math inline">\(d/2\)</span> independent 2D rotations are applied to pairs of dimensions.</p>
-<div id="fig-ch14-rope" class="quarto-float quarto-figure quarto-figure-center anchored" alt="Two vectors rotating by different angles, with the relative angle between them labelled as the positional signal.">
-<figure class="quarto-float quarto-float-fig figure">
-<div aria-describedby="fig-ch14-rope-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-<img src="images/ch14_rope.png" class="img-fluid figure-img" alt="Two vectors rotating by different angles, with the relative angle between them labelled as the positional signal.">
-</div>
-<figcaption class="quarto-float-caption-bottom quarto-float-caption quarto-float-fig" id="fig-ch14-rope-caption-0ceaefa1-69ba-4598-a22c-09a6ac19f8ca">
-Figure&nbsp;14.1: RoPE rotates query and key vectors by position — their dot product captures relative distance
-</figcaption>
-</figure>
-</div>
+<p>The result is that each new token costs <span class="math inline">\(O(N)\)</span> compute rather than <span class="math inline">\(O(N^2)\)</span> — a large saving for long sequences.</p>
+<p>The trade-off is memory. For a model with <span class="math inline">\(L\)</span> layers, <span class="math inline">\(H\)</span> heads, head dimension <span class="math inline">\(d_k\)</span>, and sequence length <span class="math inline">\(N\)</span>, the cache holds:</p>
+<p><span class="math display">\[
+2 \times L \times H \times N \times d_k \text{ values}
+\]</span></p>
+<p>(factor of 2 for <span class="math inline">\(K\)</span> and <span class="math inline">\(V\)</span>; values are stored per layer, per head).</p>
+<p>The KV cache is present in every production transformer inference engine. Grouped-Query Attention (next section) directly addresses the memory cost of the cache.</p>
 </section>
 <section id="multi-query-and-grouped-query-attention" class="level2" data-number="14.2">
 <h2 data-number="14.2" class="anchored" data-anchor-id="multi-query-and-grouped-query-attention"><span class="header-section-number">14.2</span> Multi-Query and Grouped-Query Attention</h2>

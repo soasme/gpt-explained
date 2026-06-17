@@ -505,65 +505,68 @@ R_3 k = [\cos 3, \sin 3]
 </section>
 <section id="the-code-structure" class="level2" data-number="7.4">
 <h2 data-number="7.4" class="anchored" data-anchor-id="the-code-structure"><span class="header-section-number">7.4</span> The Code Structure</h2>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> rope_angle(position: <span class="bu">int</span>, pair_index: <span class="bu">int</span>, d_model: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> position <span class="op">/</span> (<span class="fl">10000.0</span> <span class="op">**</span> (<span class="fl">2.0</span> <span class="op">*</span> pair_index <span class="op">/</span> d_model))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb1" data-snippet="rope_angle" data-startfrom="235"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 234;"><span id="cb1-235"><a href="#cb1-235" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> rope_angle(position: <span class="bu">int</span>, pair_index: <span class="bu">int</span>, d_model: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb1-236"><a href="#cb1-236" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> position <span class="op">/</span> (<span class="fl">10000.0</span> <span class="op">**</span> (<span class="fl">2.0</span> <span class="op">*</span> pair_index <span class="op">/</span> d_model))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>rope_angle</code> computes the rotation angle for one position and one pair of dimensions. The formula matches the sinusoidal frequency schedule: early dimension pairs rotate faster, later pairs rotate more slowly.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> rotate_pair(x: <span class="bu">float</span>, y: <span class="bu">float</span>, angle: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">tuple</span>[<span class="bu">float</span>, <span class="bu">float</span>]:</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    cos_theta <span class="op">=</span> math.cos(angle)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    sin_theta <span class="op">=</span> math.sin(angle)</span>
-<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> x <span class="op">*</span> cos_theta <span class="op">-</span> y <span class="op">*</span> sin_theta, x <span class="op">*</span> sin_theta <span class="op">+</span> y <span class="op">*</span> cos_theta</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" data-snippet="rotate_pair" data-startfrom="241"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 240;"><span id="cb2-241"><a href="#cb2-241" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> rotate_pair(x: <span class="bu">float</span>, y: <span class="bu">float</span>, angle: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">tuple</span>[<span class="bu">float</span>, <span class="bu">float</span>]:</span>
+<span id="cb2-242"><a href="#cb2-242" aria-hidden="true" tabindex="-1"></a>    cos_theta <span class="op">=</span> math.cos(angle)</span>
+<span id="cb2-243"><a href="#cb2-243" aria-hidden="true" tabindex="-1"></a>    sin_theta <span class="op">=</span> math.sin(angle)</span>
+<span id="cb2-244"><a href="#cb2-244" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> x <span class="op">*</span> cos_theta <span class="op">-</span> y <span class="op">*</span> sin_theta, x <span class="op">*</span> sin_theta <span class="op">+</span> y <span class="op">*</span> cos_theta</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>rotate_pair</code> is the 2D rotation from the math section. It takes two neighboring vector components and returns the rotated pair.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> apply_rope_to_vector(vector: Vector, position: <span class="bu">int</span>) <span class="op">-&gt;</span> Vector:</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(vector) <span class="op">%</span> <span class="dv">2</span> <span class="op">!=</span> <span class="dv">0</span>:</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"RoPE requires an even vector dimension"</span>)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a>    rotated: Vector <span class="op">=</span> []</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    d_model <span class="op">=</span> <span class="bu">len</span>(vector)</span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, d_model, <span class="dv">2</span>):</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        angle <span class="op">=</span> rope_angle(position, i <span class="op">//</span> <span class="dv">2</span>, d_model)</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        x, y <span class="op">=</span> rotate_pair(vector[i], vector[i <span class="op">+</span> <span class="dv">1</span>], angle)</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        rotated.extend([x, y])</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> rotated</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" data-snippet="apply_rope_to_vector" data-startfrom="249"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 248;"><span id="cb3-249"><a href="#cb3-249" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> apply_rope_to_vector(vector: Vector, position: <span class="bu">int</span>) <span class="op">-&gt;</span> Vector:</span>
+<span id="cb3-250"><a href="#cb3-250" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> <span class="bu">len</span>(vector) <span class="op">%</span> <span class="dv">2</span> <span class="op">!=</span> <span class="dv">0</span>:</span>
+<span id="cb3-251"><a href="#cb3-251" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"RoPE requires an even vector dimension"</span>)</span>
+<span id="cb3-252"><a href="#cb3-252" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-253"><a href="#cb3-253" aria-hidden="true" tabindex="-1"></a>    rotated: Vector <span class="op">=</span> []</span>
+<span id="cb3-254"><a href="#cb3-254" aria-hidden="true" tabindex="-1"></a>    d_model <span class="op">=</span> <span class="bu">len</span>(vector)</span>
+<span id="cb3-255"><a href="#cb3-255" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> i <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">0</span>, d_model, <span class="dv">2</span>):</span>
+<span id="cb3-256"><a href="#cb3-256" aria-hidden="true" tabindex="-1"></a>        angle <span class="op">=</span> rope_angle(position, i <span class="op">//</span> <span class="dv">2</span>, d_model)</span>
+<span id="cb3-257"><a href="#cb3-257" aria-hidden="true" tabindex="-1"></a>        x, y <span class="op">=</span> rotate_pair(vector[i], vector[i <span class="op">+</span> <span class="dv">1</span>], angle)</span>
+<span id="cb3-258"><a href="#cb3-258" aria-hidden="true" tabindex="-1"></a>        rotated.extend([x, y])</span>
+<span id="cb3-259"><a href="#cb3-259" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> rotated</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>apply_rope_to_vector</code> walks through a query or key vector two dimensions at a time. Each pair gets its own angle, determined by the token position and the pair index. RoPE requires an even vector dimension because every dimension must belong to a pair.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> apply_rope(matrix: Matrix) <span class="op">-&gt;</span> Matrix:</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>        apply_rope_to_vector(row, position)</span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> position, row <span class="kw">in</span> <span class="bu">enumerate</span>(matrix)</span>
-<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>    ]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" data-snippet="rope_matrix" data-startfrom="265"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 264;"><span id="cb4-265"><a href="#cb4-265" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> apply_rope(matrix: Matrix) <span class="op">-&gt;</span> Matrix:</span>
+<span id="cb4-266"><a href="#cb4-266" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> [</span>
+<span id="cb4-267"><a href="#cb4-267" aria-hidden="true" tabindex="-1"></a>        apply_rope_to_vector(row, position)</span>
+<span id="cb4-268"><a href="#cb4-268" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> position, row <span class="kw">in</span> <span class="bu">enumerate</span>(matrix)</span>
+<span id="cb4-269"><a href="#cb4-269" aria-hidden="true" tabindex="-1"></a>    ]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>apply_rope</code> applies that vector rotation to every row in a matrix. The row index is the token position, so row <code>0</code> gets position <code>0</code>, row <code>1</code> gets position <code>1</code>, and so on.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> scaled_dot_product_attention_with_rope(</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    query: Matrix,</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>    key: Matrix,</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>    value: Matrix,</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="bu">tuple</span>[Matrix, Matrix]:</span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> scaled_dot_product_attention(</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>        apply_rope(query),</span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>        apply_rope(key),</span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a>        value,</span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" data-snippet="rope_attention" data-startfrom="300"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 299;"><span id="cb5-300"><a href="#cb5-300" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> scaled_dot_product_attention_with_rope(</span>
+<span id="cb5-301"><a href="#cb5-301" aria-hidden="true" tabindex="-1"></a>    query: Matrix,</span>
+<span id="cb5-302"><a href="#cb5-302" aria-hidden="true" tabindex="-1"></a>    key: Matrix,</span>
+<span id="cb5-303"><a href="#cb5-303" aria-hidden="true" tabindex="-1"></a>    value: Matrix,</span>
+<span id="cb5-304"><a href="#cb5-304" aria-hidden="true" tabindex="-1"></a>) <span class="op">-&gt;</span> <span class="bu">tuple</span>[Matrix, Matrix]:</span>
+<span id="cb5-305"><a href="#cb5-305" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> scaled_dot_product_attention(</span>
+<span id="cb5-306"><a href="#cb5-306" aria-hidden="true" tabindex="-1"></a>        apply_rope(query),</span>
+<span id="cb5-307"><a href="#cb5-307" aria-hidden="true" tabindex="-1"></a>        apply_rope(key),</span>
+<span id="cb5-308"><a href="#cb5-308" aria-hidden="true" tabindex="-1"></a>        value,</span>
+<span id="cb5-309"><a href="#cb5-309" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>scaled_dot_product_attention_with_rope</code> keeps the attention formula from <a href="ch06-attention.html" class="quarto-xref"><span>Chapter 6</span></a>. The only difference is that queries and keys are rotated before the dot products are computed. Values are not rotated; they are still mixed by the final attention weights.</p>
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> chapter_07(seed: <span class="bu">int</span> <span class="op">=</span> <span class="dv">607</span>) <span class="op">-&gt;</span> <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">object</span>]:</span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> random.Random(seed)</span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>    query <span class="op">=</span> random_matrix(<span class="dv">4</span>, <span class="dv">8</span>, rng)</span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>    key <span class="op">=</span> random_matrix(<span class="dv">4</span>, <span class="dv">8</span>, rng)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>    value <span class="op">=</span> random_matrix(<span class="dv">4</span>, <span class="dv">8</span>, rng)</span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a>    output, weights <span class="op">=</span> scaled_dot_product_attention_with_rope(query, key, value)</span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"rotated_first"</span>: apply_rope_to_vector([<span class="fl">1.0</span>, <span class="fl">0.0</span>], <span class="dv">1</span>),</span>
-<span id="cb6-9"><a href="#cb6-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">"rotated_shape"</span>: (<span class="bu">len</span>(apply_rope(query)), <span class="bu">len</span>(query[<span class="dv">0</span>])),</span>
-<span id="cb6-10"><a href="#cb6-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">"output_shape"</span>: (<span class="bu">len</span>(output), <span class="bu">len</span>(output[<span class="dv">0</span>])),</span>
-<span id="cb6-11"><a href="#cb6-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">"weight_rows"</span>: [<span class="bu">sum</span>(row) <span class="cf">for</span> row <span class="kw">in</span> weights],</span>
-<span id="cb6-12"><a href="#cb6-12" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb6" data-snippet="chapter_07" data-startfrom="120"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 119;"><span id="cb6-120"><a href="#cb6-120" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> chapter_07(seed: <span class="bu">int</span> <span class="op">=</span> <span class="dv">607</span>) <span class="op">-&gt;</span> <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">object</span>]:</span>
+<span id="cb6-121"><a href="#cb6-121" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> random.Random(seed)</span>
+<span id="cb6-122"><a href="#cb6-122" aria-hidden="true" tabindex="-1"></a>    query <span class="op">=</span> random_matrix(<span class="dv">4</span>, <span class="dv">8</span>, rng)</span>
+<span id="cb6-123"><a href="#cb6-123" aria-hidden="true" tabindex="-1"></a>    key <span class="op">=</span> random_matrix(<span class="dv">4</span>, <span class="dv">8</span>, rng)</span>
+<span id="cb6-124"><a href="#cb6-124" aria-hidden="true" tabindex="-1"></a>    value <span class="op">=</span> random_matrix(<span class="dv">4</span>, <span class="dv">8</span>, rng)</span>
+<span id="cb6-125"><a href="#cb6-125" aria-hidden="true" tabindex="-1"></a>    output, weights <span class="op">=</span> scaled_dot_product_attention_with_rope(query, key, value)</span>
+<span id="cb6-126"><a href="#cb6-126" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb6-127"><a href="#cb6-127" aria-hidden="true" tabindex="-1"></a>        <span class="st">"rotated_first"</span>: apply_rope_to_vector([<span class="fl">1.0</span>, <span class="fl">0.0</span>], <span class="dv">1</span>),</span>
+<span id="cb6-128"><a href="#cb6-128" aria-hidden="true" tabindex="-1"></a>        <span class="st">"rotated_shape"</span>: (<span class="bu">len</span>(apply_rope(query)), <span class="bu">len</span>(query[<span class="dv">0</span>])),</span>
+<span id="cb6-129"><a href="#cb6-129" aria-hidden="true" tabindex="-1"></a>        <span class="st">"output_shape"</span>: (<span class="bu">len</span>(output), <span class="bu">len</span>(output[<span class="dv">0</span>])),</span>
+<span id="cb6-130"><a href="#cb6-130" aria-hidden="true" tabindex="-1"></a>        <span class="st">"weight_rows"</span>: [<span class="bu">sum</span>(row) <span class="cf">for</span> row <span class="kw">in</span> weights],</span>
+<span id="cb6-131"><a href="#cb6-131" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>chapter_07</code> is the runnable demo used by <code>python3 src/python/chapter_demos.py</code>. It checks that RoPE preserves the query/key matrix shape and that the resulting attention rows still sum to 1 after softmax.</p>
 </section>
 <section id="takeaways" class="level2" data-number="7.5">
 <h2 data-number="7.5" class="anchored" data-anchor-id="takeaways"><span class="header-section-number">7.5</span> Takeaways</h2>
 <ul>
 <li>Earlier positional encodings add position to the token representation before attention.</li>
-<li>RoPE puts position inside attention by rotating <span class="math inline">\(Q\)</span> and <span class="math inline">\(K\)</span>.</li>
+<li>RoPE (Su et al., 2021) puts position inside attention by rotating <span class="math inline">\(Q\)</span> and <span class="math inline">\(K\)</span>.</li>
 <li>Values are not rotated; they are still blended by the attention weights.</li>
-<li>The query-key dot product depends on relative distance between positions.</li>
-<li>Modern GPT-style models often prefer RoPE because it gives attention a strong relative-position signal without adding learned position parameters.</li>
+<li>The query-key dot product depends only on the relative distance between positions, not absolute indices.</li>
+<li>No extra parameters — the rotation is deterministic.</li>
+<li>Generalises to sequences longer than those seen during training.</li>
+<li>Compatible with linear attention variants.</li>
+<li>Used in LLaMA, Mistral, Qwen, and most open-weight models.</li>
 </ul>
 <div class="callout callout-style-simple callout-note">
 <div class="callout-body d-flex">

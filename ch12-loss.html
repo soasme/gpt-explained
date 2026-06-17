@@ -650,31 +650,22 @@ Figure&nbsp;12.2: Cross-entropy loss
 </section>
 <section id="python-implementation" class="level2" data-number="12.5">
 <h2 data-number="12.5" class="anchored" data-anchor-id="python-implementation"><span class="header-section-number">12.5</span> Python Implementation</h2>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2" data-snippet="cross_entropy_loss" data-startfrom="16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 15;"><span id="cb2-16"><a href="#cb2-16" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> cross_entropy_loss(logits: Sequence[<span class="bu">float</span>], true_id: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb2-17"><a href="#cb2-17" aria-hidden="true" tabindex="-1"></a>    probabilities <span class="op">=</span> softmax(logits)</span>
+<span id="cb2-18"><a href="#cb2-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">-</span>math.log(<span class="bu">max</span>(probabilities[true_id], <span class="fl">1.0e-12</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>cross_entropy_loss</code> computes <span class="math inline">\(-\log P(\text{true token})\)</span> for a single position.</p>
-<!-- snippet: src/python/train.py#cross_entropy_loss -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> cross_entropy_loss(logits: Sequence[<span class="bu">float</span>], true_id: <span class="bu">int</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a>    probabilities <span class="op">=</span> softmax(logits)</span>
-<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="op">-</span>math.log(<span class="bu">max</span>(probabilities[true_id], <span class="fl">1.0e-12</span>))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
-<p><code>sequence_loss</code> averages the per-position losses into one scalar — the training signal for a complete sequence. <code>perplexity</code> converts the mean loss back to an interpretable scale.</p>
-<!-- snippet: src/python/train.py#sequence_loss -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sequence_loss(logits_list: Sequence[Sequence[<span class="bu">float</span>]], true_ids: Sequence[<span class="bu">int</span>]) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>    losses <span class="op">=</span> [cross_entropy_loss(logits, true_id) <span class="cf">for</span> logits, true_id <span class="kw">in</span> <span class="bu">zip</span>(logits_list, true_ids)]</span>
-<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">sum</span>(losses) <span class="op">/</span> <span class="bu">len</span>(losses)</span>
-<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a><span class="co"># tag::perplexity[]</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> perplexity(loss: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> math.exp(loss)</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a><span class="co"># end::perplexity[]</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
-<p>The softmax-cross-entropy gradient has a clean closed form: <span class="math inline">\(\partial \mathcal{L} / \partial z_j = P(j) - \mathbf{1}[j = \text{true}]\)</span>.</p>
-<!-- snippet: src/python/train.py#loss_grad -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> softmax_cross_entropy_grad(logits: Sequence[<span class="bu">float</span>], true_id: <span class="bu">int</span>) <span class="op">-&gt;</span> Vector:</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    grad <span class="op">=</span> softmax(logits)</span>
-<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>    grad[true_id] <span class="op">-=</span> <span class="fl">1.0</span></span>
-<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> grad</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb3" data-snippet="sequence_loss" data-startfrom="23"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 22;"><span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> sequence_loss(logits_list: Sequence[Sequence[<span class="bu">float</span>]], true_ids: Sequence[<span class="bu">int</span>]) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>    losses <span class="op">=</span> [cross_entropy_loss(logits, true_id) <span class="cf">for</span> logits, true_id <span class="kw">in</span> <span class="bu">zip</span>(logits_list, true_ids)]</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> <span class="bu">sum</span>(losses) <span class="op">/</span> <span class="bu">len</span>(losses)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>sequence_loss</code> averages the per-position losses into one scalar: the training signal for a complete sequence.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb4" data-snippet="perplexity" data-startfrom="30"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 29;"><span id="cb4-30"><a href="#cb4-30" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> perplexity(loss: <span class="bu">float</span>) <span class="op">-&gt;</span> <span class="bu">float</span>:</span>
+<span id="cb4-31"><a href="#cb4-31" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> math.exp(loss)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>perplexity</code> converts the mean loss back to an interpretable scale.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb5" data-snippet="loss_grad" data-startfrom="36"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 35;"><span id="cb5-36"><a href="#cb5-36" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> softmax_cross_entropy_grad(logits: Sequence[<span class="bu">float</span>], true_id: <span class="bu">int</span>) <span class="op">-&gt;</span> Vector:</span>
+<span id="cb5-37"><a href="#cb5-37" aria-hidden="true" tabindex="-1"></a>    grad <span class="op">=</span> softmax(logits)</span>
+<span id="cb5-38"><a href="#cb5-38" aria-hidden="true" tabindex="-1"></a>    grad[true_id] <span class="op">-=</span> <span class="fl">1.0</span></span>
+<span id="cb5-39"><a href="#cb5-39" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> grad</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p><code>softmax_cross_entropy_grad</code> implements the closed-form gradient: <span class="math inline">\(\partial \mathcal{L} / \partial z_j = P(j) - \mathbf{1}[j = \text{true}]\)</span>.</p>
 <p>Run with <code>python3 src/python/chapter_demos.py</code>. Expected output:</p>
 <pre class="text"><code>Per-position losses:
   pos 0 (true=3): loss=1.609  P(true)=0.200

@@ -515,57 +515,51 @@ Figure&nbsp;8.1: Multi-head attention
 </section>
 <section id="the-code-multi-head-attention-in-python" class="level2" data-number="8.4">
 <h2 data-number="8.4" class="anchored" data-anchor-id="the-code-multi-head-attention-in-python"><span class="header-section-number">8.4</span> The Code: Multi-Head Attention in Python</h2>
-<p>Each attention head is a triple of weight matrices <span class="math inline">\((W_q, W_k, W_v)\)</span>, each of shape <span class="math inline">\([d \times d_k]\)</span>. <code>MultiHeadAttention</code> groups the heads with the output projection <span class="math inline">\(W_o\)</span>; <code>make_multi_head_attention</code> allocates them.</p>
-<!-- snippet: src/python/common.py#mha_params -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span></span>
-<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> AttentionHead:</span>
-<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>    wq: Matrix</span>
-<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a>    wk: Matrix</span>
-<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>    wv: Matrix</span>
-<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-8"><a href="#cb7-8" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span></span>
-<span id="cb7-9"><a href="#cb7-9" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> MultiHeadAttention:</span>
-<span id="cb7-10"><a href="#cb7-10" aria-hidden="true" tabindex="-1"></a>    heads: <span class="bu">list</span>[AttentionHead]</span>
-<span id="cb7-11"><a href="#cb7-11" aria-hidden="true" tabindex="-1"></a>    wo: Matrix</span>
-<span id="cb7-12"><a href="#cb7-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-13"><a href="#cb7-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb7-14"><a href="#cb7-14" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_multi_head_attention(d_model: <span class="bu">int</span>, num_heads: <span class="bu">int</span>, rng: random.Random) <span class="op">-&gt;</span> MultiHeadAttention:</span>
-<span id="cb7-15"><a href="#cb7-15" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> d_model <span class="op">%</span> num_heads <span class="op">!=</span> <span class="dv">0</span>:</span>
-<span id="cb7-16"><a href="#cb7-16" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"d_model must be divisible by num_heads"</span>)</span>
-<span id="cb7-17"><a href="#cb7-17" aria-hidden="true" tabindex="-1"></a>    d_key <span class="op">=</span> d_model <span class="op">//</span> num_heads</span>
-<span id="cb7-18"><a href="#cb7-18" aria-hidden="true" tabindex="-1"></a>    heads <span class="op">=</span> [</span>
-<span id="cb7-19"><a href="#cb7-19" aria-hidden="true" tabindex="-1"></a>        AttentionHead(</span>
-<span id="cb7-20"><a href="#cb7-20" aria-hidden="true" tabindex="-1"></a>            random_matrix(d_model, d_key, rng),</span>
-<span id="cb7-21"><a href="#cb7-21" aria-hidden="true" tabindex="-1"></a>            random_matrix(d_model, d_key, rng),</span>
-<span id="cb7-22"><a href="#cb7-22" aria-hidden="true" tabindex="-1"></a>            random_matrix(d_model, d_key, rng),</span>
-<span id="cb7-23"><a href="#cb7-23" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb7-24"><a href="#cb7-24" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(num_heads)</span>
-<span id="cb7-25"><a href="#cb7-25" aria-hidden="true" tabindex="-1"></a>    ]</span>
-<span id="cb7-26"><a href="#cb7-26" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> MultiHeadAttention(heads<span class="op">=</span>heads, wo<span class="op">=</span>random_matrix(d_model, d_model, rng))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb7" data-snippet="mha_params" data-startfrom="316"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 315;"><span id="cb7-316"><a href="#cb7-316" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span></span>
+<span id="cb7-317"><a href="#cb7-317" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> AttentionHead:</span>
+<span id="cb7-318"><a href="#cb7-318" aria-hidden="true" tabindex="-1"></a>    wq: Matrix</span>
+<span id="cb7-319"><a href="#cb7-319" aria-hidden="true" tabindex="-1"></a>    wk: Matrix</span>
+<span id="cb7-320"><a href="#cb7-320" aria-hidden="true" tabindex="-1"></a>    wv: Matrix</span>
+<span id="cb7-321"><a href="#cb7-321" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-322"><a href="#cb7-322" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-323"><a href="#cb7-323" aria-hidden="true" tabindex="-1"></a><span class="at">@dataclass</span></span>
+<span id="cb7-324"><a href="#cb7-324" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> MultiHeadAttention:</span>
+<span id="cb7-325"><a href="#cb7-325" aria-hidden="true" tabindex="-1"></a>    heads: <span class="bu">list</span>[AttentionHead]</span>
+<span id="cb7-326"><a href="#cb7-326" aria-hidden="true" tabindex="-1"></a>    wo: Matrix</span>
+<span id="cb7-327"><a href="#cb7-327" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-328"><a href="#cb7-328" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-329"><a href="#cb7-329" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> make_multi_head_attention(d_model: <span class="bu">int</span>, num_heads: <span class="bu">int</span>, rng: random.Random) <span class="op">-&gt;</span> MultiHeadAttention:</span>
+<span id="cb7-330"><a href="#cb7-330" aria-hidden="true" tabindex="-1"></a>    <span class="cf">if</span> d_model <span class="op">%</span> num_heads <span class="op">!=</span> <span class="dv">0</span>:</span>
+<span id="cb7-331"><a href="#cb7-331" aria-hidden="true" tabindex="-1"></a>        <span class="cf">raise</span> <span class="pp">ValueError</span>(<span class="st">"d_model must be divisible by num_heads"</span>)</span>
+<span id="cb7-332"><a href="#cb7-332" aria-hidden="true" tabindex="-1"></a>    d_key <span class="op">=</span> d_model <span class="op">//</span> num_heads</span>
+<span id="cb7-333"><a href="#cb7-333" aria-hidden="true" tabindex="-1"></a>    heads <span class="op">=</span> [</span>
+<span id="cb7-334"><a href="#cb7-334" aria-hidden="true" tabindex="-1"></a>        AttentionHead(</span>
+<span id="cb7-335"><a href="#cb7-335" aria-hidden="true" tabindex="-1"></a>            random_matrix(d_model, d_key, rng),</span>
+<span id="cb7-336"><a href="#cb7-336" aria-hidden="true" tabindex="-1"></a>            random_matrix(d_model, d_key, rng),</span>
+<span id="cb7-337"><a href="#cb7-337" aria-hidden="true" tabindex="-1"></a>            random_matrix(d_model, d_key, rng),</span>
+<span id="cb7-338"><a href="#cb7-338" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb7-339"><a href="#cb7-339" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> _ <span class="kw">in</span> <span class="bu">range</span>(num_heads)</span>
+<span id="cb7-340"><a href="#cb7-340" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb7-341"><a href="#cb7-341" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> MultiHeadAttention(heads<span class="op">=</span>heads, wo<span class="op">=</span>random_matrix(d_model, d_model, rng))</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>Each attention head is a triple of weight matrices <span class="math inline">\((W_q, W_k, W_v)\)</span>, each of shape <span class="math inline">\([d \times d_k]\)</span>. <code>MultiHeadAttention</code> groups the heads with the output projection <span class="math inline">\(W_o\)</span>. <code>make_multi_head_attention</code> checks that the model width can be split evenly, allocates one parameter set per head, and creates the final output projection.</p>
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8" data-snippet="mha_forward" data-startfrom="346"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 345;"><span id="cb8-346"><a href="#cb8-346" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> multi_head_attention(x: Matrix, params: MultiHeadAttention) <span class="op">-&gt;</span> <span class="bu">tuple</span>[Matrix, <span class="bu">list</span>[Matrix]]:</span>
+<span id="cb8-347"><a href="#cb8-347" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> [</span>
+<span id="cb8-348"><a href="#cb8-348" aria-hidden="true" tabindex="-1"></a>        self_attention(x, head.wq, head.wk, head.wv)</span>
+<span id="cb8-349"><a href="#cb8-349" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> head <span class="kw">in</span> params.heads</span>
+<span id="cb8-350"><a href="#cb8-350" aria-hidden="true" tabindex="-1"></a>    ]</span>
+<span id="cb8-351"><a href="#cb8-351" aria-hidden="true" tabindex="-1"></a>    concatenated <span class="op">=</span> hstack([output <span class="cf">for</span> output, _weights <span class="kw">in</span> results])</span>
+<span id="cb8-352"><a href="#cb8-352" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> matrix_multiply(concatenated, params.wo), [weights <span class="cf">for</span> _output, weights <span class="kw">in</span> results]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 <p><code>multi_head_attention</code> runs each head’s SDPA independently, concatenates the per-head outputs column-wise, and applies the output projection.</p>
-<!-- snippet: src/python/common.py#mha_forward -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> multi_head_attention(x: Matrix, params: MultiHeadAttention) <span class="op">-&gt;</span> <span class="bu">tuple</span>[Matrix, <span class="bu">list</span>[Matrix]]:</span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>    results <span class="op">=</span> [</span>
-<span id="cb8-3"><a href="#cb8-3" aria-hidden="true" tabindex="-1"></a>        self_attention(x, head.wq, head.wk, head.wv)</span>
-<span id="cb8-4"><a href="#cb8-4" aria-hidden="true" tabindex="-1"></a>        <span class="cf">for</span> head <span class="kw">in</span> params.heads</span>
-<span id="cb8-5"><a href="#cb8-5" aria-hidden="true" tabindex="-1"></a>    ]</span>
-<span id="cb8-6"><a href="#cb8-6" aria-hidden="true" tabindex="-1"></a>    concatenated <span class="op">=</span> hstack([output <span class="cf">for</span> output, _weights <span class="kw">in</span> results])</span>
-<span id="cb8-7"><a href="#cb8-7" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> matrix_multiply(concatenated, params.wo), [weights <span class="cf">for</span> _output, weights <span class="kw">in</span> results]</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
-<p><em>Demo.</em> Run with <code>python3 src/python/chapter_demos.py</code>:</p>
-<!-- snippet: src/python/chapter_demos.py#chapter_08 -->
-<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> chapter_08(seed: <span class="bu">int</span> <span class="op">=</span> <span class="dv">7</span>) <span class="op">-&gt;</span> <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">object</span>]:</span>
-<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> random.Random(seed)</span>
-<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> random_matrix(<span class="dv">4</span>, <span class="dv">8</span>, rng)</span>
-<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>    params <span class="op">=</span> make_multi_head_attention(<span class="dv">8</span>, <span class="dv">2</span>, rng)</span>
-<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>    output, weights <span class="op">=</span> multi_head_attention(x, params)</span>
-<span id="cb9-6"><a href="#cb9-6" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
-<span id="cb9-7"><a href="#cb9-7" aria-hidden="true" tabindex="-1"></a>        <span class="st">"output_shape"</span>: (<span class="bu">len</span>(output), <span class="bu">len</span>(output[<span class="dv">0</span>])),</span>
-<span id="cb9-8"><a href="#cb9-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">"num_heads"</span>: <span class="bu">len</span>(weights),</span>
-<span id="cb9-9"><a href="#cb9-9" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
-<!-- /snippet -->
+<div class="code-copy-outer-scaffold"><div class="sourceCode" id="cb9" data-snippet="chapter_08" data-startfrom="136"><pre class="sourceCode python code-with-copy"><code class="sourceCode python" style="counter-reset: source-line 135;"><span id="cb9-136"><a href="#cb9-136" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> chapter_08(seed: <span class="bu">int</span> <span class="op">=</span> <span class="dv">7</span>) <span class="op">-&gt;</span> <span class="bu">dict</span>[<span class="bu">str</span>, <span class="bu">object</span>]:</span>
+<span id="cb9-137"><a href="#cb9-137" aria-hidden="true" tabindex="-1"></a>    rng <span class="op">=</span> random.Random(seed)</span>
+<span id="cb9-138"><a href="#cb9-138" aria-hidden="true" tabindex="-1"></a>    x <span class="op">=</span> random_matrix(<span class="dv">4</span>, <span class="dv">8</span>, rng)</span>
+<span id="cb9-139"><a href="#cb9-139" aria-hidden="true" tabindex="-1"></a>    params <span class="op">=</span> make_multi_head_attention(<span class="dv">8</span>, <span class="dv">2</span>, rng)</span>
+<span id="cb9-140"><a href="#cb9-140" aria-hidden="true" tabindex="-1"></a>    output, weights <span class="op">=</span> multi_head_attention(x, params)</span>
+<span id="cb9-141"><a href="#cb9-141" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> {</span>
+<span id="cb9-142"><a href="#cb9-142" aria-hidden="true" tabindex="-1"></a>        <span class="st">"output_shape"</span>: (<span class="bu">len</span>(output), <span class="bu">len</span>(output[<span class="dv">0</span>])),</span>
+<span id="cb9-143"><a href="#cb9-143" aria-hidden="true" tabindex="-1"></a>        <span class="st">"num_heads"</span>: <span class="bu">len</span>(weights),</span>
+<span id="cb9-144"><a href="#cb9-144" aria-hidden="true" tabindex="-1"></a>    }</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<p>The demo creates a two-head attention module, runs it over a four-token sequence, and reports the output shape plus the number of attention-weight matrices. Run it with <code>python3 src/python/chapter_demos.py</code>.</p>
 </section>
 <section id="why-multi-head-attention-works" class="level2" data-number="8.5">
 <h2 data-number="8.5" class="anchored" data-anchor-id="why-multi-head-attention-works"><span class="header-section-number">8.5</span> Why Multi-Head Attention Works</h2>
