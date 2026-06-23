@@ -1,0 +1,39 @@
+## Why This Book
+
+Most people who use GPT every day have never looked inside it.
+
+That is completely understandable.
+The tools are designed so you do not have to.
+You type a message, press enter, and get an answer back.
+The machinery is hidden behind a clean interface, and the interface works beautifully.
+
+But something quietly changes the further you stay from the internals.
+
+A few years ago, building with language models meant training your own neural network from scratch.
+A year later, you could download a pre-trained model and fine-tune it on your own data.
+Today, most people simply send text to an API and read the response.
+Each step up the ladder is more productive — and each step leaves a little more behind.
+
+This is not a problem when things work.
+But these abstractions are leaky.
+When the model gives confident nonsense, when a carefully written prompt stops working after a version update, when you need to choose between architectures or explain to a colleague why context length matters — you hit the floor.
+The answer is not on the API documentation page.
+It is in the mechanics underneath.
+
+This book is built on a single conviction: **you understand a thing fully only after you have built it yourself**.
+
+We will start from raw numbers and work up to a working GPT model, step by step.
+Every concept gets explained in plain language first, then in the math that makes it precise, then in code you can actually run.
+Nothing is a black box.
+
+Three kinds of knowledge transfer from this exercise to the models you use in practice:
+
+- *Mechanics* — how tokens are produced, why attention is computed the way it is, what a transformer block actually does. This is directly reusable, regardless of model size or provider.
+- *Intuition* — why certain prompts work better than others, what "temperature" is really adjusting, why a model "forgets" things in a long context. These follow from the math.
+- *Vocabulary* — the ability to read research papers, follow technical discussions, and ask precise questions when something goes wrong.
+
+You do not need a GPU cluster to gain these things.
+A small model built on a laptop teaches the same fundamentals as a frontier model with a trillion parameters.
+The principles scale; the insight is the same.
+
+If you have ever wanted to know what is actually happening when you press send — this book is for you.

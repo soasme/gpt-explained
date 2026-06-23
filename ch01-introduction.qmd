@@ -1,9 +1,11 @@
 # Introduction {#sec-ch01-introduction}
 
-This chapter answers two questions before you touch any math or code:
-what is GPT, and how does it work?
+This chapter sets the stage before you touch any math or code:
+why this book exists, what GPT is, and how it works at a high level.
 We keep the language concrete and the diagrams simple.
 The details come later.
+
+{{< include book/01-introduction/sections/why-this-book.qmd >}}
 
 {{< include book/01-introduction/sections/what-is-gpt.qmd >}}
 
