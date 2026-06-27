@@ -1,57 +1,73 @@
 ## How GPT Works
 
-Imagine texting with a really smart friend who has read every book, article, and website ever written.
-You send a message, they think for a split second, and they reply with exactly the right words.
-GPT works like that friend, except instead of a brain, it uses a chain of math operations called a *pipeline*.
+At a high level, GPT is a text-in, text-out machine.
+The interesting part is the route between those two pieces of text:
 
-Every word GPT produces goes through these seven steps, in order:
+![The GPT data path: text becomes tokens, vectors, contextual vectors, token probabilities, and then text again](images/fig-ch01-gpt-overview.png){#fig-ch01-gpt-overview}
 
-![The GPT pipeline: from input text to predicted next word, in seven steps](images/fig-ch01-gpt-pipeline.png){#fig-ch01-gpt-pipeline}
+When you type a prompt, GPT does not understand the raw characters directly.
+It first turns the text into token IDs, turns those IDs into vectors, passes the vectors through a stack of transformer blocks, then predicts the most likely next token.
+That new token is appended to the prompt, and the same process runs again.
+Long answers are built by repeating this loop one token at a time.
 
-*Step 1 — Tokenization (@sec-ch03-tokens).*
-Before GPT can think about your text, it has to chop it into small pieces called *tokens*.
-Think of tokens like LEGO bricks: you break a sentence apart, and GPT works with the individual bricks.
-The phrase `"the cat"` might become three bricks with serial numbers like `[1, 428, 3797]`.
+![A folded example of the GPT pipeline: prompt text moves through tokenization and embeddings, then down into transformer blocks, projection, probabilities, and a sampled next token](images/fig-ch01-gpt-pipeline.png){#fig-ch01-gpt-pipeline}
 
-*Step 2 — Embedding (@sec-ch04-embeddings).*
-A number like `428` is just an ID — it has no meaning by itself.
-So GPT looks each ID up in a giant table and swaps it for a list of hundreds of numbers called a *vector*.
-Picture a map where every word has its own location.
-Similar words end up close together: "cat" and "kitten" are neighbors, while "cat" and "spaceship" are far apart.
+The pipeline has four main stages.
 
-*Step 3 — Positional Encoding (@sec-ch05-positional-encoding).*
-Here is a puzzle: does "dog bites man" mean the same thing as "man bites dog"?
-Obviously not — but if GPT only sees individual words and ignores their order, it cannot tell the difference.
-Positional encoding adds a tiny "position tag" to each word's vector so GPT knows which word came first, second, and so on.
+*1. Tokenize the text (@sec-ch03-tokens).*
 
-*Step 4 — Transformer Blocks (@sec-ch06-attention through @sec-ch10-transformer-block).*
-This is where the real thinking happens.
-GPT passes the vectors through a stack of identical layers called *transformer blocks*.
-Inside each block, two things happen back-to-back:
+Text is split into small pieces called *tokens*.
+Tokens are usually subword chunks, not full words and not single characters.
+For example, `"unhappiness"` might become something like `"un"` + `"happiness"`, or a different pair of chunks depending on the tokenizer's learned vocabulary.
 
-- *Attention* — every word looks at every other word and asks "which of you matters most to me right now?"
-  For example, the word "it" in "I kicked the ball and it bounced" needs to figure out that "it" refers to "ball".
-- *Feed-forward* — each word's vector gets processed through a small math circuit that stores facts from training.
+The tokenizer then replaces each token with an integer ID.
+From this point onward, the model works with numbers, not strings.
 
-There can be dozens of these blocks stacked on top of each other.
-Each layer builds a slightly deeper understanding of the text.
+*2. Turn token IDs into vectors (@sec-ch04-embeddings and @sec-ch05-positional-encoding).*
 
-*Step 5 — Vocab Projection (@sec-ch11-vocab-projection).*
-After passing through all the blocks, GPT has a rich, updated vector for the last word in your prompt.
-Now it needs to turn that into a real prediction: "what word should come next?"
-It does this by scoring every word in its vocabulary — all 50,000-plus of them.
-These raw scores are called *logits*.
+A token ID such as `428` is only a lookup key.
+The embedding layer uses that key to fetch a learned vector: a list of numbers that places the token in the model's internal space.
+Tokens used in similar contexts tend to end up with related vectors.
 
-*Step 6 — Softmax (@sec-ch11-vocab-projection).*
-Raw scores are hard to work with, so GPT converts them into proper probabilities that add up to 100%.
-The highest-probability word is the model's best guess.
-It samples from the top options to avoid always giving the same robotic answer.
+GPT also needs word order.
+The sequence `"dog bites man"` should not look the same as `"man bites dog"`.
+Position information is therefore added to the token representation, either before attention as positional encoding (@sec-ch05-positional-encoding) or inside attention itself in modern models such as RoPE (@sec-ch07-rope).
 
-*Step 7 — Loss and Training (@sec-ch12-loss and @sec-ch13-training).*
-GPT did not start out smart.
-During training, it read billions of sentences and kept trying to predict the next word — getting it wrong most of the time at first.
-Each mistake triggered a feedback signal called *backpropagation* that nudged millions of internal numbers a tiny bit in the right direction.
-After trillions of these small nudges, the model got very good at the guessing game.
+*3. Process the context with transformer blocks (@sec-ch06-attention through @sec-ch10-transformer-block).*
 
-That's GPT from start to finish.
-The rest of this book builds each step from scratch — in math, in Python code, and in step-by-step diagrams.
+The vectors now pass through a stack of transformer blocks.
+This is where each token's representation becomes contextual: the vector for a token is updated using information from the other tokens around it.
+
+Inside each block, attention decides which earlier tokens matter for the current position.
+In `"I kicked the ball and it bounced"`, attention gives the model a way to connect `"it"` with `"ball"`.
+Multi-head attention runs several of these relationship checks at once (@sec-ch08-multi-head-attention).
+The feed-forward network then transforms each position's vector independently, adding another learned computation step (@sec-ch09-feed-forward).
+Residual connections and layer normalization keep this deep stack trainable (@sec-ch10-transformer-block).
+
+*4. Predict and decode the next token (@sec-ch11-vocab-projection).*
+
+After the final transformer block, GPT has a contextual vector for each position.
+For generation, the important one is the final position: it represents the prompt as seen from the point where the next token should appear.
+
+The vocabulary projection turns that vector into one score per vocabulary token.
+These scores are called *logits*.
+A softmax converts logits into probabilities, and a decoding rule chooses the next token.
+Sometimes the highest-probability token is chosen; often the model samples from likely candidates so the answer is not always identical.
+
+Then the selected token is converted back into text, appended to the prompt, and fed through the model again.
+That repeated next-token prediction loop is what produces paragraphs, code blocks, summaries, and conversations.
+
+::: {.callout-note}
+### Where training fits
+
+The pipeline above describes a forward pass: how GPT produces one next-token prediction.
+Training uses the same forward pass, but adds two extra steps.
+First, the loss function measures how far the prediction was from the real next token (@sec-ch12-loss).
+Then backpropagation adjusts the model's weights so the next prediction is a little better (@sec-ch13-training).
+
+At chat time, the weights are already learned.
+The model is running inference: tokenizing your prompt, computing vectors, predicting the next token, and repeating.
+:::
+
+The rest of this book expands each box in the pipeline.
+We start with the notation needed to read the math (@sec-ch02-notation), then build the path from tokens to embeddings, attention, transformer blocks, vocabulary projection, loss, and training.

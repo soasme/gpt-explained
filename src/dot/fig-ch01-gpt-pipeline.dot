@@ -2,38 +2,63 @@ digraph gpt_pipeline {
   graph [
     rankdir=TB,
     bgcolor="white",
-    margin=0.2,
-    nodesep=0.4,
-    ranksep=0.5
+    margin=0.15,
+    nodesep=0.42,
+    ranksep=0.75,
+    splines=ortho
   ];
   node [
     shape=box,
     style="rounded,filled",
-    fontname="Courier",
+    fontname="Helvetica",
     fontsize=12,
-    color="#1177BB",
-    fillcolor="#E8F4FD",
-    penwidth=1.5,
-    margin="0.18,0.10"
+    color="#3B4A54",
+    fillcolor="#F6F8FA",
+    penwidth=1.2,
+    margin="0.16,0.10"
   ];
   edge [
-    color="#CC8800",
-    penwidth=2,
-    arrowsize=0.8
+    color="#6B7280",
+    penwidth=1.6,
+    arrowsize=0.7
   ];
 
-  input     [label="Your text\n\"the cat sat\"",
-             fillcolor="#F0F8E8", color="#228811"];
-  tokenizer [label="Step 1  Tokenizer\n-> integer IDs"];
-  embedding [label="Step 2  Embedding\n-> word vectors"];
-  positional[label="Step 3  Positional Encoding\n-> vectors with position"];
-  transformer[label="Step 4  Transformer Blocks x N\n(Attention + Feed-Forward)",
-              fillcolor="#FFF8E8", color="#CC8800"];
-  projection[label="Step 5  Vocab Projection\n-> scores for every word"];
-  softmax   [label="Step 6  Softmax\n-> probabilities"];
-  output    [label="Next word!",
-             fillcolor="#F0F8E8", color="#228811"];
+  input [
+    label="prompt text\n\"the cat sat\"",
+    fillcolor="#EAF7EF",
+    color="#2F7D4A"
+  ];
+  tokenizer [label="tokenizer"];
+  ids [label="token IDs\n[1, 428, 3797]"];
+  embedding [label="embedding\nlookup"];
 
-  input -> tokenizer -> embedding -> positional -> transformer
-        -> projection -> softmax -> output;
+  positioned [label="vectors with\nposition"];
+  transformer [
+    label="transformer\nblocks x N",
+    fillcolor="#EEF2FF",
+    color="#4F46E5"
+  ];
+  projection [label="vocab\nprojection"];
+  softmax [label="softmax\nprobabilities"];
+  output [
+    label="sampled\nnext token",
+    fillcolor="#EAF7EF",
+    color="#2F7D4A"
+  ];
+
+  { rank=same; input; tokenizer; ids; embedding; }
+  { rank=same; output; softmax; projection; transformer; positioned; }
+
+  input -> tokenizer -> ids -> embedding;
+  embedding -> positioned;
+
+  output -> softmax -> projection -> transformer -> positioned [
+    style=invis,
+    weight=100
+  ];
+
+  positioned -> transformer [constraint=false];
+  transformer -> projection [constraint=false];
+  projection -> softmax [constraint=false];
+  softmax -> output [constraint=false];
 }

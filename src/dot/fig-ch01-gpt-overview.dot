@@ -1,0 +1,33 @@
+digraph gpt_overview {
+  graph [
+    rankdir=LR,
+    bgcolor="white",
+    margin=0.12,
+    nodesep=0.35,
+    ranksep=0.45
+  ];
+  node [
+    shape=box,
+    style="rounded,filled",
+    fontname="Helvetica",
+    fontsize=13,
+    color="#3B4A54",
+    fillcolor="#F6F8FA",
+    penwidth=1.2,
+    margin="0.16,0.10"
+  ];
+  edge [
+    color="#6B7280",
+    penwidth=1.6,
+    arrowsize=0.7
+  ];
+
+  text_in [label="text", fillcolor="#EAF7EF", color="#2F7D4A"];
+  tokens [label="tokens"];
+  vectors [label="vectors"];
+  context [label="contextual\nvectors", fillcolor="#EEF2FF", color="#4F46E5"];
+  probs [label="token\nprobabilities"];
+  text_out [label="text", fillcolor="#EAF7EF", color="#2F7D4A"];
+
+  text_in -> tokens -> vectors -> context -> probs -> text_out;
+}
